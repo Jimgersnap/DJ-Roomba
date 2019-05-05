@@ -1666,12 +1666,12 @@ class MusicBot(discord.Client):
         """
 
         if player.is_stopped:
-            raise exceptions.CommandError(self.str.get('cmd-promote-nothing-playing', "I'm not playing anything, so I cannot modify the queue."), expire_in=20)
+            raise exceptions.CommandError(self.str.get('cmd-promote-nothing-playing', "Nothing is currently playing so the queue cannot be modified."), expire_in=20)
 
         length = len(player.playlist.entries)
 
         if length < 2:
-            raise exceptions.CommandError(self.str.get('cmd-promote-not-enough-entries', "I cannot promote anything since nothing is currently in the queue."), expire_in=20)
+            raise exceptions.CommandError(self.str.get('cmd-promote-not-enough-entries', "Nothing can be promoted since the queue is empty."), expire_in=20)
 
         if not position:
             entry = player.playlist.promote_last()
@@ -1679,16 +1679,16 @@ class MusicBot(discord.Client):
             try:
                 position = int(position)
             except ValueError:
-                 raise exceptions.CommandError(self.str.get('cmd-promote-invalid-song-number', "That's not a valid song ID. Please choose a song number between 2 and %s.") % length, expire_in=20)
+                 raise exceptions.CommandError(self.str.get('cmd-promote-invalid-song-number', "That's not a valid song ID. Please choose a song number between `2` and `%s`.") % length, expire_in=20)
 
             if position == 1:
                 raise exceptions.CommandError(self.str.get('cmd-promote-entry-already-at-top', "That song is already going to play next."), expire_in=20)
             if position < 1 or position > length:
-                raise exceptions.CommandError(self.str.get('cmd-promote-invalid-song-number-2', "I can't find that song in the queue. Please choose a song number between 2 and %s.") % length, expire_in=20)
+                raise exceptions.CommandError(self.str.get('cmd-promote-invalid-song-number-2', "I can't find that song in the queue. Please choose a song number between `2` and `%s`.") % length, expire_in=20)
 
             entry = player.playlist.promote_position(position)
 
-        reply_text = self.str.get('cmd-promote-successful',"I have promoted **%s** to the top of the queue. Estimated time until playing: %s")
+        reply_text = self.str.get('cmd-promote-successful',"The song **%s** has been promoted to the top of the queue.\nEstimated time until playing: **%s**")
         btext = entry.title
 
         try:
