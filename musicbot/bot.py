@@ -1479,7 +1479,7 @@ class MusicBot(discord.Client):
                     channel,
                     self.str.get('cmd-play-playlist-gathering-1', 'Processing playlist information for **{0}** songs{1}. This may take a while for large playlists.').format(
                         num_songs,
-                        self.str.get('cmd-play-playlist-gathering-2', ', **ETA:** `{0}` seconds.').format(fixg(
+                        self.str.get('cmd-play-playlist-gathering-2', '\nEstimated time until completed: `{0}` seconds.').format(fixg(
                             num_songs * wait_per_song)) if num_songs >= 10 else '.'))
 
                 # We don't have a pretty way of doing this yet.  We need either a loop
@@ -1523,7 +1523,7 @@ class MusicBot(discord.Client):
                         expire_in=30
                     )
 
-                reply_text = self.str.get('cmd-play-playlist-reply', "Enqueued **%s** songs to be played. Position in queue: **%s**.")
+                reply_text = self.str.get('cmd-play-playlist-reply', "Enqueued **%s** songs to be played. Position in queue: **%s**")
                 btext = str(listlen - drop_count)
 
             # If it's an entry
@@ -1543,17 +1543,17 @@ class MusicBot(discord.Client):
 
                 entry, position = await player.playlist.add_entry(song_url, channel=channel, author=author)
 
-                reply_text = self.str.get('cmd-play-song-reply', "Enqueued **%s** to be played. Position in queue: **%s**.")
+                reply_text = self.str.get('cmd-play-song-reply', "Enqueued **%s** to be played. Position in queue: **%s**")
                 btext = entry.title
 
             if position == 1 and player.is_stopped:
-                position = self.str.get('cmd-play-next', '**Up next!**')
+                position = self.str.get('cmd-play-next', '**Up next.**')
                 reply_text %= (btext, position)
 
             else:
                 try:
                     time_until = await player.playlist.estimate_time_until(position, player)
-                    reply_text += self.str.get('cmd-play-eta', ' - estimated time until playing: **%s**.')
+                    reply_text += self.str.get('cmd-play-eta', '\nEstimated time until playing: **%s**')
                 except:
                     traceback.print_exc()
                     time_until = ''
