@@ -2493,7 +2493,7 @@ class MusicBot(discord.Client):
 
         lines = []
         unlisted = 0
-        andmoretext = '* ... and %s more*' % ('x' * len(player.playlist.entries))
+        andmoretext = '* ... and **%s** more.*' % ('x' * len(player.playlist.entries))
 
         if player.is_playing:
             # TODO: Fix timedelta garbage with util function
@@ -2502,17 +2502,17 @@ class MusicBot(discord.Client):
             prog_str = '`[%s/%s]`' % (song_progress, song_total)
 
             if player.current_entry.meta.get('channel', False) and player.current_entry.meta.get('author', False):
-                lines.append(self.str.get('cmd-queue-playing-author', "Currently playing: `{0}` added by `{1}` {2}\n").format(
+                lines.append(self.str.get('cmd-queue-playing-author', "Currently playing: **{0}** added by **{1}**. {2}\n").format(
                     player.current_entry.title, player.current_entry.meta['author'].name, prog_str))
             else:
-                lines.append(self.str.get('cmd-queue-playing-noauthor', "Currently playing: `{0}` {1}\n").format(player.current_entry.title, prog_str))
+                lines.append(self.str.get('cmd-queue-playing-noauthor', "Currently playing: **{0}** {1}\n").format(player.current_entry.title, prog_str))
 
 
         for i, item in enumerate(player.playlist, 1):
             if item.meta.get('channel', False) and item.meta.get('author', False):
-                nextline = self.str.get('cmd-queue-entry-author', '{0} -- `{1}` by `{2}`').format(i, item.title, item.meta['author'].name).strip()
+                nextline = self.str.get('cmd-queue-entry-author', '{0} -- **{1}** added by **{2}**').format(i, item.title, item.meta['author'].name).strip()
             else:
-                nextline = self.str.get('cmd-queue-entry-noauthor', '{0} -- `{1}`').format(i, item.title).strip()
+                nextline = self.str.get('cmd-queue-entry-noauthor', '{0} -- **{1}**').format(i, item.title).strip()
 
             currentlinesum = sum(len(x) + 1 for x in lines)  # +1 is for newline char
 
@@ -2524,11 +2524,11 @@ class MusicBot(discord.Client):
             lines.append(nextline)
 
         if unlisted:
-            lines.append(self.str.get('cmd-queue-more', '\n... and %s more') % unlisted)
+            lines.append(self.str.get('cmd-queue-more', '\n... and **%s** more.') % unlisted)
 
         if not lines:
             lines.append(
-                self.str.get('cmd-queue-none', 'There are no songs queued! Queue something with {}play.').format(self.config.command_prefix))
+                self.str.get('cmd-queue-none', 'There are no songs in the queue. Queue something with `{}play`.').format(self.config.command_prefix))
 
         message = '\n'.join(lines)
         return Response(message, delete_after=30)
