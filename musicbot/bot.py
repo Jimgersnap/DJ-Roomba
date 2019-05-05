@@ -467,24 +467,25 @@ class MusicBot(discord.Client):
 
         channel = entry.meta.get('channel', None)
         author = entry.meta.get('author', None)
+        duration = ftimedelta(timedelta(seconds=player.current_entry.duration))
 
         if channel and author:
             author_perms = self.permissions.for_user(author)
 
             if author not in player.voice_client.channel.members and author_perms.skip_when_absent:
-                newmsg = 'Skipping the next song in **%s**: **%s** added by **%s** as they are no longer in the voice channel.' % (
+                newmsg = 'Skipping the next song in `%s`: **%s** added by **%s** as they are no longer in the voice channel.' % (
                     player.voice_client.channel.name, entry.title, entry.meta['author'].name)
                 player.skip()
             elif self.config.now_playing_mentions:
-                newmsg = '%s - your song **%s** is now playing in **%s**.' % (
-                    entry.meta['author'].mention, entry.title, player.voice_client.channel.name)
+                newmsg = '%s - your song **%s** is now playing in `%s`. `(%s)`' % (
+                    entry.meta['author'].mention, entry.title, player.voice_client.channel.name, duration)
             else:
-                newmsg = 'Now playing in **%s**: **%s** added by **%s**.' % (
-                    player.voice_client.channel.name, entry.title, entry.meta['author'].name)
+                newmsg = 'Now playing in `%s`: **%s** added by **%s**. `(%s)`' % (
+                    player.voice_client.channel.name, entry.title, entry.meta['author'].name, duration)
         else:
             # no author (and channel), it's an autoplaylist (or autostream from my other PR) entry.
-            newmsg = 'Now playing automatically added entry **%s** in **%s**.' % (
-                entry.title, player.voice_client.channel.name)
+            newmsg = 'Now playing automatically added entry **%s** in `%s`. `(%s)`' % (
+                entry.title, player.voice_client.channel.name, duration)
 
         if newmsg:
             guild = player.voice_client.guild
