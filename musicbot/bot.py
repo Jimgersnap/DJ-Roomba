@@ -1666,17 +1666,17 @@ class MusicBot(discord.Client):
         # TODO: Where ytdl gets the generic extractor version with no processing, but finds two different urls
 
         if 'entries' in info:
-            raise exceptions.CommandError(self.str.get('cmd-playnow-playlist-not-allowed', "Cannot playnow playlists! You must specify a single song."), expire_in=30)
+            raise exceptions.CommandError(self.str.get('cmd-playnow-playlist-not-allowed', "I can't playnow playlists. Please specify a single song for me to playnow."), expire_in=30)
         else:
             if permissions.max_song_length and info.get('duration', 0) > permissions.max_song_length:
                 raise exceptions.PermissionsError(self.str.get('cmd-playnow-song-over-limit',
-                    "Song duration exceeds limit (%s > %s)") % (info['duration'], permissions.max_song_length),
+                    "That song's duration exceeds the limit (%s > %s). Please request a shorter song.") % (info['duration'], permissions.max_song_length),
                     expire_in=30
                 )
 
             try:
                 entry, position = await player.playlist.add_entry(song_url, channel=channel, author=author)
-                await self.safe_send_message(channel, self.str.get('cmd-playnow-successful', "Enqueued **%s** to be played. Position in queue: Up next!") % entry.title, expire_in=20)
+                await self.safe_send_message(channel, self.str.get('cmd-playnow-successful', "The song **%s** has been added to the top of the queue to be played right away. The current song will now be skipped.") % entry.title, expire_in=20)
                 # Get the song ready now, otherwise race condition where finished-playing will fire before
                 # the song is finished downloading, which will then cause another song from autoplaylist to
                 # be added to the queue
@@ -1696,6 +1696,97 @@ class MusicBot(discord.Client):
                 player.playlist.promote_last()
             if player.is_playing:
                 player.skip()
+
+        # return Response(reply_text, delete_after=30)
+
+    async def cmd_playnext(self, player, channel, author, permissions, leftover_args, song_url):
+        """
+        Usage:
+            {command_prefix}playnext song_link
+            {command_prefix}playnext text to search for
+        Adds the requested song to the top of the queue to play next. \
+        If a link is not provided, the first result from a youtube search is played.
+        """
+
+        song_url = song_url.strip('<>')
+
+        if permissions.max_songs and player.playlist.count_for_user(author) >= permissions.max_songs:
+            raise exceptions.PermissionsError(self.str.get('cmd-playnext-song-limit',
+                "Sorry, but you have reached your enqueued song limit (%s).") % permissions.max_songs, expire_in=30
+            )
+
+        await self.send_typing(channel)
+
+        if leftover_args:
+            song_url = ' '.join([song_url, *leftover_args])
+
+        try:
+            info = await self.downloader.extract_info(player.playlist.loop, song_url, download=False, process=False)
+        except Exception as e:
+            raise exceptions.CommandError(e, expire_in=30)
+
+        if not info:
+            raise exceptions.CommandError(self.str.get('cmd-playnext-unplayable-entry', "Sorry, but I'm unable to play that video. Please try something else."), expire_in=30)
+
+        # abstract the search handling away from the user
+        # our ytdl options allow us to use search strings as input urls
+        if info.get('url', '').startswith('ytsearch'):
+            # print("[Command:play] Searching for \"%s\"" % song_url)
+            info = await self.downloader.extract_info(
+                player.playlist.loop,
+                song_url,
+                download=False,
+                process=True,    # ASYNC LAMBDAS WHEN
+                on_error=lambda e: asyncio.ensure_future(
+                    self.safe_send_message(channel, "```\n%s\n```" % e, expire_in=120), loop=self.loop),
+                retry_on_error=True
+            )
+
+            if not info:
+                raise exceptions.CommandError(self.str.get('cmd-playnext-no-data',
+                    "I'm having issues extracting info from the search string because youtubedl returned no data and might be broken. You might need to restart me if this continues to happen."), expire_in=30)
+
+            if not all(info.get('entries', [])):
+                # empty list, no data
+                return
+
+            song_url = info['entries'][0]['webpage_url']
+            info = await self.downloader.extract_info(player.playlist.loop, song_url, download=False, process=False)
+            # Now I could just do: return await self.cmd_play(player, channel, author, song_url)
+            # But this is probably fine
+
+        # TODO: Possibly add another check here to see about things like the bandcamp issue
+        # TODO: Where ytdl gets the generic extractor version with no processing, but finds two different urls
+
+        if 'entries' in info:
+            raise exceptions.CommandError(self.str.get('cmd-playnext-playlist-not-allowed', "I can't playnext playlists. Please specify a single song for me to playnext."), expire_in=30)
+        else:
+            if permissions.max_song_length and info.get('duration', 0) > permissions.max_song_length:
+                raise exceptions.PermissionsError(self.str.get('cmd-playnext-song-over-limit',
+                    "That song's duration exceeds the limit (%s > %s). Please request a shorter song.") % (info['duration'], permissions.max_song_length),
+                    expire_in=30
+                )
+
+            try:
+                entry, position = await player.playlist.add_entry(song_url, channel=channel, author=author)
+                await self.safe_send_message(channel, self.str.get('cmd-playnext-successful', "The requested song **%s** has been added to the queue. Position in queue: Up next!") % entry.title, expire_in=20)
+                # Get the song ready now, otherwise race condition where finished-playing will fire before
+                # the song is finished downloading, which will then cause another song from autoplaylist to
+                # be added to the queue
+                await entry.get_ready_future()
+
+            except exceptions.WrongEntryTypeError as e:
+                if e.use_url == song_url:
+                    log.debug("[Warning] Determined incorrect entry type, but suggested url is the same.  Help.")
+
+                if self.config.debug_mode:
+                    log.debug("[Info] Assumed url \"%s\" was a single entry, was actually a playlist" % song_url)
+                    log.debug("[Info] Using \"%s\" instead" % e.use_url)
+
+                return await self.cmd_playnext(player, channel, author, permissions, leftover_args, e.use_url)
+
+            if position > 1:
+                player.playlist.promote_last()
 
         # return Response(reply_text, delete_after=30)
 
