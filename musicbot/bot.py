@@ -2145,7 +2145,7 @@ class MusicBot(discord.Client):
 
         log.info("Joining {0.guild.name}/{0.name}".format(author.voice.channel))
 
-        return Response(self.str.get('cmd-summon-reply', 'Connected to `{0.name}`').format(author.voice.channel), delete_after=20)
+        return Response(self.str.get('cmd-summon-reply', "Connected to `{0.channel}` on `{1.guild}`. Please type `{2}help` to learn more about what I can do.").format(author.voice.channel, author.voice.channel.guild, self.config.command_prefix), delete_after=30)
 
     async def cmd_pause(self, player):
         """
