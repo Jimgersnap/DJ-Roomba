@@ -39,7 +39,7 @@
     "cmd-play-next": "Up next!",
     "cmd-play-eta": " - estimated time until playing: %s",
     "cmd-play-badextractor": "You do not have permission to play media from this service.",
-	"cmd-promote-nothing-playing": "I'm not playing anything, so I cannot modify the queue.",
+    "cmd-promote-nothing-playing": "I'm not playing anything, so I cannot modify the queue.",
     "cmd-promote-not-enough-entries": "I cannot promote anything since nothing is currently in the queue.",
     "cmd-promote-invalid-song-number": "That's not a valid song ID. Please choose a song number between 2 and %s.",
     "cmd-promote-entry-already-at-top": "That song is already going to play next.",
