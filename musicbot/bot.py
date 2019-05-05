@@ -1340,13 +1340,13 @@ class MusicBot(discord.Client):
                     elif 'album' in parts:
                         res = await self.spotify.get_album(parts[-1])
                         await self._do_playlist_checks(permissions, player, author, res['tracks']['items'])
-                        procmesg = await self.safe_send_message(channel, self.str.get('cmd-play-spotify-album-process', 'Processing album `{0}` (`{1}`)').format(res['name'], song_url))
+                        procmesg = await self.safe_send_message(channel, self.str.get('cmd-play-spotify-album-process', 'Processing Spotify album **{0}**. This may take a while for large albums.').format(res['name']))
                         for i in res['tracks']['items']:
                             song_url = i['name'] + ' ' + i['artists'][0]['name']
                             log.debug('Processing {0}'.format(song_url))
                             await self.cmd_play(message, player, channel, author, permissions, leftover_args, song_url)
                         await self.safe_delete_message(procmesg)
-                        return Response(self.str.get('cmd-play-spotify-album-queued', "Enqueued `{0}` with **{1}** songs.").format(res['name'], len(res['tracks']['items'])))
+                        return Response(self.str.get('cmd-play-spotify-album-queued', "Spotify album **{0}** has been added to the queue with **{1}** songs.").format(res['name'], len(res['tracks']['items'])))
 
                     elif 'playlist' in parts:
                         res = []
@@ -1359,13 +1359,13 @@ class MusicBot(discord.Client):
                             else:
                                 break
                         await self._do_playlist_checks(permissions, player, author, res)
-                        procmesg = await self.safe_send_message(channel, self.str.get('cmd-play-spotify-playlist-process', 'Processing playlist `{0}` (`{1}`)').format(parts[-1], song_url))
+                        procmesg = await self.safe_send_message(channel, self.str.get('cmd-play-spotify-playlist-process', 'Processing Spotify playlist **{0}**. This may take a while for large playlists.').format(parts[-1]))
                         for i in res:
                             song_url = i['track']['name'] + ' ' + i['track']['artists'][0]['name']
                             log.debug('Processing {0}'.format(song_url))
                             await self.cmd_play(message, player, channel, author, permissions, leftover_args, song_url)
                         await self.safe_delete_message(procmesg)
-                        return Response(self.str.get('cmd-play-spotify-playlist-queued', "Enqueued `{0}` with **{1}** songs.").format(parts[-1], len(res)))
+                        return Response(self.str.get('cmd-play-spotify-playlist-queued', "Spotify playlist **{0}** has been added to the queue with **{1}** songs.").format(parts[-1], len(res)))
 
                     else:
                         raise exceptions.CommandError(self.str.get('cmd-play-spotify-unsupported', 'That is not a supported Spotify URI or URL.'), expire_in=30)
@@ -1376,12 +1376,12 @@ class MusicBot(discord.Client):
         async with self.aiolocks[_func_() + ':' + str(author.id)]:
             if permissions.max_songs and player.playlist.count_for_user(author) >= permissions.max_songs:
                 raise exceptions.PermissionsError(
-                    self.str.get('cmd-play-limit', "You have reached your enqueued song limit ({0})").format(permissions.max_songs), expire_in=30
+                    self.str.get('cmd-play-limit', "You have reached your enqueued song limit `({0})`.").format(permissions.max_songs), expire_in=30
                 )
 
             if player.karaoke_mode and not permissions.bypass_karaoke_mode:
                 raise exceptions.PermissionsError(
-                    self.str.get('karaoke-enabled', "Karaoke mode is enabled, please try again when its disabled!"), expire_in=30
+                    self.str.get('karaoke-enabled', "Karaoke mode is enabled, please try again when its disabled."), expire_in=30
                 )
 
             # Try to determine entry type, if _type is playlist then there should be entries
@@ -1411,13 +1411,13 @@ class MusicBot(discord.Client):
 
             if not info:
                 raise exceptions.CommandError(
-                    self.str.get('cmd-play-noinfo', "That video cannot be played. Try using the {0}stream command.").format(self.config.command_prefix),
+                    self.str.get('cmd-play-noinfo', "Sorry, that video cannot be played. Is it a stream? If so, please use the {0}stream command.").format(self.config.command_prefix),
                     expire_in=30
                 )
 
             if info.get('extractor', '') not in permissions.extractors and permissions.extractors:
                 raise exceptions.PermissionsError(
-                    self.str.get('cmd-play-badextractor', "You do not have permission to play media from this service."), expire_in=30
+                    self.str.get('cmd-play-badextractor', "Sorry, but you do not have permission to play media from this service."), expire_in=30
                 )
 
             # abstract the search handling away from the user
@@ -1436,8 +1436,8 @@ class MusicBot(discord.Client):
 
                 if not info:
                     raise exceptions.CommandError(
-                        self.str.get('cmd-play-nodata', "Error extracting info from search string, youtubedl returned no data. "
-                                                        "You may need to restart the bot if this continues to happen."), expire_in=30
+                        self.str.get('cmd-play-nodata', "I'm having issues extracting the info from the search string since youtubedl returned no data and might be broken. "
+                                                        "You may need to restart me if this continues to happen."), expire_in=30
                     )
 
                 if not all(info.get('entries', [])):
@@ -1464,7 +1464,7 @@ class MusicBot(discord.Client):
                         raise
                     except Exception as e:
                         log.error("Error queuing playlist", exc_info=True)
-                        raise exceptions.CommandError(self.str.get('cmd-play-playlist-error', "Error queuing playlist:\n`{0}`").format(e), expire_in=30)
+                        raise exceptions.CommandError(self.str.get('cmd-play-playlist-error', "Error queuing playlist:\n**{0}**.").format(e), expire_in=30)
 
                 t0 = time.time()
 
@@ -1477,9 +1477,9 @@ class MusicBot(discord.Client):
 
                 procmesg = await self.safe_send_message(
                     channel,
-                    self.str.get('cmd-play-playlist-gathering-1', 'Gathering playlist information for {0} songs{1}').format(
+                    self.str.get('cmd-play-playlist-gathering-1', 'Processing playlist information for **{0}** songs{1}. This may take a while for large playlists.').format(
                         num_songs,
-                        self.str.get('cmd-play-playlist-gathering-2', ', ETA: {0} seconds').format(fixg(
+                        self.str.get('cmd-play-playlist-gathering-2', ', **ETA:** `{0}` seconds.').format(fixg(
                             num_songs * wait_per_song)) if num_songs >= 10 else '.'))
 
                 # We don't have a pretty way of doing this yet.  We need either a loop
@@ -1519,11 +1519,11 @@ class MusicBot(discord.Client):
 
                 if not listlen - drop_count:
                     raise exceptions.CommandError(
-                        self.str.get('cmd-play-playlist-maxduration', "No songs were added, all songs were over max duration (%ss)") % permissions.max_song_length,
+                        self.str.get('cmd-play-playlist-maxduration', "No songs were added because all songs were over max duration `(%ss)`.") % permissions.max_song_length,
                         expire_in=30
                     )
 
-                reply_text = self.str.get('cmd-play-playlist-reply', "Enqueued **%s** songs to be played. Position in queue: %s")
+                reply_text = self.str.get('cmd-play-playlist-reply', "Enqueued **%s** songs to be played. Position in queue: **%s**.")
                 btext = str(listlen - drop_count)
 
             # If it's an entry
@@ -1537,23 +1537,23 @@ class MusicBot(discord.Client):
 
                 if permissions.max_song_length and info.get('duration', 0) > permissions.max_song_length:
                     raise exceptions.PermissionsError(
-                        self.str.get('cmd-play-song-limit', "Song duration exceeds limit ({0} > {1})").format(info['duration'], permissions.max_song_length),
+                        self.str.get('cmd-play-song-limit', "That song exceeds the maximum duration you are allowed to queue: `({0} > {1})` seconds.").format(info['duration'], permissions.max_song_length),
                         expire_in=30
                     )
 
                 entry, position = await player.playlist.add_entry(song_url, channel=channel, author=author)
 
-                reply_text = self.str.get('cmd-play-song-reply', "Enqueued `%s` to be played. Position in queue: %s")
+                reply_text = self.str.get('cmd-play-song-reply', "Enqueued **%s** to be played. Position in queue: **%s**.")
                 btext = entry.title
 
             if position == 1 and player.is_stopped:
-                position = self.str.get('cmd-play-next', 'Up next!')
+                position = self.str.get('cmd-play-next', '**Up next!**')
                 reply_text %= (btext, position)
 
             else:
                 try:
                     time_until = await player.playlist.estimate_time_until(position, player)
-                    reply_text += self.str.get('cmd-play-eta', ' - estimated time until playing: %s')
+                    reply_text += self.str.get('cmd-play-eta', ' - estimated time until playing: **%s**.')
                 except:
                     traceback.print_exc()
                     time_until = ''
@@ -1561,6 +1561,100 @@ class MusicBot(discord.Client):
                 reply_text %= (btext, position, ftimedelta(time_until))
 
         return Response(reply_text, delete_after=30)
+
+    async def _cmd_play_playlist_async(self, player, channel, author, permissions, playlist_url, extractor_type):
+        """
+        Secret handler to use the async wizardry to make playlist queuing non-"blocking"
+        """
+
+        await self.send_typing(channel)
+        info = await self.downloader.extract_info(player.playlist.loop, playlist_url, download=False, process=False)
+
+        if not info:
+            raise exceptions.CommandError(self.str.get('cmd-play-playlist-invalid', "Sorry, but that playlist cannot be played."))
+
+        num_songs = sum(1 for _ in info['entries'])
+        t0 = time.time()
+
+        busymsg = await self.safe_send_message(
+            channel, self.str.get('cmd-play-playlist-process', "Processing **{0}** songs. This may take a while for large playlists.").format(num_songs))  # TODO: From playlist_title
+        await self.send_typing(channel)
+
+        entries_added = 0
+        if extractor_type == 'youtube:playlist':
+            try:
+                entries_added = await player.playlist.async_process_youtube_playlist(
+                    playlist_url, channel=channel, author=author)
+                # TODO: Add hook to be called after each song
+                # TODO: Add permissions
+
+            except Exception:
+                log.error("Error processing playlist", exc_info=True)
+                raise exceptions.CommandError(self.str.get('cmd-play-playlist-queueerror', 'Oops. There has been an error handling the requested playlist `{0}`. Queue canceled. Please try another playlist.').format(playlist_url), expire_in=30)
+
+        elif extractor_type.lower() in ['soundcloud:set', 'bandcamp:album']:
+            try:
+                entries_added = await player.playlist.async_process_sc_bc_playlist(
+                    playlist_url, channel=channel, author=author)
+                # TODO: Add hook to be called after each song
+                # TODO: Add permissions
+
+            except Exception:
+                log.error("Error processing playlist", exc_info=True)
+                raise exceptions.CommandError(self.str.get('cmd-play-playlist-queueerror', 'Oops. There has been an error handling the requested playlist `{0}`. Queue canceled. Please try another playlist.').format(playlist_url), expire_in=30)
+
+
+        songs_processed = len(entries_added)
+        drop_count = 0
+        skipped = False
+
+        if permissions.max_song_length:
+            for e in entries_added.copy():
+                if e.duration > permissions.max_song_length:
+                    try:
+                        player.playlist.entries.remove(e)
+                        entries_added.remove(e)
+                        drop_count += 1
+                    except:
+                        pass
+
+            if drop_count:
+                log.debug("Dropped %s songs" % drop_count)
+
+            if player.current_entry and player.current_entry.duration > permissions.max_song_length:
+                await self.safe_delete_message(self.server_specific_data[channel.guild]['last_np_msg'])
+                self.server_specific_data[channel.guild]['last_np_msg'] = None
+                skipped = True
+                player.skip()
+                entries_added.pop()
+
+        await self.safe_delete_message(busymsg)
+
+        songs_added = len(entries_added)
+        tnow = time.time()
+        ttime = tnow - t0
+        wait_per_song = 1.2
+        # TODO: actually calculate wait per song in the process function and return that too
+
+        # This is technically inaccurate since bad songs are ignored but still take up time
+        log.info("Processed {}/{} songs in {} seconds at {:.2f}s/song, {:+.2g}/song from expected ({}s)".format(
+            songs_processed,
+            num_songs,
+            fixg(ttime),
+            ttime / num_songs if num_songs else 0,
+            ttime / num_songs - wait_per_song if num_songs - wait_per_song else 0,
+            fixg(wait_per_song * num_songs))
+        )
+
+        if not songs_added:
+            basetext = self.str.get('cmd-play-playlist-maxduration', "No songs were added because all songs were over max duration `(%ss)`.") % permissions.max_song_length
+            if skipped:
+                basetext += self.str.get('cmd-play-playlist-skipped', "\nAdditionally, the current song was skipped for being too long.")
+
+            raise exceptions.CommandError(basetext, expire_in=30)
+
+        return Response(self.str.get('cmd-play-playlist-reply-secs', "Playlist processing completed in **{0}** seconds. **{1}** songs have been added to the queue. Shuffle the queue by typing `{2}shuffle`.").format(
+            fixg(ttime, 1), songs_added, self.config.command_prefix), delete_after=30)
 
     async def cmd_promote(self, player, position=None):
         """
@@ -1835,100 +1929,6 @@ class MusicBot(discord.Client):
                 player.playlist.promote_last()
 
         # return Response(reply_text, delete_after=30)
-
-    async def _cmd_play_playlist_async(self, player, channel, author, permissions, playlist_url, extractor_type):
-        """
-        Secret handler to use the async wizardry to make playlist queuing non-"blocking"
-        """
-
-        await self.send_typing(channel)
-        info = await self.downloader.extract_info(player.playlist.loop, playlist_url, download=False, process=False)
-
-        if not info:
-            raise exceptions.CommandError(self.str.get('cmd-play-playlist-invalid', "That playlist cannot be played."))
-
-        num_songs = sum(1 for _ in info['entries'])
-        t0 = time.time()
-
-        busymsg = await self.safe_send_message(
-            channel, self.str.get('cmd-play-playlist-process', "Processing {0} songs...").format(num_songs))  # TODO: From playlist_title
-        await self.send_typing(channel)
-
-        entries_added = 0
-        if extractor_type == 'youtube:playlist':
-            try:
-                entries_added = await player.playlist.async_process_youtube_playlist(
-                    playlist_url, channel=channel, author=author)
-                # TODO: Add hook to be called after each song
-                # TODO: Add permissions
-
-            except Exception:
-                log.error("Error processing playlist", exc_info=True)
-                raise exceptions.CommandError(self.str.get('cmd-play-playlist-queueerror', 'Error handling playlist {0} queuing.').format(playlist_url), expire_in=30)
-
-        elif extractor_type.lower() in ['soundcloud:set', 'bandcamp:album']:
-            try:
-                entries_added = await player.playlist.async_process_sc_bc_playlist(
-                    playlist_url, channel=channel, author=author)
-                # TODO: Add hook to be called after each song
-                # TODO: Add permissions
-
-            except Exception:
-                log.error("Error processing playlist", exc_info=True)
-                raise exceptions.CommandError(self.str.get('cmd-play-playlist-queueerror', 'Error handling playlist {0} queuing.').format(playlist_url), expire_in=30)
-
-
-        songs_processed = len(entries_added)
-        drop_count = 0
-        skipped = False
-
-        if permissions.max_song_length:
-            for e in entries_added.copy():
-                if e.duration > permissions.max_song_length:
-                    try:
-                        player.playlist.entries.remove(e)
-                        entries_added.remove(e)
-                        drop_count += 1
-                    except:
-                        pass
-
-            if drop_count:
-                log.debug("Dropped %s songs" % drop_count)
-
-            if player.current_entry and player.current_entry.duration > permissions.max_song_length:
-                await self.safe_delete_message(self.server_specific_data[channel.guild]['last_np_msg'])
-                self.server_specific_data[channel.guild]['last_np_msg'] = None
-                skipped = True
-                player.skip()
-                entries_added.pop()
-
-        await self.safe_delete_message(busymsg)
-
-        songs_added = len(entries_added)
-        tnow = time.time()
-        ttime = tnow - t0
-        wait_per_song = 1.2
-        # TODO: actually calculate wait per song in the process function and return that too
-
-        # This is technically inaccurate since bad songs are ignored but still take up time
-        log.info("Processed {}/{} songs in {} seconds at {:.2f}s/song, {:+.2g}/song from expected ({}s)".format(
-            songs_processed,
-            num_songs,
-            fixg(ttime),
-            ttime / num_songs if num_songs else 0,
-            ttime / num_songs - wait_per_song if num_songs - wait_per_song else 0,
-            fixg(wait_per_song * num_songs))
-        )
-
-        if not songs_added:
-            basetext = self.str.get('cmd-play-playlist-maxduration', "No songs were added, all songs were over max duration (%ss)") % permissions.max_song_length
-            if skipped:
-                basetext += self.str.get('cmd-play-playlist-skipped', "\nAdditionally, the current song was skipped for being too long.")
-
-            raise exceptions.CommandError(basetext, expire_in=30)
-
-        return Response(self.str.get('cmd-play-playlist-reply-secs', "Enqueued {0} songs to be played in {1} seconds").format(
-            songs_added, fixg(ttime, 1)), delete_after=30)
 
     async def cmd_stream(self, player, channel, author, permissions, song_url):
         """
@@ -2775,7 +2775,7 @@ class MusicBot(discord.Client):
         Forces the bot leave the current voice channel.
         """
         await self.disconnect_voice_client(guild)
-        return Response("Disconnected from `{0.name}`".format(guild), delete_after=20)
+        return Response("Disconnected from `{0.name}`.".format(guild), delete_after=20)
 
     async def cmd_restart(self, channel):
         """
