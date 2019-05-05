@@ -2021,7 +2021,7 @@ class MusicBot(discord.Client):
         """
 
         if not author.voice:
-            raise exceptions.CommandError(self.str.get('cmd-summon-novc', 'You are not connected to voice. Try joining a voice channel!'))
+            raise exceptions.CommandError(self.str.get('cmd-summon-novc', 'You are not connected to voice. Try joining a voice channel!'), expire_in=20)
 
         voice_client = self.voice_client_in(guild)
         if voice_client and guild == author.voice.channel.guild:
@@ -2054,7 +2054,7 @@ class MusicBot(discord.Client):
 
         log.info("Joining {0.guild.name}/{0.name}".format(author.voice.channel))
 
-        return Response(self.str.get('cmd-summon-reply', 'Connected to `{0.name}`').format(author.voice.channel))
+        return Response(self.str.get('cmd-summon-reply', 'Connected to `{0.name}`').format(author.voice.channel), delete_after=20)
 
     async def cmd_pause(self, player):
         """
