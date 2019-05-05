@@ -73,9 +73,9 @@ class MusicBot(discord.Client):
         self.last_status = None
 
         self.config = Config(config_file)
-        
+
         self._setup_logging()
-        
+
         self.permissions = Permissions(perms_file, grant_all=[self.config.owner_id])
         self.str = Json(self.config.i18n_file)
 
@@ -981,7 +981,7 @@ class MusicBot(discord.Client):
                             await s.leave()
                             log.info('Left {} due to bot owner not found'.format(s.name))
             if unavailable_servers != 0:
-                log.info('Not proceeding with checks in {} servers due to unavailability'.format(str(unavailable_servers))) 
+                log.info('Not proceeding with checks in {} servers due to unavailability'.format(str(unavailable_servers)))
 
         elif self.guilds:
             log.warning("Owner could not be found on any guild (id: %s)\n" % self.config.owner_id)
@@ -1055,7 +1055,7 @@ class MusicBot(discord.Client):
         else:
             log.info("Not autojoining any voice channels")
             self.autojoin_channels = set()
-        
+
         if self.config.show_config_at_start:
             print(flush=True)
             log.info("Options:")
@@ -1334,7 +1334,7 @@ class MusicBot(discord.Client):
                 try:
                     if 'track' in parts:
                         res = await self.spotify.get_track(parts[-1])
-                        song_url = res['artists'][0]['name'] + ' ' + res['name'] 
+                        song_url = res['artists'][0]['name'] + ' ' + res['name']
 
                     elif 'album' in parts:
                         res = await self.spotify.get_album(parts[-1])
@@ -1346,7 +1346,7 @@ class MusicBot(discord.Client):
                             await self.cmd_play(message, player, channel, author, permissions, leftover_args, song_url)
                         await self.safe_delete_message(procmesg)
                         return Response(self.str.get('cmd-play-spotify-album-queued', "Enqueued `{0}` with **{1}** songs.").format(res['name'], len(res['tracks']['items'])))
-                    
+
                     elif 'playlist' in parts:
                         res = []
                         r = await self.spotify.get_playlist_tracks(parts[-1])
@@ -1365,7 +1365,7 @@ class MusicBot(discord.Client):
                             await self.cmd_play(message, player, channel, author, permissions, leftover_args, song_url)
                         await self.safe_delete_message(procmesg)
                         return Response(self.str.get('cmd-play-spotify-playlist-queued', "Enqueued `{0}` with **{1}** songs.").format(parts[-1], len(res)))
-                    
+
                     else:
                         raise exceptions.CommandError(self.str.get('cmd-play-spotify-unsupported', 'That is not a supported Spotify URI.'), expire_in=30)
                 except exceptions.SpotifyError:
@@ -1558,6 +1558,51 @@ class MusicBot(discord.Client):
                     time_until = ''
 
                 reply_text %= (btext, position, ftimedelta(time_until))
+
+        return Response(reply_text, delete_after=30)
+
+    async def cmd_promote(self, player, position=None):
+        """
+        Usage:
+            {command_prefix}promote
+            {command_prefix}promote [song position]
+        Promotes the last song in the queue to the front.
+        If you specify a position in the queue, it promotes the song at that position to the front.
+        """
+
+        if player.is_stopped:
+            raise exceptions.CommandError(self.str.get('cmd-promote-nothing-playing', "I'm not playing anything, so I cannot modify the queue."), expire_in=20)
+
+        length = len(player.playlist.entries)
+
+        if length < 2:
+            raise exceptions.CommandError(self.str.get('cmd-promote-not-enough-entries', "I cannot promote anything since nothing is currently in the queue."), expire_in=20)
+
+        if not position:
+            entry = player.playlist.promote_last()
+        else:
+            try:
+                position = int(position)
+            except ValueError:
+                 raise exceptions.CommandError(self.str.get('cmd-promote-invalid-song-number', "That's not a valid song ID. Please choose a song number between 2 and %s.") % length, expire_in=20)
+
+            if position == 1:
+                raise exceptions.CommandError(self.str.get('cmd-promote-entry-already-at-top', "That song is already going to play next."), expire_in=20)
+            if position < 1 or position > length:
+                raise exceptions.CommandError(self.str.get('cmd-promote-invalid-song-number-2', "I can't find that song in the queue. Please choose a song number between 2 and %s.") % length, expire_in=20)
+
+            entry = player.playlist.promote_position(position)
+
+        reply_text = self.str.get('cmd-promote-successful',"I have promoted **%s** to the top of the queue. Estimated time until playing: %s")
+        btext = entry.title
+
+        try:
+            time_until = await player.playlist.estimate_time_until(1, player)
+        except:
+            traceback.print_exc()
+            time_until = ''
+
+        reply_text %= (btext, time_until)
 
         return Response(reply_text, delete_after=30)
 
@@ -2060,7 +2105,7 @@ class MusicBot(discord.Client):
             else:
                 print("Something strange is happening.  "
                       "You might want to restart the bot if it doesn't start working.")
-        
+
         current_entry = player.current_entry
 
         if (param.lower() in ['force', 'f']) or self.config.legacy_skip:
@@ -2496,7 +2541,7 @@ class MusicBot(discord.Client):
         """
         Usage:
             {command_prefix}disconnect
-        
+
         Forces the bot leave the current voice channel.
         """
         await self.disconnect_voice_client(guild)
@@ -2506,7 +2551,7 @@ class MusicBot(discord.Client):
         """
         Usage:
             {command_prefix}restart
-        
+
         Restarts the bot.
         Will not properly load new dependencies or file updates unless fully shutdown
         and restarted.
@@ -2525,15 +2570,15 @@ class MusicBot(discord.Client):
         """
         Usage:
             {command_prefix}shutdown
-        
+
         Disconnects from voice channels and closes the bot process.
         """
         await self.safe_send_message(channel, "\N{WAVING HAND SIGN}")
-        
+
         player = self.get_player_in(channel.guild)
         if player and player.is_paused:
             player.resume()
-        
+
         await self.disconnect_all_voice_clients()
         raise exceptions.TerminateSignal()
 
@@ -2899,7 +2944,7 @@ class MusicBot(discord.Client):
                         channel = player.voice_client.channel,
                         reason = ""
                     ).strip())
- 
+
                     self.server_specific_data[player.voice_client.guild]['auto_paused'] = False
                     player.resume()
 
