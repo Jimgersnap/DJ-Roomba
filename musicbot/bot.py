@@ -2086,9 +2086,9 @@ class MusicBot(discord.Client):
     async def cmd_progress(self, player, channel, guild, message):
         """
         Usage:
-            {command_prefix}np
+            {command_prefix}progress
 
-        Displays the current song in chat.
+        Displays the current progress of the song currently playing.
         """
 
         if player.current_entry:
