@@ -2083,7 +2083,7 @@ class MusicBot(discord.Client):
 
         return Response(self.str.get('cmd-search-decline', "Oh well :("), delete_after=30)
 
-    async def cmd_np(self, player, channel, guild, message):
+    async def cmd_progress(self, player, channel, guild, message):
         """
         Usage:
             {command_prefix}np
