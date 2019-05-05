@@ -1523,7 +1523,7 @@ class MusicBot(discord.Client):
                         expire_in=30
                     )
 
-                reply_text = self.str.get('cmd-play-playlist-reply', "Enqueued **%s** songs to be played. Position in queue: **%s**")
+                reply_text = self.str.get('cmd-play-playlist-reply', "Enqueued **%s** songs to be played.\nPosition in queue: **%s**")
                 btext = str(listlen - drop_count)
 
             # If it's an entry
@@ -1543,17 +1543,17 @@ class MusicBot(discord.Client):
 
                 entry, position = await player.playlist.add_entry(song_url, channel=channel, author=author)
 
-                reply_text = self.str.get('cmd-play-song-reply', "Enqueued **%s** to be played. Position in queue: **%s**")
+                reply_text = self.str.get('cmd-play-song-reply', "Enqueued **%s** to be played.\nPosition in queue: **%s**")
                 btext = entry.title
 
             if position == 1 and player.is_stopped:
-                position = self.str.get('cmd-play-next', '**Up next.**')
+                position = self.str.get('cmd-play-next', "Up next.")
                 reply_text %= (btext, position)
 
             else:
                 try:
                     time_until = await player.playlist.estimate_time_until(position, player)
-                    reply_text += self.str.get('cmd-play-eta', '\nEstimated time until playing: **%s**')
+                    reply_text += self.str.get('cmd-play-eta', '\n\nEstimated time until playing: **%s**')
                 except:
                     traceback.print_exc()
                     time_until = ''
