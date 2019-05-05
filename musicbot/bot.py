@@ -1367,9 +1367,9 @@ class MusicBot(discord.Client):
                         return Response(self.str.get('cmd-play-spotify-playlist-queued', "Enqueued `{0}` with **{1}** songs.").format(parts[-1], len(res)))
 
                     else:
-                        raise exceptions.CommandError(self.str.get('cmd-play-spotify-unsupported', 'That is not a supported Spotify URI.'), expire_in=30)
+                        raise exceptions.CommandError(self.str.get('cmd-play-spotify-unsupported', 'That is not a supported Spotify URI or URL.'), expire_in=30)
                 except exceptions.SpotifyError:
-                    raise exceptions.CommandError(self.str.get('cmd-play-spotify-invalid', 'You either provided an invalid URI, or there was a problem.'))
+                    raise exceptions.CommandError(self.str.get('cmd-play-spotify-invalid', 'You either provided an invalid Spotify URI or URL, or an unknown problem occurred.'))
 
         # This lock prevent spamming play command to add entries that exceeds time limit/ maximum song limit
         async with self.aiolocks[_func_() + ':' + str(author.id)]:
@@ -1624,6 +1624,28 @@ class MusicBot(discord.Client):
 
         await self.send_typing(channel)
 
+        if self.config._spotify:
+            if 'open.spotify.com' in song_url:
+                song_url = 'spotify:' + re.sub('(http[s]?:\/\/)?(open.spotify.com)\/', '', song_url).replace('/', ':')
+            if song_url.startswith('spotify:'):
+                parts = song_url.split(":")
+                try:
+                    if 'track' in parts:
+                        res = await self.spotify.get_track(parts[-1])
+                        song_url = res['artists'][0]['name'] + ' ' + res['name']
+
+                    elif 'album' in parts:
+                        return Response(self.str.get('cmd-playnow-spotify-album', "Sorry, but you cannot playnow Spotify albums. Please add the album to the queue using {0}play.").format(self.config.command_prefix), delete_after=30)
+
+                    elif 'playlist' in parts:
+                        return Response(self.str.get('cmd-playnow-spotify-playlist', "Sorry, but you cannot playnow Spotify playlists. Please add the playlist to the queue using {0}play.").format(self.config.command_prefix), delete_after=30)
+
+                    else:
+                        raise exceptions.CommandError(self.str.get('cmd-play-spotify-unsupported', 'That is not a supported Spotify URI or URL.'), expire_in=30)
+
+                except exceptions.SpotifyError:
+                    raise exceptions.CommandError(self.str.get('cmd-play-spotify-invalid', 'You either provided an invalid Spotify URI or URL, or an unknown problem occurred.'))
+
         if leftover_args:
             song_url = ' '.join([song_url, *leftover_args])
 
@@ -1637,6 +1659,7 @@ class MusicBot(discord.Client):
 
         # abstract the search handling away from the user
         # our ytdl options allow us to use search strings as input urls
+
         if info.get('url', '').startswith('ytsearch'):
             # print("[Command:play] Searching for \"%s\"" % song_url)
             info = await self.downloader.extract_info(
@@ -1716,6 +1739,28 @@ class MusicBot(discord.Client):
             )
 
         await self.send_typing(channel)
+
+        if self.config._spotify:
+            if 'open.spotify.com' in song_url:
+                song_url = 'spotify:' + re.sub('(http[s]?:\/\/)?(open.spotify.com)\/', '', song_url).replace('/', ':')
+            if song_url.startswith('spotify:'):
+                parts = song_url.split(":")
+                try:
+                    if 'track' in parts:
+                        res = await self.spotify.get_track(parts[-1])
+                        song_url = res['artists'][0]['name'] + ' ' + res['name']
+
+                    elif 'album' in parts:
+                        return Response(self.str.get('cmd-playnow-spotify-album', "Sorry, but you cannot playnow Spotify albums. Please add the album to the queue using {0}play.").format(self.config.command_prefix), delete_after=30)
+
+                    elif 'playlist' in parts:
+                        return Response(self.str.get('cmd-playnow-spotify-playlist', "Sorry, but you cannot playnow Spotify playlists. Please add the playlist to the queue using {0}play.").format(self.config.command_prefix), delete_after=30)
+
+                    else:
+                        raise exceptions.CommandError(self.str.get('cmd-play-spotify-unsupported', 'That is not a supported Spotify URI or URL.'), expire_in=30)
+
+                except exceptions.SpotifyError:
+                    raise exceptions.CommandError(self.str.get('cmd-play-spotify-invalid', 'You either provided an invalid Spotify URI or URL, or an unknown problem occurred.'))
 
         if leftover_args:
             song_url = ' '.join([song_url, *leftover_args])
