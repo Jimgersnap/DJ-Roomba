@@ -480,7 +480,7 @@ class MusicBot(discord.Client):
                 newmsg = '%s - your song **%s** is now playing in `%s`. `(%s)`' % (
                     entry.meta['author'].mention, entry.title, player.voice_client.channel.name, duration)
             else:
-                newmsg = 'Now playing in `%s`: **%s** added by **%s**. `(%s)`' % (
+                newmsg = 'Now playing in `%s`:\n**%s** added by **%s**. `(%s)`' % (
                     player.voice_client.channel.name, entry.title, entry.meta['author'].name, duration)
         else:
             # no author (and channel), it's an autoplaylist (or autostream from my other PR) entry.
@@ -1688,7 +1688,7 @@ class MusicBot(discord.Client):
 
             entry = player.playlist.promote_position(position)
 
-        reply_text = self.str.get('cmd-promote-successful',"The song **%s** has been promoted to the top of the queue.\nEstimated time until playing: **%s**")
+        reply_text = self.str.get('cmd-promote-successful',"The song **%s** has been promoted to the top of the queue.\n\nEstimated time until playing: **%s**")
         btext = entry.title
 
         try:
