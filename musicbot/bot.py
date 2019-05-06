@@ -430,7 +430,7 @@ class MusicBot(discord.Client):
                 if not create:
                     raise exceptions.CommandError(
                         'I am not connected to a voice channel.  '
-                        'Use `%ssummon` to summon me to your voice channel.' % self.config.command_prefix, expire_in=15)
+                        'Use `%ssummon` or `%splay [song query]` to summon me to your voice channel.' % self.config.command_prefix, self.config.command_prefix, expire_in=15)
 
                 voice_client = await self.get_voice_client(channel)
 
@@ -1341,8 +1341,8 @@ class MusicBot(discord.Client):
 
         if not player:
             raise exceptions.CommandError(
-                'I am not in a voice channel.  '
-                'Use `%ssummon` to summon me to your voice channel.' % self.config.command_prefix)
+                'I am not connected to a voice channel.  '
+                'Use `%ssummon` or `%splay [song query]` to summon me to your voice channel.' % self.config.command_prefix, self.config.command_prefix, expire_in=15)
 
         song_url = song_url.strip('<>')
 
@@ -1997,8 +1997,8 @@ class MusicBot(discord.Client):
 
         if not player:
             raise exceptions.CommandError(
-                'I am not in a voice channel.  '
-                'Use `%ssummon` to summon me to your voice channel.' % self.config.command_prefix)
+                'I am not connected to a voice channel.  '
+                'Use `%ssummon` or `%splay [song query]` to summon me to your voice channel.' % self.config.command_prefix, self.config.command_prefix, expire_in=15)
 
         song_url = song_url.strip('<>')
 
@@ -2262,10 +2262,10 @@ class MusicBot(discord.Client):
 
         if player.is_playing:
             player.pause()
-            return Response(self.str.get('cmd-pause-reply', 'Paused music in `{0.name}`').format(player.voice_client.channel))
+            return Response(self.str.get('cmd-pause-reply', 'Paused music in `{0.name}`.').format(player.voice_client.channel))
 
         else:
-            raise exceptions.CommandError(self.str.get('cmd-pause-none', 'Player is not playing.'), expire_in=30)
+            raise exceptions.CommandError(self.str.get('cmd-pause-none', 'Nothing is currently playing.'), expire_in=30)
 
     async def cmd_resume(self, player):
         """
@@ -2277,10 +2277,10 @@ class MusicBot(discord.Client):
 
         if player.is_paused:
             player.resume()
-            return Response(self.str.get('cmd-resume-reply', 'Resumed music in `{0.name}`').format(player.voice_client.channel), delete_after=15)
+            return Response(self.str.get('cmd-resume-reply', 'Resumed music in `{0.name}`.').format(player.voice_client.channel), delete_after=15)
 
         else:
-            raise exceptions.CommandError(self.str.get('cmd-resume-none', 'Player is not paused.'), expire_in=30)
+            raise exceptions.CommandError(self.str.get('cmd-resume-none', 'I am not paused.'), expire_in=30)
 
     async def cmd_shuffle(self, channel, player):
         """
