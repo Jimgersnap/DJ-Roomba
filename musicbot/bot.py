@@ -2237,15 +2237,15 @@ class MusicBot(discord.Client):
         random.shuffle(cards)
 
         hand = await self.safe_send_message(channel, ' '.join(cards))
-        await asyncio.sleep(0.6)
+        await asyncio.sleep(0.3)
 
         for x in range(4):
             random.shuffle(cards)
             await self.safe_edit_message(hand, ' '.join(cards))
-            await asyncio.sleep(0.6)
+            await asyncio.sleep(0.3)
 
         await self.safe_delete_message(hand, quiet=True)
-        return Response(self.str.get('cmd-shuffle-reply', "Shuffled `{0}`'s queue.").format(player.voice_client.channel.guild), delete_after=15)
+        return Response(self.str.get('cmd-shuffle-reply', "The queue in `{0}` has been shuffled.").format(player.voice_client.channel), delete_after=15)
 
     async def cmd_clear(self, player, author):
         """
@@ -2256,7 +2256,7 @@ class MusicBot(discord.Client):
         """
 
         player.playlist.clear()
-        return Response(self.str.get('cmd-clear-reply', "The queue in `{0}` has been cleared.").format(player.voice_client.channel.guild), delete_after=20)
+        return Response(self.str.get('cmd-clear-reply', "The queue in `{0}` has been cleared.").format(player.voice_client.channel), delete_after=20)
 
     async def cmd_remove(self, user_mentions, message, author, permissions, channel, player, index=None):
         """
@@ -2267,7 +2267,7 @@ class MusicBot(discord.Client):
         """
 
         if not player.playlist.entries:
-            raise exceptions.CommandError(self.str.get('cmd-remove-none', "There's nothing to remove!"), expire_in=20)
+            raise exceptions.CommandError(self.str.get('cmd-remove-none', "There is nothing in the queue to remove."), expire_in=20)
 
         if user_mentions:
             for user in user_mentions:
@@ -2279,13 +2279,13 @@ class MusicBot(discord.Client):
                         entry_text = '%s ' % len(entry_indexes) + 'item'
                         if len(entry_indexes) > 1:
                             entry_text += 's'
-                        return Response(self.str.get('cmd-remove-reply', "Removed `{0}` added by `{1}`").format(entry_text, user.name).strip())
+                        return Response(self.str.get('cmd-remove-reply', "The song **{0}** added by **{1}** has been removed from the queue.").format(entry_text, user.name).strip())
 
                     except ValueError:
-                        raise exceptions.CommandError(self.str.get('cmd-remove-missing', "Nothing found in the queue from user `%s`") % user.name, expire_in=20)
+                        raise exceptions.CommandError(self.str.get('cmd-remove-missing', "Nothing was found in the queue from user **%s**.") % user.name, expire_in=20)
 
                 raise exceptions.PermissionsError(
-                    self.str.get('cmd-remove-noperms', "You do not have the valid permissions to remove that entry from the queue, make sure you're the one who queued it or have instant skip permissions"), expire_in=20)
+                    self.str.get('cmd-remove-noperms', "You do not have the valid permissions to remove that entry from the queue. Make sure you're the one who queued it or have instant skip permissions."), expire_in=20)
 
         if not index:
             index = len(player.playlist.entries)
@@ -2293,21 +2293,21 @@ class MusicBot(discord.Client):
         try:
             index = int(index)
         except (TypeError, ValueError):
-            raise exceptions.CommandError(self.str.get('cmd-remove-invalid', "Invalid number. Use {}queue to find queue positions.").format(self.config.command_prefix), expire_in=20)
+            raise exceptions.CommandError(self.str.get('cmd-remove-invalid', "Invalid number. Use `{}queue` to find the queue position values.").format(self.config.command_prefix), expire_in=20)
 
         if index > len(player.playlist.entries):
-            raise exceptions.CommandError(self.str.get('cmd-remove-invalid', "Invalid number. Use {}queue to find queue positions.").format(self.config.command_prefix), expire_in=20)
+            raise exceptions.CommandError(self.str.get('cmd-remove-invalid', "Invalid number. Use `{}queue` to find the queue position values.").format(self.config.command_prefix), expire_in=20)
 
         if permissions.remove or author == player.playlist.get_entry_at_index(index - 1).meta.get('author', None):
             entry = player.playlist.delete_entry_at_index((index - 1))
             await self._manual_delete_check(message)
             if entry.meta.get('channel', False) and entry.meta.get('author', False):
-                return Response(self.str.get('cmd-remove-reply-author', "Removed entry `{0}` added by `{1}`").format(entry.title, entry.meta['author'].name).strip())
+                return Response(self.str.get('cmd-remove-reply-author', "Removed entry **{0}** added by **{1}**.").format(entry.title, entry.meta['author'].name).strip(), delete_after=20)
             else:
-                return Response(self.str.get('cmd-remove-reply-noauthor', "Removed entry `{0}`").format(entry.title).strip())
+                return Response(self.str.get('cmd-remove-reply-noauthor', "Removed entry **{0}**.").format(entry.title).strip(), delete_after=20)
         else:
             raise exceptions.PermissionsError(
-                self.str.get('cmd-remove-noperms', "You do not have the valid permissions to remove that entry from the queue, make sure you're the one who queued it or have instant skip permissions"), expire_in=20
+                self.str.get('cmd-remove-noperms', "You do not have the valid permissions to remove that entry from the queue. Make sure you're the one who queued it or have instant skip permissions"), expire_in=20
             )
 
     async def cmd_skip(self, player, channel, author, message, permissions, voice_channel, param=''):
