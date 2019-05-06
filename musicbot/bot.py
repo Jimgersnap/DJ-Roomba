@@ -2258,6 +2258,19 @@ class MusicBot(discord.Client):
         player.playlist.clear()
         return Response(self.str.get('cmd-clear-reply', "The queue in `{0}` has been cleared.").format(player.voice_client.channel), delete_after=20)
 
+    async def cmd_stop(self, player, author):
+        """
+        Usage:
+            {command_prefix}stop
+
+        Stops the current queue session by clearing the queue and ending the song currently playing.
+        """
+        player.playlist.clear()
+        if player.is_playing:
+            player.skip()
+
+        return Response("I have ended the current queue session in `{0}`. Start a new session by queuing more songs using `{1}play`.".format(player.voice_client.channel.name, self.config.command_prefix), delete_after=30)
+
     async def cmd_remove(self, user_mentions, message, author, permissions, channel, player, index=None):
         """
         Usage:
