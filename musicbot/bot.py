@@ -1124,9 +1124,8 @@ class MusicBot(discord.Client):
         Usage:
             {command_prefix}help [command]
 
-        Prints a help message.
-        If a command is specified, it prints a help message for that command.
-        Otherwise, it lists the available commands.
+        Prints a list of commands and useful information about DJ Roomba.
+        If a command is specified ({command_prefix]help [command]), then the bot returns information about that command.
         """
         self.commands = []
         self.is_all = False
@@ -1156,12 +1155,19 @@ class MusicBot(discord.Client):
             await self.gen_cmd_list(message)
 
         desc = '```\n' + ', '.join(self.commands) + '\n```\n' + self.str.get(
-            'cmd-help-response', 'For information about a particular command, run `{}help [command]`\n'
-                                 'For further help, see https://just-some-bots.github.io/MusicBot/').format(prefix)
+            'cmd-help-response', 'For information about a particular command, type `{0}help [command]`.\n'
+                                 'For more information about DJ Roomba, type `{1}botinfo`.').format(prefix, prefix)
         if not self.is_all:
-            desc += self.str.get('cmd-help-all', '\nOnly showing commands you can use, for a list of all commands, run `{}help all`').format(prefix)
+            desc += self.str.get('cmd-help-all', '\nOnly showing commands you can use, for a list of all commands, type `{}help all`.').format(prefix)
 
         return Response(desc, reply=True, delete_after=60)
+
+    async def cmd_botinfo(self, message):
+        """
+        Returns general information about DJ Roomba.
+        """
+
+        return Response("DJ Roomba is a forked version of MusicBot for Discord with additional features and a cleaner chat presence. DJ Roomba is on version `1.3.0 alpha` and is running on top of MusicBot version `1.9.8_4`.\n\nDJ Roomba Changelog: `http://jimgersnap.com/dj-roomba/changelog.txt`\nDJ Roomba Known Issues: `http://jimgersnap.com/dj-roomba/issues.txt`\n\nDJ Roomba GitHub Repo: `https://github.com/Jimgersnap/DJ-Roomba`\nMusicBot GitHub Repo: `https://github.com/Just-Some-Bots/MusicBot`", delete_after=60)
 
     async def cmd_blacklist(self, message, user_mentions, option, something):
         """
@@ -1302,7 +1308,7 @@ class MusicBot(discord.Client):
         Adds the song to the playlist.  If a link is not provided, the first
         result from a youtube search is added to the queue.
 
-        If enabled in the config, the bot will also support Spotify URIs, however
+        If enabled in the config, the bot will also support Spotify URIs and URLs, however
         it will use the metadata (e.g song name and artist) to find a YouTube
         equivalent of the song. Streaming from Spotify is not possible.
         """
