@@ -2324,9 +2324,16 @@ class MusicBot(discord.Client):
 
         Stops the current queue session by clearing the queue and ending the song currently playing.
         """
-        player.playlist.clear()
+
+        if not author.voice:
+            raise exceptions.CommandError("You must be in a voice channel to stop the queue session.", expire_in=20)
+
         if player.is_playing:
             player.skip()
+        else:
+            raise exceptions.CommandError("I'm not playing anything.", expire_in=20)
+
+        player.playlist.clear()
 
         return Response("The current song has been stopped and the queue has been cleared in `{0}`. Start a new session by queuing more songs using `{1}play`.".format(player.voice_client.channel.name, self.config.command_prefix), delete_after=30)
 
