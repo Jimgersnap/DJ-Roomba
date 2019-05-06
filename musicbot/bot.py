@@ -2856,13 +2856,13 @@ class MusicBot(discord.Client):
         Tells DJ Roomba to reconnect to the server.
         This is useful to fix any common Discord connection issues (i.e: Not being able to hear audio when DJ Roomba says it's playing something).
         """
-        if not author.voice.channel:
-            raise exceptions.CommandError("You must be in a voice channel to have me reconnect to the server.", delete_after=20)
+        if not author.voice:
+            raise exceptions.CommandError("You must be in a voice channel to have me reconnect to the server.", expire_in=20)
 
         if self.voice_client_in(guild):
             await self.disconnect_voice_client(guild)
         else:
-            raise exceptions.CommandError("I need to be connected to the server to reconnect to the server.", delete_after=20)
+            raise exceptions.CommandError("I need to be connected to the server to reconnect to the server.", expire_in=20)
 
         time.sleep(0.3) # Mostly because without this it reconnects so fast the disconnect and connect Discord sounds overlap, otherwise it's unnecessary
 
