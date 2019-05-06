@@ -427,8 +427,8 @@ class MusicBot(discord.Client):
             if guild.id not in self.players:
                 if not create:
                     raise exceptions.CommandError(
-                        'The bot is not in a voice channel.  '
-                        'Use %ssummon to summon it to your voice channel.' % self.config.command_prefix)
+                        'I am not connected to a voice channel.  '
+                        'Use `%ssummon` to summon me to your voice channel.' % self.config.command_prefix, expire_in=15)
 
                 voice_client = await self.get_voice_client(channel)
 
@@ -2154,11 +2154,11 @@ class MusicBot(discord.Client):
         Usage:
             {command_prefix}summon
 
-        Call the bot to the summoner's voice channel.
+        Calls DJ Roomba to the summoner's voice channel.
         """
 
         if not author.voice:
-            raise exceptions.CommandError(self.str.get('cmd-summon-novc', 'You are not connected to voice. Try joining a voice channel!'), expire_in=20)
+            raise exceptions.CommandError(self.str.get('cmd-summon-novc', 'You are not connected to voice. Please join a voice channel to summon me.'), expire_in=20)
 
         voice_client = self.voice_client_in(guild)
         if voice_client and guild == author.voice.channel.guild:
@@ -2786,8 +2786,7 @@ class MusicBot(discord.Client):
         Will not properly load new dependencies or file updates unless fully shutdown
         and restarted.
         """
-        await self.safe_send_message(channel, "\N{WAVING HAND SIGN} Restarting. If you have updated your bot "
-            "or its dependencies, you need to restart the bot properly, rather than using this command.")
+        await self.safe_send_message(channel, "\N{WAVING HAND SIGN} Restarting ...")
 
         player = self.get_player_in(channel.guild)
         if player and player.is_paused:
@@ -2803,7 +2802,7 @@ class MusicBot(discord.Client):
 
         Disconnects from voice channels and closes the bot process.
         """
-        await self.safe_send_message(channel, "\N{WAVING HAND SIGN}")
+        await self.safe_send_message(channel, "\N{WAVING HAND SIGN} Shutting down ...")
 
         player = self.get_player_in(channel.guild)
         if player and player.is_paused:

@@ -77,7 +77,7 @@
     "cmd-np-reply-author": "Now {action}: **{title}** added by **{author}**.\nProgress: {progress_bar} {progress}\n:point_right: <{url}>",
     "cmd-np-reply-noauthor": "Now {action}: **{title}**.\nProgress: {progress_bar} {progress}\n:point_right: <{url}>",
     "cmd-np-none": "There are no songs in the queue. Queue something with {0}play.",
-    "cmd-summon-novc": "You are not in a voice channel!",
+    "cmd-summon-novc": "You are not connected to voice. Please join a voice channel to summon me.",
     "cmd-summon-noperms-connect": "Cannot join channel `{0}`, no permission to connect.",
     "cmd-summon-noperms-speak": "Cannot join channel `{0}`, no permission to speak.",
     "cmd-summon-reply": "Connected to `{0.name}` on `{1.name}`. Please type `{2}help` to learn more about what I can do.",
