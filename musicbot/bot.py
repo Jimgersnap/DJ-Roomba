@@ -1951,18 +1951,18 @@ class MusicBot(discord.Client):
 
         if permissions.max_songs and player.playlist.count_for_user(author) >= permissions.max_songs:
             raise exceptions.PermissionsError(
-                self.str.get('cmd-stream-limit', "You have reached your enqueued song limit ({0})").format(permissions.max_songs), expire_in=30
+                self.str.get('cmd-stream-limit', "You have reached your enqueued song limit ({0}).").format(permissions.max_songs), expire_in=30
             )
 
         if player.karaoke_mode and not permissions.bypass_karaoke_mode:
             raise exceptions.PermissionsError(
-                self.str.get('karaoke-enabled', "Karaoke mode is enabled, please try again when its disabled!"), expire_in=30
+                self.str.get('karaoke-enabled', "Karaoke mode is enabled, please try again when its disabled."), expire_in=30
             )
 
         await self.send_typing(channel)
         await player.playlist.add_stream_entry(song_url, channel=channel, author=author)
 
-        return Response(self.str.get('cmd-stream-success', "Streaming."), delete_after=6)
+        return Response(self.str.get('cmd-stream-success', "Connected to the stream successfully. End the stream by typing {}skip. Starting stream now ...").format(prefix), delete_after=15)
 
     async def cmd_search(self, message, player, channel, author, permissions, leftover_args):
         """
@@ -1984,20 +1984,20 @@ class MusicBot(discord.Client):
 
         if permissions.max_songs and player.playlist.count_for_user(author) > permissions.max_songs:
             raise exceptions.PermissionsError(
-                self.str.get('cmd-search-limit', "You have reached your playlist item limit ({0})").format(permissions.max_songs),
+                self.str.get('cmd-search-limit', "You have reached your playlist item limit ({0}).").format(permissions.max_songs),
                 expire_in=30
             )
 
         if player.karaoke_mode and not permissions.bypass_karaoke_mode:
             raise exceptions.PermissionsError(
-                self.str.get('karaoke-enabled', "Karaoke mode is enabled, please try again when its disabled!"), expire_in=30
+                self.str.get('karaoke-enabled', "Karaoke mode is enabled, please try again when its disabled."), expire_in=30
             )
 
         def argcheck():
             if not leftover_args:
                 # noinspection PyUnresolvedReferences
                 raise exceptions.CommandError(
-                    self.str.get('cmd-search-noquery', "Please specify a search query.\n%s") % dedent(
+                    self.str.get('cmd-search-noquery', "Please specify a search query.\n%s.") % dedent(
                         self.cmd_search.__doc__.format(command_prefix=self.config.command_prefix)),
                     expire_in=60
                 )
@@ -2007,7 +2007,7 @@ class MusicBot(discord.Client):
         try:
             leftover_args = shlex.split(' '.join(leftover_args))
         except ValueError:
-            raise exceptions.CommandError(self.str.get('cmd-search-noquote', "Please quote your search query properly."), expire_in=30)
+            raise exceptions.CommandError(self.str.get('cmd-search-noquote', "Please quote your search query properly and try again."), expire_in=30)
 
         service = 'youtube'
         items_requested = 3
@@ -2030,7 +2030,7 @@ class MusicBot(discord.Client):
             argcheck()
 
             if items_requested > max_items:
-                raise exceptions.CommandError(self.str.get('cmd-search-searchlimit', "You cannot search for more than %s videos") % max_items)
+                raise exceptions.CommandError(self.str.get('cmd-search-searchlimit', "You cannot search for more than %s videos.") % max_items)
 
         # Look jake, if you see this and go "what the fuck are you doing"
         # and have a better idea on how to do this, i'd be delighted to know.
@@ -2044,7 +2044,7 @@ class MusicBot(discord.Client):
 
         search_query = '%s%s:%s' % (services[service], items_requested, ' '.join(leftover_args))
 
-        search_msg = await self.safe_send_message(channel, self.str.get('cmd-search-searching', "Searching for videos..."))
+        search_msg = await self.safe_send_message(channel, self.str.get('cmd-search-searching', "Searching for videos ... make your choice by choosing a reaction under the search result."))
         await self.send_typing(channel)
 
         try:
@@ -2057,7 +2057,7 @@ class MusicBot(discord.Client):
             await self.safe_delete_message(search_msg)
 
         if not info:
-            return Response(self.str.get('cmd-search-none', "No videos found."), delete_after=30)
+            return Response(self.str.get('cmd-search-none', "No videos found. Please make your search query contain a little more info."), delete_after=30)
 
         for e in info['entries']:
             result_message = await self.safe_send_message(channel, self.str.get('cmd-search-result', "Result {0}/{1}: {2}").format(
@@ -2079,7 +2079,7 @@ class MusicBot(discord.Client):
             if str(reaction.emoji) == '\u2705':  # check
                 await self.safe_delete_message(result_message)
                 await self.cmd_play(message, player, channel, author, permissions, [], e['webpage_url'])
-                return Response(self.str.get('cmd-search-accept', "Alright, coming right up!"), delete_after=30)
+                return Response(self.str.get('cmd-search-accept', "Your song has been added to the queue."), delete_after=30)
             elif str(reaction.emoji) == '\U0001F6AB':  # cross
                 await self.safe_delete_message(result_message)
                 continue
@@ -2087,7 +2087,7 @@ class MusicBot(discord.Client):
                 await self.safe_delete_message(result_message)
                 break
 
-        return Response(self.str.get('cmd-search-decline', "Oh well :("), delete_after=30)
+        return Response(self.str.get('cmd-search-decline', "If the results you were expecting were not found, try again with a search query containing more info."), delete_after=30)
 
     async def cmd_songprogress(self, player, channel, guild, message):
         """
@@ -2275,7 +2275,7 @@ class MusicBot(discord.Client):
         if player.is_playing:
             player.skip()
 
-        return Response("I have ended the current queue session in `{0}`. Start a new session by queuing more songs using `{1}play`.".format(player.voice_client.channel.name, self.config.command_prefix), delete_after=30)
+        return Response("The current song has been stopped and the queue has been cleared in `{0}`. Start a new session by queuing more songs using `{1}play`.".format(player.voice_client.channel.name, self.config.command_prefix), delete_after=30)
 
     async def cmd_remove(self, user_mentions, message, author, permissions, channel, player, index=None):
         """
