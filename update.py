@@ -21,7 +21,7 @@ def update_deps():
 def finalize():
     try:
         from musicbot.constants import VERSION
-        print('The current MusicBot version is {0}.'.format(VERSION))
+        print('The current DJ Roomba version is {0}.'.format(VERSION))
     except Exception:
         print('There was a problem fetching your current bot version. The installation may not have completed correctly.')
 
