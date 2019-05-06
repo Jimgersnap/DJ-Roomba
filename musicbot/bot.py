@@ -35,7 +35,7 @@ from .config import Config, ConfigDefaults
 from .permissions import Permissions, PermissionsDefaults
 from .aliases import Aliases, AliasesDefault
 from .constructs import SkipState, Response
-from .utils import load_file, write_file, fixg, ftimedelta, _func_, _get_variable
+from .utils import load_file, write_file, fixg, ftimedelta, _func_, _get_variable, lookup_activity, lookup_status
 from .spotify import Spotify
 from .json import Json
 
@@ -456,7 +456,7 @@ class MusicBot(discord.Client):
 
     async def on_player_play(self, player, entry):
         log.debug('Running on_player_play')
-        await self.update_now_playing_status(entry)
+        await self.update_now_playing_status()
         player.skip_state.reset()
 
         # This is the one event where its ok to serialize autoplaylist entries
@@ -513,11 +513,11 @@ class MusicBot(discord.Client):
 
     async def on_player_resume(self, player, entry, **_):
         log.debug('Running on_player_resume')
-        await self.update_now_playing_status(entry)
+        await self.update_now_playing_status()
 
     async def on_player_pause(self, player, entry, **_):
         log.debug('Running on_player_pause')
-        await self.update_now_playing_status(entry, True)
+        await self.update_now_playing_status(is_paused = True)
         # await self.serialize_queue(player.voice_client.channel.guild)
 
     async def on_player_stop(self, player, **_):
@@ -626,32 +626,35 @@ class MusicBot(discord.Client):
         else:
             log.exception("Player error", exc_info=ex)
 
-    async def update_now_playing_status(self, entry=None, is_paused=False):
-        game = None
+    async def update_now_playing_status(self, is_paused=False):
 
-        if not self.config.status_message:
-            if self.user.bot:
-                activeplayers = sum(1 for p in self.players.values() if p.is_playing)
-                if activeplayers > 1:
-                    game = discord.Game(type=0, name="music on %s guilds" % activeplayers)
-                    entry = None
+        name = ''
 
-                elif activeplayers == 1:
-                    player = discord.utils.get(self.players.values(), is_playing=True)
-                    entry = player.current_entry
+        activeplayers = sum(1 for p in self.players.values() if p.is_playing)
+        if activeplayers > 1:
+            name="music on %s guilds" % activeplayers
+        elif activeplayers == 1:
+            player = discord.utils.get(self.players.values(), is_playing=True)
+            prefix = u'\u275A\u275A ' if is_paused else ''
+            name = u'{}{}'.format(prefix, player.current_entry.title)[:128]
 
-            if entry:
-                prefix = u'\u275A\u275A ' if is_paused else ''
+        if self.config.status_message:
+            name = self.config.status_message.strip()[:128]
 
-                name = u'{}{}'.format(prefix, entry.title)[:128]
-                game = discord.Game(type=0, name=name)
+        activity_type = await lookup_activity(self.config.activitystatus)
+        if not self.config.streamer.startswith("https://www.twitch.tv/"):
+            url = "https://www.twitch.tv/"
         else:
-            game = discord.Game(type=0, name=self.config.status_message.strip()[:128])
+            url = self.config.streamer
 
-        async with self.aiolocks[_func_()]:
-            if game != self.last_status:
-                await self.change_presence(activity=game)
-                self.last_status = game
+        game = discord.Activity(
+                type=activity_type,
+                name=name,
+                url=url
+                )
+        status = await lookup_status(self.config.status)
+
+        await self.change_presence(activity=game, status=status)
 
     async def update_now_playing_message(self, guild, message, *, channel=None):
         lnp = self.server_specific_data[guild]['last_np_msg']
@@ -1082,6 +1085,10 @@ class MusicBot(discord.Client):
             log.info("  Spotify integration: " + ['Disabled', 'Enabled'][self.config._spotify])
             log.info("  Legacy skip: " + ['Disabled', 'Enabled'][self.config.legacy_skip])
             log.info("  Leave non owners: " + ['Disabled', 'Enabled'][self.config.leavenonowners])
+            log.info("  Activity status: " + self.config.activitystatus)
+            log.info("  Status: " + self.config.status)
+            if self.config.activitystatus == 1:
+                log.info(" Twitch.tv url: " + self.config.streamer)
 
         print(flush=True)
 
