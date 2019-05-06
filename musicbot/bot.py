@@ -2256,7 +2256,7 @@ class MusicBot(discord.Client):
         """
 
         player.playlist.clear()
-        return Response(self.str.get('cmd-clear-reply', "Cleared `{0}`'s queue").format(player.voice_client.channel.guild), delete_after=20)
+        return Response(self.str.get('cmd-clear-reply', "The queue in `{0}` has been cleared.").format(player.voice_client.channel.guild), delete_after=20)
 
     async def cmd_remove(self, user_mentions, message, author, permissions, channel, player, index=None):
         """
@@ -2320,21 +2320,21 @@ class MusicBot(discord.Client):
         """
 
         if player.is_stopped:
-            raise exceptions.CommandError(self.str.get('cmd-skip-none', "Can't skip! The player is not playing!"), expire_in=20)
+            raise exceptions.CommandError(self.str.get('cmd-skip-none', "There is nothing to skip because I am not playing anything."), expire_in=20)
 
         if not player.current_entry:
             if player.playlist.peek():
                 if player.playlist.peek()._is_downloading:
-                    return Response(self.str.get('cmd-skip-dl', "The next song (`%s`) is downloading, please wait.") % player.playlist.peek().title)
+                    return Response(self.str.get('cmd-skip-dl', "The next song (**%s**) is downloading. Please wait ...") % player.playlist.peek().title)
 
                 elif player.playlist.peek().is_downloaded:
-                    print("The next song will be played shortly.  Please wait.")
+                    print("The next song will be played shortly. Please wait ...")
                 else:
                     print("Something odd is happening.  "
-                          "You might want to restart the bot if it doesn't start working.")
+                          "You might want to restart me if I don't respond soon.")
             else:
                 print("Something strange is happening.  "
-                      "You might want to restart the bot if it doesn't start working.")
+                      "You might want to restart me if I don't respond soon.")
 
         current_entry = player.current_entry
 
@@ -2344,7 +2344,7 @@ class MusicBot(discord.Client):
 
                 player.skip()  # TODO: check autopause stuff here
                 await self._manual_delete_check(message)
-                return Response(self.str.get('cmd-skip-force', 'Force skipped `{}`.').format(current_entry.title), reply=True, delete_after=30)
+                return Response(self.str.get('cmd-skip-force', ', the song **{}** was skipped on your request.').format(current_entry.title), reply=True, delete_after=30)
             else:
                 raise exceptions.PermissionsError(self.str.get('cmd-skip-force-noperms', 'You do not have permission to force skip.'), expire_in=30)
 
@@ -2366,7 +2366,7 @@ class MusicBot(discord.Client):
             player.skip()  # check autopause stuff here
             # @TheerapakG: Check for pausing state in the player.py make more sense
             return Response(
-                self.str.get('cmd-skip-reply-skipped-1', 'Your skip for `{0}` was acknowledged.\nThe vote to skip has been passed.{1}').format(
+                self.str.get('cmd-skip-reply-skipped-1', 'Your skip for **{0}** was acknowledged.\nThe vote to skip has been passed.{1}').format(
                     current_entry.title,
                     self.str.get('cmd-skip-reply-skipped-2', ' Next song coming up!') if player.playlist.peek() else ''
                 ),
@@ -2377,7 +2377,7 @@ class MusicBot(discord.Client):
         else:
             # TODO: When a song gets skipped, delete the old x needed to skip messages
             return Response(
-                self.str.get('cmd-skip-reply-voted-1', 'Your skip for `{0}` was acknowledged.\n**{1}** more {2} required to vote to skip this song.').format(
+                self.str.get('cmd-skip-reply-voted-1', 'Your skip for **{0}** was acknowledged.\n**{1}** more {2} required to vote to skip this song.').format(
                     current_entry.title,
                     skips_remaining,
                     self.str.get('cmd-skip-reply-voted-2', 'person is') if skips_remaining == 1 else self.str.get('cmd-skip-reply-voted-3', 'people are')
@@ -2396,7 +2396,7 @@ class MusicBot(discord.Client):
         """
 
         if not new_volume:
-            return Response(self.str.get('cmd-volume-current', 'Current volume: `%s%%`') % int(player.volume * 100), reply=True, delete_after=20)
+            return Response(self.str.get('cmd-volume-current', ', the current volume is **%s%%**.') % int(player.volume * 100), reply=True, delete_after=20)
 
         relative = False
         if new_volume[0] in '+-':
@@ -2406,7 +2406,7 @@ class MusicBot(discord.Client):
             new_volume = int(new_volume)
 
         except ValueError:
-            raise exceptions.CommandError(self.str.get('cmd-volume-invalid', '`{0}` is not a valid number').format(new_volume), expire_in=20)
+            raise exceptions.CommandError(self.str.get('cmd-volume-invalid', '`{0}` is not a valid number.').format(new_volume), expire_in=20)
 
         vol_change = None
         if relative:
@@ -2418,16 +2418,16 @@ class MusicBot(discord.Client):
         if 0 < new_volume <= 100:
             player.volume = new_volume / 100.0
 
-            return Response(self.str.get('cmd-volume-reply', 'Updated volume from **%d** to **%d**') % (old_volume, new_volume), reply=True, delete_after=20)
+            return Response(self.str.get('cmd-volume-reply', ', the volume has been changed from **%d%%** to **%d%%** on your request.') % (old_volume, new_volume), reply=True, delete_after=20)
 
         else:
             if relative:
                 raise exceptions.CommandError(
-                    self.str.get('cmd-volume-unreasonable-relative', 'Unreasonable volume change provided: {}{:+} -> {}%.  Provide a change between {} and {:+}.').format(
+                    self.str.get('cmd-volume-unreasonable-relative', 'Unreasonable volume change provided: `{}{:+} -> {}%`. Provide a change between `{}` and `{:+}`.').format(
                         old_volume, vol_change, old_volume + vol_change, 1 - old_volume, 100 - old_volume), expire_in=20)
             else:
                 raise exceptions.CommandError(
-                    self.str.get('cmd-volume-unreasonable-absolute', 'Unreasonable volume provided: {}%. Provide a value between 1 and 100.').format(new_volume), expire_in=20)
+                    self.str.get('cmd-volume-unreasonable-absolute', 'Unreasonable volume provided: `{}%`. Provide a value between `1` and `100`.').format(new_volume), expire_in=20)
 
     @owner_only
     async def cmd_option(self, player, option, value):
