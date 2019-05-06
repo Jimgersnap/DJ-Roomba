@@ -1164,10 +1164,11 @@ class MusicBot(discord.Client):
             await self.gen_cmd_list(message)
 
         desc = '```\n' + ', '.join(self.commands) + '\n```\n' + self.str.get(
-            'cmd-help-response', 'For information about a particular command, type `{0}help [command]`.\n'
-                                 'For more information about DJ Roomba, type `{1}botinfo`.').format(prefix, prefix)
+            'cmd-help-response', 'Type `{0}summon` or `{1}play [song query]` to summon me to your channel.\n'
+                                 'For information about a particular command, type `{2}help [command]`.\n'
+                                 'For more information about DJ Roomba, type `{3}botinfo`.').format(prefix, prefix, prefix, prefix)
         if not self.is_all:
-            desc += self.str.get('cmd-help-all', '\nOnly showing commands you can use, for a list of all commands, type `{}help all`.').format(prefix)
+            desc += self.str.get('cmd-help-all', '\n\nOnly showing commands you can use, for a list of all commands, type `{}help all`.').format(prefix)
 
         return Response(desc, reply=True, delete_after=60)
 
@@ -1176,7 +1177,7 @@ class MusicBot(discord.Client):
         Returns general information about DJ Roomba.
         """
 
-        return Response("DJ Roomba is a forked version of MusicBot for Discord with additional features and a cleaner chat presence. DJ Roomba is on version `1.3.0 alpha` and is running on top of MusicBot version `1.9.8_4`.\n\nDJ Roomba Changelog: `http://jimgersnap.com/dj-roomba/changelog.txt`\nDJ Roomba Known Issues: `http://jimgersnap.com/dj-roomba/issues.txt`\n\nDJ Roomba GitHub Repo: `https://github.com/Jimgersnap/DJ-Roomba`\nMusicBot GitHub Repo: `https://github.com/Just-Some-Bots/MusicBot`", delete_after=60)
+        return Response("DJ Roomba is a fork of MusicBot for Discord with many additional features. DJ Roomba is on version `1.3.0 alpha` and is running on top of MusicBot version `1.9.8_4`.\n\nDJ Roomba Changelog: `http://jimgersnap.com/dj-roomba/changelog.txt`\nDJ Roomba Known Issues: `http://jimgersnap.com/dj-roomba/issues.txt`\n\nDJ Roomba GitHub Repo: `https://github.com/Jimgersnap/DJ-Roomba`\nMusicBot GitHub Repo: `https://github.com/Just-Some-Bots/MusicBot`", delete_after=60)
 
     async def cmd_blacklist(self, message, user_mentions, option, something):
         """
