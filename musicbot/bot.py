@@ -2790,6 +2790,41 @@ class MusicBot(discord.Client):
         await self.disconnect_voice_client(guild)
         return Response("Disconnected from `{0.name}`.".format(guild), delete_after=20)
 
+    async def cmd_reconnect(self, guild, author, channel):
+        """
+        Usage:
+            {command_prefix}reconnect
+        Tells DJ Roomba to reconnect to the server.
+        This is useful to fix any common Discord connection issues (i.e: Not being able to hear audio when DJ Roomba says it's playing something).
+        """
+        if not author.voice.channel:
+            raise exceptions.CommandError("You must be in a voice channel to have me reconnect to the server.", delete_after=20)
+
+        if self.voice_client_in(guild):
+            await self.disconnect_voice_client(guild)
+        else:
+            raise exceptions.CommandError("I need to be connected to the server to reconnect to the server.", delete_after=20)
+
+        time.sleep(0.3) # Mostly because without this it reconnects so fast the disconnect and connect Discord sounds overlap, otherwise it's unnecessary
+
+        voice_client = self.voice_client_in(guild)
+        if voice_client and guild == author.voice.channel.guild:
+            await voice_client.move_to(author.voice.channel)
+        else:
+            # move to _verify_vc_perms?
+            chperms = author.voice.channel.permissions_for(guild.me)
+
+        player = await self.get_player(author.voice.channel, create=True, deserialize=self.config.persistent_queue)
+        if player.is_stopped:
+            player.play()
+
+        if self.config.auto_playlist:
+            await self.on_player_finished_playing(player)
+
+        log.info("Reconnect command used. Reconnected to {0} in the {1} voice channel".format(guild, author.voice.channel.name))
+
+        return Response("I have reconnected to `{0}`.".format(guild), delete_after=20)
+
     async def cmd_restart(self, channel):
         """
         Usage:
