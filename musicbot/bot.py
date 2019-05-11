@@ -1380,13 +1380,13 @@ class MusicBot(discord.Client):
                     elif 'album' in parts:
                         res = await self.spotify.get_album(parts[-1])
                         await self._do_playlist_checks(permissions, player, author, res['tracks']['items'])
-                        procmesg = await self.safe_send_message(channel, self.str.get('cmd-play-spotify-album-process', 'Processing Spotify album **{0}**. This may take a while for large albums.').format(res['name']))
+                        procmesg = await self.safe_send_message(channel, self.str.get('cmd-play-spotify-album-process', 'Processing your requested Spotify album (**{0}**). Please wait ...').format(res['name']))
                         for i in res['tracks']['items']:
                             song_url = i['name'] + ' ' + i['artists'][0]['name']
                             log.debug('Processing {0}'.format(song_url))
                             await self.cmd_play(message, player, channel, author, permissions, leftover_args, song_url)
                         await self.safe_delete_message(procmesg)
-                        return Response(self.str.get('cmd-play-spotify-album-queued', "Spotify album **{0}** has been added to the queue with **{1}** songs.").format(res['name'], len(res['tracks']['items'])))
+                        return Response(self.str.get('cmd-play-spotify-album-queued', "Your requested Spotify album (**{0}**) containing **{1}** songs has been added to the queue. Shuffle the queue by typing `{2}shuffle`.").format(res['name'], len(res['tracks']['items']), self.config.command_prefix), delete_after=20)
 
                     elif 'playlist' in parts:
                         res = []
@@ -1399,18 +1399,18 @@ class MusicBot(discord.Client):
                             else:
                                 break
                         await self._do_playlist_checks(permissions, player, author, res)
-                        procmesg = await self.safe_send_message(channel, self.str.get('cmd-play-spotify-playlist-process', 'Processing Spotify playlist **{0}**. This may take a while for large playlists.').format(parts[-1]))
+                        procmesg = await self.safe_send_message(channel, self.str.get('cmd-play-spotify-playlist-process', 'Processing your requested Spotify playlist. This may take a while for large playlists. Please wait ...'))
                         for i in res:
                             song_url = i['track']['name'] + ' ' + i['track']['artists'][0]['name']
                             log.debug('Processing {0}'.format(song_url))
                             await self.cmd_play(message, player, channel, author, permissions, leftover_args, song_url)
                         await self.safe_delete_message(procmesg)
-                        return Response(self.str.get('cmd-play-spotify-playlist-queued', "Spotify playlist **{0}** has been added to the queue with **{1}** songs.").format(parts[-1], len(res)))
+                        return Response(self.str.get('cmd-play-spotify-playlist-queued', "Your requested Spotify playlist containing **{0}** songs has been added to the queue. Shuffle the queue by typing `{1}shuffle`.").format(len(res), self.config.command_prefix), delete_after=20)
 
                     else:
                         raise exceptions.CommandError(self.str.get('cmd-play-spotify-unsupported', 'That is not a supported Spotify URI or URL.'), expire_in=30)
                 except exceptions.SpotifyError:
-                    raise exceptions.CommandError(self.str.get('cmd-play-spotify-invalid', 'You either provided an invalid Spotify URI or URL, or an unknown problem occurred.'))
+                    raise exceptions.CommandError(self.str.get('cmd-play-spotify-invalid', 'You either provided an invalid Spotify URI or URL, or an unknown problem occurred.'), expire_in=30)
 
         # This lock prevent spamming play command to add entries that exceeds time limit/ maximum song limit
         async with self.aiolocks[_func_() + ':' + str(author.id)]:
@@ -1521,9 +1521,9 @@ class MusicBot(discord.Client):
 
                 procmesg = await self.safe_send_message(
                     channel,
-                    self.str.get('cmd-play-playlist-gathering-1', 'Processing playlist information for **{0}** songs{1}. This may take a while for large playlists.').format(
+                    self.str.get('cmd-play-playlist-gathering-1', 'Processing your requested playlist containing **{0}** songs. Please wait ...').format(
                         num_songs,
-                        self.str.get('cmd-play-playlist-gathering-2', '\nEstimated time until completed: `{0}` seconds.').format(fixg(
+                        self.str.get('cmd-play-playlist-gathering-2', '\nEstimated time until completed: **{0}** seconds.').format(fixg(
                             num_songs * wait_per_song)) if num_songs >= 10 else '.'))
 
                 # We don't have a pretty way of doing this yet.  We need either a loop
@@ -1567,7 +1567,7 @@ class MusicBot(discord.Client):
                         expire_in=30
                     )
 
-                reply_text = self.str.get('cmd-play-playlist-reply', "Enqueued **%s** songs to be played.\nPosition in queue: **%s**")
+                reply_text = self.str.get('cmd-play-playlist-reply', "Your requested playlist containing **%s** songs has been added to the queue.\nPosition in queue: **%s**")
                 btext = str(listlen - drop_count)
 
             # If it's an entry
@@ -1587,7 +1587,7 @@ class MusicBot(discord.Client):
 
                 entry, position = await player.playlist.add_entry(song_url, channel=channel, author=author)
 
-                reply_text = self.str.get('cmd-play-song-reply', "Enqueued **%s** to be played.\nPosition in queue: **%s**")
+                reply_text = self.str.get('cmd-play-song-reply', "Added **%s** to the queue.\nPosition in queue: **%s**")
                 btext = entry.title
 
             if position == 1 and player.is_stopped:
@@ -1621,7 +1621,7 @@ class MusicBot(discord.Client):
         t0 = time.time()
 
         busymsg = await self.safe_send_message(
-            channel, self.str.get('cmd-play-playlist-process', "Processing **{0}** songs. This may take a while for large playlists.").format(num_songs))  # TODO: From playlist_title
+            channel, self.str.get('cmd-play-playlist-process', "Processing your requested playlist containing **{0}** songs. Please wait ...").format(num_songs))  # TODO: From playlist_title
         await self.send_typing(channel)
 
         entries_added = 0
@@ -1697,8 +1697,7 @@ class MusicBot(discord.Client):
 
             raise exceptions.CommandError(basetext, expire_in=30)
 
-        return Response(self.str.get('cmd-play-playlist-reply-secs', "Playlist processing completed in **{0}** seconds. **{1}** songs have been added to the queue. Shuffle the queue by typing `{2}shuffle`.").format(
-            fixg(ttime, 1), songs_added, self.config.command_prefix), delete_after=30)
+        return Response(self.str.get('cmd-play-playlist-reply-secs', "Your requested playlist containing **{0}** songs has been added to the queue. Shuffle the queue by typing `{1}shuffle`.").format(songs_added, self.config.command_prefix), delete_after=30)
 
     async def cmd_promote(self, player, position=None):
         """
