@@ -1426,7 +1426,11 @@ class MusicBot(discord.Client):
             while True:
                 try:
                     info = await self.downloader.extract_info(player.playlist.loop, song_url, download=False, process=False)
-                    info_process = await self.downloader.extract_info(player.playlist.loop, song_url, download=False)
+                    try: # If ytdl gets an error resolving entry type, continue processing
+                        info_process = await self.downloader.extract_info(player.playlist.loop, song_url, download=False)
+                    except:
+                        info_process = None
+
                     log.debug(info)
                     if info_process and info and info_process.get('_type', None) == 'playlist' and 'entries' not in info and not info.get('url', '').startswith('ytsearch'):
                         use_url = info_process.get('webpage_url', None) or info_process.get('url', None)
