@@ -54,7 +54,7 @@ except ImportError:
 
 # Arguments
 ap = argparse.ArgumentParser()
-ap.add_argument('--dir', help='the name of the directory to install to (default: MusicBot)')
+ap.add_argument('--dir', help='the name of the directory to install to (default: DJ-Roomba)')
 args = ap.parse_args()
 
 # Logging setup goes here
@@ -76,13 +76,13 @@ if SYS_PLATFORM not in PLATFORMS:
 if SYS_PLATFORM == 'linux2':
     SYS_PLATFORM = 'linux'
 
-TEMP_DIR = tempfile.TemporaryDirectory(prefix='musicbot-')
+TEMP_DIR = tempfile.TemporaryDirectory(prefix='djroomba-')
 try:
     PY_BUILD_DIR = os.path.join(TEMP_DIR, "Python-%s" % TARGET_PY_VERSION)
 except TypeError:  # expected str, bytes or os.PathLike object, not TemporaryDirectory
     PY_BUILD_DIR = os.path.join(TEMP_DIR.name, "Python-%s" % TARGET_PY_VERSION)
 
-INSTALL_DIR = args.dir if args.dir is not None else 'MusicBot'
+INSTALL_DIR = args.dir if args.dir is not None else 'DJ-Roomba'
 
 GET_PIP = "https://bootstrap.pypa.io/get-pip.py"
 
@@ -511,7 +511,7 @@ class EnsurePip(SetupTask):
 
 
 class GitCloneMusicbot(SetupTask):
-    GIT_URL = "https://github.com/Just-Some-Bots/MusicBot.git"
+    GIT_URL = "https://github.com/Jimgersnap/DJ-Roomba.git"
     GIT_CMD = "git clone --depth 10 --no-single-branch %s %s" % (GIT_URL, INSTALL_DIR)
 
     def download(self):
@@ -570,8 +570,8 @@ class SetupMusicbot(SetupTask):
 
 
 def preface():
-    print(" MusicBot Bootstrapper (v0.1) ".center(50, '#'))
-    print("This script will install the MusicBot into a folder called '%s' in your current directory." % INSTALL_DIR,
+    print(" DJ Roomba Bootstrapper (v0.1) ".center(50, '#'))
+    print("This script will install DJ Roomba into a folder called '%s' in your current directory." % INSTALL_DIR,
           "\nDepending on your system and environment, several packages and dependencies will be installed.",
           "\nTo ensure there are no issues, you should probably run this script as an administrator.")
     print()
@@ -581,7 +581,7 @@ def preface():
 
 def main():
     preface()
-    print("Bootstrapping MusicBot on Python %s." % '.'.join(list(map(str, PY_VERSION))))
+    print("Bootstrapping DJ Roomba on Python %s." % '.'.join(list(map(str, PY_VERSION))))
 
     EnsurePython.run()
     EnsureBrew.run()
