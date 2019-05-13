@@ -2028,7 +2028,7 @@ class MusicBot(discord.Client):
         await self.send_typing(channel)
         await player.playlist.add_stream_entry(song_url, channel=channel, author=author)
 
-        return Response(self.str.get('cmd-stream-success', "Connected to the stream successfully. End the stream by typing {}skip. Starting stream now ...").format(prefix), delete_after=15)
+        return Response(self.str.get('cmd-stream-success', "Connected to the stream successfully. End the stream by typing `{}skip`.").format(self.config.command_prefix), delete_after=15)
 
     async def cmd_search(self, message, player, channel, author, permissions, leftover_args):
         """
