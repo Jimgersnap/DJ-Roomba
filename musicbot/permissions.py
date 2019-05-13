@@ -29,6 +29,7 @@ class PermissionsDefaults:
     Remove = False
     SkipWhenAbsent = True
     BypassKaraokeMode = False
+    SummonNoVoice = False
 
     Extractors = "generic youtube youtube:playlist"
 
@@ -49,12 +50,13 @@ class Permissive:
     Remove = True
     SkipWhenAbsent = False
     BypassKaraokeMode = True
+    SummonNoVoice = True
 
     Extractors = ""
 
 class Permissions:
 
-    def __init__(self, config_file, grant_all=None):        
+    def __init__(self, config_file, grant_all=None):
         self.config_file = config_file
         self.config = configparser.ConfigParser(interpolation=None)
 
@@ -75,16 +77,16 @@ class Permissions:
         for section in self.config.sections():
             if section != 'Owner (auto)':
                 self.groups.add(PermissionGroup(section, self.config[section]))
-                
+
         if self.config.has_section('Owner (auto)'):
             owner_group = PermissionGroup('Owner (auto)', self.config['Owner (auto)'], fallback=Permissive)
-            
+
         else:
             log.info("[Owner (auto)] section not found, falling back to permissive default")
             # Create a fake section to fallback onto the default permissive values to grant to the owner
             # noinspection PyTypeChecker
             owner_group = PermissionGroup("Owner (auto)", configparser.SectionProxy(self.config, "Owner (auto)"), fallback=Permissive)
-            
+
         if hasattr(grant_all, '__iter__'):
             owner_group.user_list = set(grant_all)
 
@@ -133,7 +135,7 @@ class Permissions:
 class PermissionGroup:
     def __init__(self, name, section_data, fallback=PermissionsDefaults):
         self.name = name
-        
+
         self.command_whitelist = section_data.get('CommandWhiteList', fallback=fallback.CommandWhiteList)
         self.command_blacklist = section_data.get('CommandBlackList', fallback=fallback.CommandBlackList)
         self.ignore_non_voice = section_data.get('IgnoreNonVoice', fallback=fallback.IgnoreNonVoice)
@@ -150,6 +152,7 @@ class PermissionGroup:
         self.remove = section_data.getboolean('Remove', fallback=fallback.Remove)
         self.skip_when_absent = section_data.getboolean('SkipWhenAbsent', fallback=fallback.SkipWhenAbsent)
         self.bypass_karaoke_mode = section_data.getboolean('BypassKaraokeMode', fallback=fallback.BypassKaraokeMode)
+        self.summonplay = section_data.getboolean('SummonNoVoice', fallback=fallback.SummonNoVoice)
 
         self.extractors = section_data.get('Extractors', fallback=fallback.Extractors)
 
