@@ -2436,7 +2436,7 @@ class MusicBot(discord.Client):
 
                 player.skip()  # TODO: check autopause stuff here
                 await self._manual_delete_check(message)
-                return Response(self.str.get('cmd-skip-force', ', the song **{}** was skipped on your request.').format(current_entry.title), reply=True, delete_after=30)
+                return Response(self.str.get('cmd-skip-force', ', the song **{}** has been skipped.').format(current_entry.title), reply=True, delete_after=30)
             else:
                 raise exceptions.PermissionsError(self.str.get('cmd-skip-force-noperms', 'You do not have permission to force skip.'), expire_in=30)
 

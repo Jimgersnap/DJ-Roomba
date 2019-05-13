@@ -96,7 +96,7 @@
     "cmd-remove-reply-noauthor": "Removed entry **{0}**.",
     "cmd-skip-none": "There is nothing to skip because I am not playing anything.",
     "cmd-skip-dl": "The next song (**%s**) is downloading. Please wait ...",
-    "cmd-skip-force": ", the song **{}** was skipped on your request.",
+    "cmd-skip-force": ", the song **{}** has been skipped.",
     "cmd-skip-force-noperms": "You do not have permission to force skip.",
     "cmd-skip-reply-skipped-1": "Your skip for **{0}** was acknowledged.\nThe vote to skip has been passed.{1}",
     "cmd-skip-reply-skipped-2": " Next song coming up!",
