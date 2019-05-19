@@ -2033,10 +2033,10 @@ class MusicBot(discord.Client):
             - soundcloud (sc)
             - yahoo (yh)
         - number: return a number of video results and waits for user to choose one
-          - defaults to 3 if unspecified
+          - defaults to 5 if unspecified
           - note: If your search query starts with a number,
                   you must put your query in quotes
-            - ex: {command_prefix}search 2 "I ran seagulls"
+            - ex: {command_prefix}search 3 "I ran seagulls"
         The command issuer can use reactions to indicate their response to each result.
         """
 
@@ -2068,7 +2068,7 @@ class MusicBot(discord.Client):
             raise exceptions.CommandError(self.str.get('cmd-search-noquote', "Please quote your search query properly and try again."), expire_in=30)
 
         service = 'youtube'
-        items_requested = 3
+        items_requested = 5
         max_items = permissions.max_search_items
         services = {
             'youtube': 'ytsearch',
