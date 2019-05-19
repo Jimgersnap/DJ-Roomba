@@ -1747,9 +1747,9 @@ class MusicBot(discord.Client):
             traceback.print_exc()
             time_until = ''
 
-        reply_text %= (btext, time_until)
+        reply_text %= (btext, ftimedelta(time_until))
 
-        return Response(reply_text, delete_after=30)
+        return Response(reply_text, delete_after=20)
 
     async def cmd_playnow(self, player, channel, author, permissions, leftover_args, song_url):
         """
