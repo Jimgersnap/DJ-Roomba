@@ -471,7 +471,7 @@ class MusicBot(discord.Client):
         author = entry.meta.get('author', None)
         duration = ftimedelta(timedelta(seconds=player.current_entry.duration))
 
-        if self.config.embeds:
+        if self.config.embeds: # check if embeds are enabled in config, if so, format the responses this way
 
             if channel and author:
                 author_perms = self.permissions.for_user(author)
@@ -490,7 +490,8 @@ class MusicBot(discord.Client):
                 # no author (and channel), it's an autoplaylist (or autostream from my other PR) entry.
                 newmsg = 'Autoplaylist entry **%s**. `(%s)`' % (
                     entry.title, duration)
-        else:
+                    
+        else: # if embeds aren't enabled in config format the responses this way
 
             if channel and author:
                 author_perms = self.permissions.for_user(author)
@@ -537,9 +538,9 @@ class MusicBot(discord.Client):
                 return
 
             # send it in specified channel
-            if self.config.embeds: # embed now playing messages if embeds are on in config
+            if self.config.embeds: # if embeds are enabled in config, use embeded responses
                 embed = self._gen_embed()
-                embed.add_field(name='Now Playing in `{}`:'.format(player.voice_client.channel.name), value='{}'.format(newmsg), inline=True)
+                embed.add_field(name='Now playing in `{}`:'.format(player.voice_client.channel.name), value='{}'.format(newmsg), inline=True)
             self.server_specific_data[guild]['last_np_msg'] = await self.safe_send_message(channel, embed if self.config.embeds else newmsg)
 
         # TODO: Check channel voice state?
