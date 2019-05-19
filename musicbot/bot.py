@@ -1844,11 +1844,12 @@ class MusicBot(discord.Client):
 
             try:
                 entry, position = await player.playlist.add_entry(song_url, channel=channel, author=author)
-                await self.safe_send_message(channel, self.str.get('cmd-playnow-successful', "The song **%s** has been added to the top of the queue to be played right away. The current song will now be skipped.") % entry.title, expire_in=20)
-                # Get the song ready now, otherwise race condition where finished-playing will fire before
-                # the song is finished downloading, which will then cause another song from autoplaylist to
-                # be added to the queue
                 await entry.get_ready_future()
+                if position > 1:
+                    player.playlist.promote_last()
+                if player.is_playing:
+                    player.skip()
+                return Response(self.str.get('cmd-playnow-successful', "The requested song **%s** has been added to the top of the queue to be played right now. The current song is being skipped.") % entry.title, delete_after=20)
 
             except exceptions.WrongEntryTypeError as e:
                 if e.use_url == song_url:
@@ -1858,12 +1859,7 @@ class MusicBot(discord.Client):
                     log.debug("[Info] Assumed url \"%s\" was a single entry, was actually a playlist" % song_url)
                     log.debug("[Info] Using \"%s\" instead" % e.use_url)
 
-                return await self.cmd_playnow(player, channel, author, permissions, leftover_args, e.use_url)
-
-            if position > 1:
-                player.playlist.promote_last()
-            if player.is_playing:
-                player.skip()
+            return await self.cmd_playnow(player, channel, author, permissions, leftover_args, e.use_url)
 
         # return Response(reply_text, delete_after=30)
 
@@ -1959,11 +1955,10 @@ class MusicBot(discord.Client):
 
             try:
                 entry, position = await player.playlist.add_entry(song_url, channel=channel, author=author)
-                await self.safe_send_message(channel, self.str.get('cmd-playnext-successful', "The requested song **%s** has been added to the queue. Position in queue: Up next!") % entry.title, expire_in=20)
-                # Get the song ready now, otherwise race condition where finished-playing will fire before
-                # the song is finished downloading, which will then cause another song from autoplaylist to
-                # be added to the queue
                 await entry.get_ready_future()
+                if position > 1:
+                    player.playlist.promote_last()
+                return Response(self.str.get('cmd-playnext-successful', "The requested song **%s** has been added to the queue.\nPosition in queue: **Up next.**") % entry.title, delete_after=20)
 
             except exceptions.WrongEntryTypeError as e:
                 if e.use_url == song_url:
@@ -1973,10 +1968,7 @@ class MusicBot(discord.Client):
                     log.debug("[Info] Assumed url \"%s\" was a single entry, was actually a playlist" % song_url)
                     log.debug("[Info] Using \"%s\" instead" % e.use_url)
 
-                return await self.cmd_playnext(player, channel, author, permissions, leftover_args, e.use_url)
-
-            if position > 1:
-                player.playlist.promote_last()
+            return await self.cmd_playnext(player, channel, author, permissions, leftover_args, e.use_url)
 
         # return Response(reply_text, delete_after=30)
 
