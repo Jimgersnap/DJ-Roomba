@@ -471,23 +471,44 @@ class MusicBot(discord.Client):
         author = entry.meta.get('author', None)
         duration = ftimedelta(timedelta(seconds=player.current_entry.duration))
 
-        if channel and author:
-            author_perms = self.permissions.for_user(author)
+        if self.config.embeds:
 
-            if author not in player.voice_client.channel.members and author_perms.skip_when_absent:
-                newmsg = 'Skipping the next song in `%s`: **%s** added by **%s** as they are no longer in the voice channel.' % (
-                    player.voice_client.channel.name, entry.title, entry.meta['author'].name)
-                player.skip()
-            elif self.config.now_playing_mentions:
-                newmsg = '%s - your song **%s** is now playing in `%s`. `(%s)`' % (
-                    entry.meta['author'].mention, entry.title, player.voice_client.channel.name, duration)
+            if channel and author:
+                author_perms = self.permissions.for_user(author)
+
+                if author not in player.voice_client.channel.members and author_perms.skip_when_absent:
+                    newmsg = 'Skipping **%s** added by **%s** as they are no longer in the voice channel.' % (
+                         entry.title, entry.meta['author'].name)
+                    player.skip()
+                elif self.config.now_playing_mentions:
+                    newmsg = '**%s** added by %s. `(%s)`' % (
+                        entry.title, entry.meta['author'].mention, duration)
+                else:
+                    newmsg = '**%s** added by **%s**. `(%s)`' % (
+                        entry.title, entry.meta['author'].name, duration)
             else:
-                newmsg = 'Now playing in `%s`:\n**%s** added by **%s**. `(%s)`' % (
-                    player.voice_client.channel.name, entry.title, entry.meta['author'].name, duration)
+                # no author (and channel), it's an autoplaylist (or autostream from my other PR) entry.
+                newmsg = 'Autoplaylist entry **%s**. `(%s)`' % (
+                    entry.title, duration)
         else:
-            # no author (and channel), it's an autoplaylist (or autostream from my other PR) entry.
-            newmsg = 'Now playing automatically added entry **%s** in `%s`. `(%s)`' % (
-                entry.title, player.voice_client.channel.name, duration)
+
+            if channel and author:
+                author_perms = self.permissions.for_user(author)
+
+                if author not in player.voice_client.channel.members and author_perms.skip_when_absent:
+                    newmsg = 'Skipping the next song in `%s`: **%s** added by **%s** as they are no longer in the voice channel.' % (
+                        player.voice_client.channel.name, entry.title, entry.meta['author'].name)
+                    player.skip()
+                elif self.config.now_playing_mentions:
+                    newmsg = 'Now playing in `%s`:\n**%s** added by %s. `(%s)`' % (
+                        player.voice_client.channel.name, entry.title, entry.meta['author'].mention, duration)
+                else:
+                    newmsg = 'Now playing in `%s`:\n**%s** added by **%s**. `(%s)`' % (
+                        player.voice_client.channel.name, entry.title, entry.meta['author'].name, duration)
+            else:
+                # no author (and channel), it's an autoplaylist (or autostream from my other PR) entry.
+                newmsg = 'Now playing autoplaylist entry **%s** in `%s`. `(%s)`' % (
+                    entry.title, player.voice_client.channel.name, duration)
 
         if newmsg:
             if self.config.dm_nowplaying and author:
@@ -516,7 +537,10 @@ class MusicBot(discord.Client):
                 return
 
             # send it in specified channel
-            self.server_specific_data[guild]['last_np_msg'] = await self.safe_send_message(channel, newmsg)
+            if self.config.embeds: # embed now playing messages if embeds are on in config
+                embed = self._gen_embed()
+                embed.add_field(name='Now Playing in `{}`:'.format(player.voice_client.channel.name), value='{}'.format(newmsg), inline=True)
+            self.server_specific_data[guild]['last_np_msg'] = await self.safe_send_message(channel, embed if self.config.embeds else newmsg)
 
         # TODO: Check channel voice state?
 
