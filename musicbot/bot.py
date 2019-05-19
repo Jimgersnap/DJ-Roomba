@@ -430,7 +430,7 @@ class MusicBot(discord.Client):
                 if not create:
                     raise exceptions.CommandError(
                         'I am not connected to a voice channel.  '
-                        'Use `%ssummon` or `%splay [song query]` to summon me to your voice channel.' % self.config.command_prefix, self.config.command_prefix, expire_in=15)
+                        'Use `%ssummon` or `%splay [song query]` to summon me to your voice channel.' % (self.config.command_prefix, self.config.command_prefix), expire_in=20)
 
                 voice_client = await self.get_voice_client(channel)
 
