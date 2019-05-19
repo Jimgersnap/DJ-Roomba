@@ -1780,16 +1780,16 @@ class MusicBot(discord.Client):
                         song_url = res['artists'][0]['name'] + ' ' + res['name']
 
                     elif 'album' in parts:
-                        return Response(self.str.get('cmd-playnow-spotify-album', "Sorry, but you cannot playnow Spotify albums. Please add the album to the queue using {0}play.").format(self.config.command_prefix), delete_after=30)
+                        return Response(self.str.get('cmd-playnow-spotify-album', "Sorry, but you cannot playnow Spotify albums. Please add the album to the queue using `{0}play`.").format(self.config.command_prefix), delete_after=30)
 
                     elif 'playlist' in parts:
-                        return Response(self.str.get('cmd-playnow-spotify-playlist', "Sorry, but you cannot playnow Spotify playlists. Please add the playlist to the queue using {0}play.").format(self.config.command_prefix), delete_after=30)
+                        return Response(self.str.get('cmd-playnow-spotify-playlist', "Sorry, but you cannot playnow Spotify playlists. Please add the playlist to the queue using `{0}play`.").format(self.config.command_prefix), delete_after=30)
 
                     else:
                         raise exceptions.CommandError(self.str.get('cmd-play-spotify-unsupported', 'That is not a supported Spotify URI or URL.'), expire_in=30)
 
                 except exceptions.SpotifyError:
-                    raise exceptions.CommandError(self.str.get('cmd-play-spotify-invalid', 'You either provided an invalid Spotify URI or URL, or an unknown problem occurred.'))
+                    raise exceptions.CommandError(self.str.get('cmd-play-spotify-invalid', 'You either provided an invalid Spotify URI or URL, or an unknown problem occurred.'), expire_in=30)
 
         if leftover_args:
             song_url = ' '.join([song_url, *leftover_args])
@@ -1849,7 +1849,7 @@ class MusicBot(discord.Client):
                     player.playlist.promote_last()
                 if player.is_playing:
                     player.skip()
-                return Response(self.str.get('cmd-playnow-successful', "The requested song **%s** has been added to the top of the queue to be played right now. The current song is being skipped.") % entry.title, delete_after=20)
+                return Response(self.str.get('cmd-playnow-successful', "Added **%s** to the top of the queue to be played now. The current song is being skipped.") % entry.title, delete_after=20)
 
             except exceptions.WrongEntryTypeError as e:
                 if e.use_url == song_url:
@@ -1892,16 +1892,16 @@ class MusicBot(discord.Client):
                         song_url = res['artists'][0]['name'] + ' ' + res['name']
 
                     elif 'album' in parts:
-                        return Response(self.str.get('cmd-playnow-spotify-album', "Sorry, but you cannot playnow Spotify albums. Please add the album to the queue using {0}play.").format(self.config.command_prefix), delete_after=30)
+                        return Response(self.str.get('cmd-playnow-spotify-album', "Sorry, but you cannot playnow Spotify albums. Please add the album to the queue using `{0}play`.").format(self.config.command_prefix), delete_after=30)
 
                     elif 'playlist' in parts:
-                        return Response(self.str.get('cmd-playnow-spotify-playlist', "Sorry, but you cannot playnow Spotify playlists. Please add the playlist to the queue using {0}play.").format(self.config.command_prefix), delete_after=30)
+                        return Response(self.str.get('cmd-playnow-spotify-playlist', "Sorry, but you cannot playnow Spotify playlists. Please add the playlist to the queue using `{0}play`.").format(self.config.command_prefix), delete_after=30)
 
                     else:
                         raise exceptions.CommandError(self.str.get('cmd-play-spotify-unsupported', 'That is not a supported Spotify URI or URL.'), expire_in=30)
 
                 except exceptions.SpotifyError:
-                    raise exceptions.CommandError(self.str.get('cmd-play-spotify-invalid', 'You either provided an invalid Spotify URI or URL, or an unknown problem occurred.'))
+                    raise exceptions.CommandError(self.str.get('cmd-play-spotify-invalid', 'You either provided an invalid Spotify URI or URL, or an unknown problem occurred.'), expire_in=30)
 
         if leftover_args:
             song_url = ' '.join([song_url, *leftover_args])
@@ -1958,7 +1958,7 @@ class MusicBot(discord.Client):
                 await entry.get_ready_future()
                 if position > 1:
                     player.playlist.promote_last()
-                return Response(self.str.get('cmd-playnext-successful', "The requested song **%s** has been added to the queue.\nPosition in queue: **Up next.**") % entry.title, delete_after=20)
+                return Response(self.str.get('cmd-playnext-successful', "Added **%s** to the top of the queue to be played next.") % entry.title, delete_after=20)
 
             except exceptions.WrongEntryTypeError as e:
                 if e.use_url == song_url:
