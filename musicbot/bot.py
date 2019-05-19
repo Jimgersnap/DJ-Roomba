@@ -2147,12 +2147,12 @@ class MusicBot(discord.Client):
 
         return Response(self.str.get('cmd-search-decline', "If the results you were expecting were not found, try again with a search query containing more info."), delete_after=30)
 
-    async def cmd_songprogress(self, player, channel, guild, message):
+    async def cmd_nowplaying(self, player, channel, guild, message):
         """
         Usage:
-            {command_prefix}songprogress
+            {command_prefix}nowplaying
 
-        Displays the current progress of the song currently playing.
+        Displays information on the song that is currently playing.
         """
 
         if player.current_entry:
@@ -2186,7 +2186,7 @@ class MusicBot(discord.Client):
             action_text = self.str.get('cmd-np-action-streaming', 'Streaming') if streaming else self.str.get('cmd-np-action-playing', 'Playing')
 
             if player.current_entry.meta.get('channel', False) and player.current_entry.meta.get('author', False):
-                np_text = self.str.get('cmd-np-reply-author', "Now {action}: **{title}** added by **{author}**.\nProgress: {progress_bar} {progress}\n\N{WHITE RIGHT POINTING BACKHAND INDEX} <{url}>").format(
+                np_text = self.str.get('cmd-np-reply-author', "Now {action}:\n**{title}** added by **{author}**.\nProgress: {progress_bar} {progress}\n\N{WHITE RIGHT POINTING BACKHAND INDEX} <{url}>").format(
                     action=action_text,
                     title=player.current_entry.title,
                     author=player.current_entry.meta['author'].name,
@@ -2196,7 +2196,7 @@ class MusicBot(discord.Client):
                 )
             else:
 
-                np_text = self.str.get('cmd-np-reply-noauthor', "Now {action}: **{title}**.\nProgress: {progress_bar} {progress}\n\N{WHITE RIGHT POINTING BACKHAND INDEX} <{url}>").format(
+                np_text = self.str.get('cmd-np-reply-noauthor', "Now {action}:\n**{title}**.\nProgress: {progress_bar} {progress}\n\N{WHITE RIGHT POINTING BACKHAND INDEX} <{url}>").format(
 
                     action=action_text,
                     title=player.current_entry.title,
@@ -2209,8 +2209,50 @@ class MusicBot(discord.Client):
             await self._manual_delete_check(message)
         else:
             return Response(
-                self.str.get('cmd-np-none', 'There are no songs in the queue. Queue something with {0}play.') .format(self.config.command_prefix),
+                self.str.get('cmd-np-none', 'There are no songs in the queue. Queue something with `{0}play`.') .format(self.config.command_prefix),
                 delete_after=30
+            )
+
+    async def cmd_songprogress(self, player):
+        """
+        Usage:
+            {command_prefix}songprogress
+
+        Displays the progress of the song currently playing (useful for long song requests).
+        """
+
+        if player.current_entry:
+
+            # Recycled cmd_np code since it basically does what we want
+            # to get the progress of the song along with the progress bar
+            song_progress = ftimedelta(timedelta(seconds=player.progress))
+            song_total = ftimedelta(timedelta(seconds=player.current_entry.duration))
+
+            streaming = isinstance(player.current_entry, StreamPlaylistEntry)
+            prog_str = ('`[{progress}]`' if streaming else '`[{progress}/{total}]`').format(
+                progress=song_progress, total=song_total
+            )
+            prog_bar_str = ''
+
+            percentage = 0.0
+            if player.current_entry.duration > 0:
+                percentage = player.progress / player.current_entry.duration
+
+            progress_bar_length = 30
+            for i in range(progress_bar_length):
+                if (percentage < 1 / progress_bar_length * i):
+                    prog_bar_str += '□'
+                else:
+                    prog_bar_str += '■'
+
+            return Response(
+                self.str.get('cmd-songprogress-entry', '**Progress:** {0} {1}').format(prog_bar_str, prog_str),
+                delete_after=15
+            )
+        else:
+            return Response(
+                self.str.get('cmd-songprogress-none', 'There are no songs in the queue. Queue something with `{0}play`.') .format(self.config.command_prefix),
+                delete_after=20
             )
 
     async def cmd_summon(self, channel, guild, author, voice_channel):
