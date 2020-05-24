@@ -49,6 +49,8 @@ class Config:
             'Permissions', 'OwnerID', fallback=ConfigDefaults.owner_id)
         self.dev_ids = config.get(
             'Permissions', 'DevIDs', fallback=ConfigDefaults.dev_ids)
+        self.team_devs = config.getboolean(
+            "Permissions", "TeamDevs", fallback=ConfigDefaults.team_devs)
         self.bot_exception_ids = config.get(
             "Permissions", "BotExceptionIDs", fallback=ConfigDefaults.bot_exception_ids)
 
@@ -311,6 +313,9 @@ class Config:
             app_info = bot.cached_app_info
             if app_info.team:
                 self.owner_id = app_info.team.owner_id
+                if self.team_devs:
+                    for mem in app_info.team.members:
+                        self.dev_ids.add(mem.id)
             else:
                 self.owner_id = app_info.owner.id
             log.debug("Acquired owner id via API")
