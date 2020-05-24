@@ -224,6 +224,8 @@ class Config:
             self.dev_ids = set()
             for did in ids:
                 self.dev_ids.add(int(did))
+        else:
+            self.dev_ids = set()
 
         if self.bot_exception_ids:
             try:
