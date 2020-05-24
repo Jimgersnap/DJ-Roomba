@@ -217,6 +217,12 @@ class Config:
                 preface=self._confpreface
             )
 
+        if len(self.dev_ids) > 0:
+            ids = self.dev_ids.split()
+            self.dev_ids = set()
+            for did in ids:
+                self.dev_ids.add(int(did))
+
         if self.bot_exception_ids:
             try:
                 self.bot_exception_ids = set(
