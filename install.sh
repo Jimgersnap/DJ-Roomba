@@ -27,9 +27,9 @@ function pull_musicbot_git() {
     echo "Do you want to install the review branch?"
     read -p "Installing the review branch means limited support, but newer fixes and features. [N/y] " BRANCH
     case $BRANCH in
-        [Yy]*)  echo "Installing branch Review"; git clone https://github.com/Just-Some-Bots/MusicBot.git MusicBot -b review;;
-        [Nn]*) echo "Installing branch Master"; git clone https://github.com/Just-Some-Bots/MusicBot.git MusicBot -b master;;
-        *)  echo "Installing branch Master"; git clone https://github.com/Just-Some-Bots/MusicBot.git MusicBot -b master;;
+        [Yy]*)  echo "Installing branch Review"; git clone https://github.com/Team-JSB/MusicBot.git MusicBot -b review;;
+        [Nn]*) echo "Installing branch Master"; git clone https://github.com/Team-JSB/MusicBot.git MusicBot -b master;;
+        *)  echo "Installing branch Master"; git clone https://github.com/Team-JSB/MusicBot.git MusicBot -b master;;
     esac
     cd MusicBot
 

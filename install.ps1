@@ -95,7 +95,7 @@ else
     $branch = "master"
 }
 
-Invoke-Expression "git clone https://github.com/Just-Some-Bots/MusicBot.git MusicBot -b $branch"
+Invoke-Expression "git clone https://github.com/Team-JSB/MusicBot.git MusicBot -b $branch"
 Invoke-Expression "cd MusicBot"
 
 # --------------------------------------------INSTALL PYTHON DEPENDENCIES----------------------------------------------
