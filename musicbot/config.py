@@ -184,7 +184,7 @@ class Config:
             raise HelpfulError(
                 "No bot token was specified in the config.",
                 "As of v1.9.6_1, you are required to use a Discord bot account. "
-                "See https://github.com/Just-Some-Bots/MusicBot/wiki/FAQ for info.",
+                "See https://github.com/Team-JSB/MusicBot/wiki/FAQ for info.",
                 preface=self._confpreface
             )
 
