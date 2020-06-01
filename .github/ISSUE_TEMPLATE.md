@@ -1,7 +1,7 @@
 Please tick all applicable boxes.
 
 - [ ] I am using Python 3.5.3 or higher (run `python --version` on the command line)
-- [ ] I have followed the [official guides](https://github.com/Just-Some-Bots/MusicBot/wiki) to install the bot for my system
+- [ ] I have followed the [official guides](https://github.com/Team-JSB/MusicBot/wiki) to install the bot for my system
 - [ ] I have updated my dependencies to the latest version using the appropriate `update` script
 
 Which version are you using?
