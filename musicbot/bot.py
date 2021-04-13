@@ -715,7 +715,8 @@ class MusicBot(discord.Client):
         else:
             log.exception("Player error", exc_info=ex)
 
-    async def update_now_playing_status(self, is_paused=False):
+    async def update_now_playing_status(self, entry=None, is_paused=False):
+        name = ''
 
         if not self.config.status_message:
             if self.user.bot:
@@ -731,25 +732,30 @@ class MusicBot(discord.Client):
                         self.players.values(), is_playing=True)
                     entry = player.current_entry
 
-        if self.config.status_message:
-            name = self.config.status_message.strip()[:128]
+            if entry:
+                prefix = u'\u275A\u275A ' if is_paused else ''
 
-        activity_type = await lookup_activity(self.config.activitystatus)
-        if not self.config.streamer.startswith("https://www.twitch.tv/"):
-            url = "https://www.twitch.tv/"
+                name = u'{}{}'.format(prefix, entry.title)[:128]
+                game = discord.Game(type=0, name=name)
         else:
-            url = self.config.streamer
-            game = discord.Game(
-                type=0, name=self.config.status_message.strip()[:128])
+            name = self.config.status_message.strip()[:128]
+            activity_type = await lookup_activity(self.config.activitystatus)
 
-        game = discord.Activity(
+            if not self.config.streamer.startswith("https://www.twitch.tv/"):
+                url = "https://www.twitch.tv/"
+            else:
+                url = self.config.streamer
+
+            game = discord.Activity(
                 type=activity_type,
                 name=name,
                 url=url
                 )
-        status = await lookup_status(self.config.status)
 
-        await self.change_presence(activity=game, status=status)
+        async with self.aiolocks[_func_()]:
+            if game != self.last_status:
+                await self.change_presence(activity=game)
+                self.last_status = game
 
     async def update_now_playing_message(self, guild, message, *, channel=None):
         lnp = self.server_specific_data[guild]['last_np_msg']
