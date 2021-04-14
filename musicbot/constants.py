@@ -1,8 +1,8 @@
 import os.path
 import subprocess
 
-MAIN_VERSION = '1.9.8_4'
-SUB_VERSION = ' - 1.3.0a'
+MAIN_VERSION = 'v1.5'
+SUB_VERSION = '.0a'
 VERSION = MAIN_VERSION + SUB_VERSION
 
 #try:
