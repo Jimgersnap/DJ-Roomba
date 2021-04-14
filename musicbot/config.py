@@ -18,7 +18,7 @@ class Config:
         self.find_config()
 
         config = configparser.ConfigParser(interpolation=None)
-        config.read(config_file, encoding='utf-8')
+        config.read(config_file, encoding="utf-8")
 
         confsections = {"Credentials", "Permissions",
                         "Chat", "MusicBot"}.difference(config.sections())
@@ -27,9 +27,9 @@ class Config:
                 "One or more required config sections are missing.",
                 "Fix your config.  Each [Section] should be on its own line with "
                 "nothing else on it.  The following sections are missing: {}".format(
-                    ', '.join(['[%s]' % s for s in confsections])
+                    ", ".join(["[%s]" % s for s in confsections])
                 ),
-                preface="An error has occured parsing the config:\n"
+                preface="An error has occured parsing the config:\n",
             )
 
         self._confpreface = "An error has occured reading the config:\n"
@@ -156,11 +156,11 @@ class Config:
         return keys
 
     def check_changes(self, conf):
-        exfile = 'config/example_options.ini'
+        exfile = "config/example_options.ini"
         if os.path.isfile(exfile):
             usr_keys = self.get_all_keys(conf)
             exconf = configparser.ConfigParser(interpolation=None)
-            if not exconf.read(exfile, encoding='utf-8'):
+            if not exconf.read(exfile, encoding="utf-8"):
                 return
             ex_keys = self.get_all_keys(exconf)
             if set(usr_keys) != set(ex_keys):
@@ -181,17 +181,17 @@ class Config:
                 "Your i18n file was not found, and we could not fallback.",
                 "As a result, the bot cannot launch. Have you moved some files? "
                 "Try pulling the recent changes from Git, or resetting your local repo.",
-                preface=self._confpreface
+                preface=self._confpreface,
             )
 
-        log.info('Using i18n: {0}'.format(self.i18n_file))
+        log.info("Using i18n: {0}".format(self.i18n_file))
 
         if not self._login_token:
             raise HelpfulError(
                 "No bot token was specified in the config.",
                 "As of v1.9.6_1, you are required to use a Discord bot account. "
-                "See https://github.com/Team-JSB/MusicBot/wiki/FAQ for info.",
-                preface=self._confpreface
+                "See https://github.com/Just-Some-Bots/MusicBot/wiki/FAQ for info.",
+                preface=self._confpreface,
             )
 
         else:
@@ -204,15 +204,14 @@ class Config:
                 if int(self.owner_id) < 10000:
                     raise HelpfulError(
                         "An invalid OwnerID was set: {}".format(self.owner_id),
-
                         "Correct your OwnerID. The ID should be just a number, approximately "
                         "18 characters long, or 'auto'. If you don't know what your ID is, read the "
                         "instructions in the options or ask in the help server.",
-                        preface=self._confpreface
+                        preface=self._confpreface,
                     )
                 self.owner_id = int(self.owner_id)
 
-            elif self.owner_id == 'auto':
+            elif self.owner_id == "auto":
                 pass  # defer to async check
 
             else:
@@ -222,7 +221,7 @@ class Config:
             raise HelpfulError(
                 "No OwnerID was set.",
                 "Please set the OwnerID option in {}".format(self.config_file),
-                preface=self._confpreface
+                preface=self._confpreface,
             )
 
         if len(self.dev_ids) > 0:
@@ -235,8 +234,7 @@ class Config:
 
         if self.bot_exception_ids:
             try:
-                self.bot_exception_ids = set(
-                    int(x) for x in self.bot_exception_ids.replace(',', ' ').split())
+                self.bot_exception_ids = set(int(x) for x in self.bot_exception_ids.replace(",", " ").split())
             except:
                 log.warning(
                     "BotExceptionIDs data is invalid, will ignore all bots")
@@ -244,8 +242,7 @@ class Config:
 
         if self.bound_channels:
             try:
-                self.bound_channels = set(
-                    int(x) for x in self.bound_channels.replace(',', ' ').split() if x)
+                self.bound_channels = set(int(x) for x in self.bound_channels.replace(",", " ").split() if x)
             except:
                 log.warning(
                     "BindToChannels data is invalid, will not bind to any channels")
@@ -253,8 +250,7 @@ class Config:
 
         if self.autojoin_channels:
             try:
-                self.autojoin_channels = set(
-                    int(x) for x in self.autojoin_channels.replace(',', ' ').split() if x)
+                self.autojoin_channels = set(int(x) for x in self.autojoin_channels.replace(",", " ").split() if x)
             except:
                 log.warning(
                     "AutojoinChannels data is invalid, will not autojoin any channels")
@@ -262,8 +258,7 @@ class Config:
 
         if self.nowplaying_channels:
             try:
-                self.nowplaying_channels = set(
-                    int(x) for x in self.nowplaying_channels.replace(',', ' ').split() if x)
+                self.nowplaying_channels = set(int(x) for x in self.nowplaying_channels.replace(",", " ").split() if x)
             except:
                 log.warning(
                     "NowPlayingChannels data is invalid, will use the default behavior for all servers")
@@ -277,29 +272,27 @@ class Config:
 
         ap_path, ap_name = os.path.split(self.auto_playlist_file)
         apn_name, apn_ext = os.path.splitext(ap_name)
-        self.auto_playlist_removed_file = os.path.join(
-            ap_path, apn_name + '_removed' + apn_ext)
+        self.auto_playlist_removed_file = os.path.join(ap_path, apn_name + "_removed" + apn_ext)
 
         if hasattr(logging, self.debug_level.upper()):
             self.debug_level = getattr(logging, self.debug_level.upper())
         else:
-            log.warning("Invalid DebugLevel option \"{}\" given, falling back to INFO".format(
-                self.debug_level_str))
+            log.warning('Invalid DebugLevel option "{}" given, falling back to INFO'.format(self.debug_level_str))
             self.debug_level = logging.INFO
-            self.debug_level_str = 'INFO'
+            self.debug_level_str = "INFO"
 
         self.debug_mode = self.debug_level <= logging.DEBUG
 
-        self.create_empty_file_ifnoexist('config/blacklist.txt')
-        self.create_empty_file_ifnoexist('config/whitelist.txt')
+        self.create_empty_file_ifnoexist("config/blacklist.txt")
+        self.create_empty_file_ifnoexist("config/whitelist.txt")
 
         if not self.footer_text:
             self.footer_text = ConfigDefaults.footer_text
 
     def create_empty_file_ifnoexist(self, path):
         if not os.path.isfile(path):
-            open(path, 'a').close()
-            log.warning('Creating %s' % path)
+            open(path, "a").close()
+            log.warning("Creating %s" % path)
 
     # TODO: Add save function for future editing of options with commands
     #       Maybe add warnings about fields missing from the config file
@@ -307,15 +300,12 @@ class Config:
     async def async_validate(self, bot):
         log.debug("Validating options...")
 
-        if self.owner_id == 'auto':
+        if self.owner_id == "auto":
             if not bot.user.bot:
                 raise HelpfulError(
-                    "Invalid parameter \"auto\" for OwnerID option.",
-
-                    "Only bot accounts can use the \"auto\" option.  Please "
-                    "set the OwnerID in the config.",
-
-                    preface=self._confpreface2
+                    'Invalid parameter "auto" for OwnerID option.',
+                    'Only bot accounts can use the "auto" option.  Please ' "set the OwnerID in the config.",
+                    preface=self._confpreface2,
                 )
 
             app_info = bot.cached_app_info
@@ -331,45 +321,44 @@ class Config:
         if self.owner_id == bot.user.id:
             raise HelpfulError(
                 "Your OwnerID is incorrect or you've used the wrong credentials.",
-
                 "The bot's user ID and the id for OwnerID is identical. "
                 "This is wrong. The bot needs a bot account to function, "
                 "meaning you cannot use your own account to run the bot on. "
                 "The OwnerID is the id of the owner, not the bot. "
                 "Figure out which one is which and use the correct information.",
-
-                preface=self._confpreface2
+                preface=self._confpreface2,
             )
 
     def find_config(self):
         config = configparser.ConfigParser(interpolation=None)
 
         if not os.path.isfile(self.config_file):
-            if os.path.isfile(self.config_file + '.ini'):
-                shutil.move(self.config_file + '.ini', self.config_file)
-                log.info("Moving {0} to {1}, you should probably turn file extensions on.".format(
-                    self.config_file + '.ini', self.config_file
-                ))
+            if os.path.isfile(self.config_file + ".ini"):
+                shutil.move(self.config_file + ".ini", self.config_file)
+                log.info(
+                    "Moving {0} to {1}, you should probably turn file extensions on.".format(
+                        self.config_file + ".ini", self.config_file
+                    )
+                )
 
-            elif os.path.isfile('config/example_options.ini'):
-                shutil.copy('config/example_options.ini', self.config_file)
-                log.warning(
-                    'Options file not found, copying example_options.ini')
+            elif os.path.isfile("config/example_options.ini"):
+                shutil.copy("config/example_options.ini", self.config_file)
+                log.warning("Options file not found, copying example_options.ini")
 
             else:
                 raise HelpfulError(
                     "Your config files are missing. Neither options.ini nor example_options.ini were found.",
                     "Grab the files back from the archive or remake them yourself and copy paste the content "
-                    "from the repo. Stop removing important files!"
+                    "from the repo. Stop removing important files!",
                 )
 
-        if not config.read(self.config_file, encoding='utf-8'):
+        if not config.read(self.config_file, encoding="utf-8"):
             c = configparser.ConfigParser()
             try:
                 # load the config again and check to see if the user edited that one
-                c.read(self.config_file, encoding='utf-8')
+                c.read(self.config_file, encoding="utf-8")
 
-                if not int(c.get('Permissions', 'OwnerID', fallback=0)):  # jake pls no flame
+                if not int(c.get("Permissions", "OwnerID", fallback=0)):  # jake pls no flame
                     print(flush=True)
                     log.critical(
                         "Please configure config/options.ini and re-run the bot.")
@@ -378,9 +367,9 @@ class Config:
             except ValueError:  # Config id value was changed but its not valid
                 raise HelpfulError(
                     'Invalid value "{}" for OwnerID, config cannot be loaded. '.format(
-                        c.get('Permissions', 'OwnerID', fallback=None)
+                        c.get("Permissions", "OwnerID", fallback=None)
                     ),
-                    "The OwnerID option requires a user ID or 'auto'."
+                    "The OwnerID option requires a user ID or 'auto'.",
                 )
 
             except Exception as e:
@@ -391,9 +380,8 @@ class Config:
 
     def find_autoplaylist(self):
         if not os.path.exists(self.auto_playlist_file):
-            if os.path.exists('config/_autoplaylist.txt'):
-                shutil.copy('config/_autoplaylist.txt',
-                            self.auto_playlist_file)
+            if os.path.exists("config/_autoplaylist.txt"):
+                shutil.copy("config/_autoplaylist.txt", self.auto_playlist_file)
                 log.debug("Copying _autoplaylist.txt to autoplaylist.txt")
             else:
                 log.warning("No autoplaylist file found.")
@@ -413,7 +401,7 @@ class ConfigDefaults:
     spotify_clientid = None
     spotify_clientsecret = None
 
-    command_prefix = '!'
+    command_prefix = "!"
     bound_channels = set()
     unbound_servers = False
     autojoin_channels = set()
@@ -434,7 +422,7 @@ class ConfigDefaults:
     delete_messages = True
     delete_invoking = False
     persistent_queue = True
-    debug_level = 'INFO'
+    debug_level = "INFO"
     status_message = None
     write_current_song = False
     allow_author_skip = True
@@ -449,7 +437,7 @@ class ConfigDefaults:
     status = 'online'
     activitystatus = '0'
     streamer = 'https://www.twitch.tv/'
-    footer_text = 'Jimgersnap/DJ-Roomba ({})'.format(BOTVERSION)
+    footer_text = 'DJ-Roomba ({})'.format(BOTVERSION)
 
     options_file = 'config/options.ini'
     blacklist_file = 'config/blacklist.txt'
