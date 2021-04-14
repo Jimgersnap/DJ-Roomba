@@ -110,6 +110,9 @@ class SourcePlaybackCounter(AudioSource):
     def get_progress(self):
         return self.progress * 0.02
 
+    def cleanup(self):
+        self._source.cleanup()
+
 
 class MusicPlayer(EventEmitter, Serializable):
     def __init__(self, bot, voice_client, playlist):
@@ -203,10 +206,17 @@ class MusicPlayer(EventEmitter, Serializable):
         self._current_entry = None
         self._source = None
 
+        if error:
+            self.stop()
+            self.emit('error', player=self, entry=entry, ex=error)
+            return
+
         if self._stderr_future.done() and self._stderr_future.exception():
             # I'm not sure that this would ever not be done if it gets to this point
             # unless ffmpeg is doing something highly questionable
+            self.stop()
             self.emit('error', player=self, entry=entry, ex=self._stderr_future.exception())
+            return
 
         if not self.bot.config.save_videos and entry:
             if not isinstance(entry, StreamPlaylistEntry):
@@ -223,7 +233,7 @@ class MusicPlayer(EventEmitter, Serializable):
                             break
                         except PermissionError as e:
                             if e.winerror == 32:  # File is in use
-                                log.error('Can\'t delete file, it is currently in use: {0}').format(filename)
+                                log.error('Can\'t delete file, it is currently in use: {0}'.format(filename))
                         except FileNotFoundError:
                             log.debug('Could not find delete {} as it was not found. Skipping.'.format(filename), exc_info=True)
                             break
@@ -238,11 +248,8 @@ class MusicPlayer(EventEmitter, Serializable):
 
     def _kill_current_player(self):
         if self._current_player:
-            if self.voice_client.is_paused():
-                self.voice_client.resume()
-
             try:
-                self.voice_client.stop()
+                self._current_player.stop()
             except OSError:
                 pass
             self._current_player = None
