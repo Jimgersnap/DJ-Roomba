@@ -1315,10 +1315,11 @@ class MusicBot(discord.Client):
         """
 
         return Response(
-            'DJ Roomba is a Python-based Discord music bot, a fork of Just-Some-Bots/MusicBot, with many additional features and a cleaner Discord presence.'
-            'This instance of DJ Roomba is running version `1.5.0 alpha` and is running on top of MusicBot `release-010620u`.'
+            'DJ Roomba is a Python-based Discord music bot, a fork of Just-Some-Bots/MusicBot, with many additional features and a cleaner Discord presence. '
+            'This instance of DJ Roomba is running version `1.5.0 alpha` and is running on top of MusicBot `release-010620u` provided by Team-JSB.'
             '\n\nDJ Roomba GitHub Repo: `https://github.com/Jimgersnap/DJ-Roomba`'
             '\nMusicBot GitHub Repo: `https://github.com/Just-Some-Bots/MusicBot`'
+            '\nTeam-JSB Forked GitHub Repo: `https://github.com/Team-JSB/MusicBot`'
             '\n\nDJ Roomba avatar created by VeryBear: `https://www.teepublic.com/user/verybear`',delete_after=60)
 
     async def cmd_blacklist(self, message, user_mentions, option, something):
