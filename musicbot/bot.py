@@ -1660,7 +1660,7 @@ class MusicBot(discord.Client):
 
                 num_songs = sum(1 for _ in info["entries"])
 
-                if info["extractor"].lower() in ["youtube:playlist", "soundcloud:set", "bandcamp:album"]:
+                if info["extractor"].lower() in ["youtube:tab", "soundcloud:set", "bandcamp:album"]:
                     try:
                         return await self._cmd_play_playlist_async(
                             player, channel, author, permissions, song_url, info["extractor"]
@@ -1738,8 +1738,8 @@ class MusicBot(discord.Client):
 
             # If it's an entry
             else:
-                # youtube:playlist extractor but it's actually an entry
-                if info.get("extractor", "").startswith("youtube:playlist"):
+                # youtube:tab (playlist) extractor but it's actually an entry
+                if info.get("extractor", "").startswith("youtube:tab"):
                     try:
                         info = await self.downloader.extract_info(
                             player.playlist.loop,
@@ -1801,7 +1801,7 @@ class MusicBot(discord.Client):
         await self.send_typing(channel)
 
         entries_added = 0
-        if extractor_type == "youtube:playlist":
+        if extractor_type == "youtube:tab":
             try:
                 entries_added = await player.playlist.async_process_youtube_playlist(
                     playlist_url, channel=channel, author=author
