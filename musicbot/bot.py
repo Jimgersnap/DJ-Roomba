@@ -1651,8 +1651,12 @@ class MusicBot(discord.Client):
 
                 if "entries" in info:
                     # if entry is playlist then only get the first one
-                    song_url = info["entries"][0]["webpage_url"]
-                    info = info["entries"][0]
+                    try:
+                        song_url = info["entries"][0]["webpage_url"]
+                        info = info["entries"][0]
+                    except:
+                        log.error('Could not find entry successfully, falling back to playlist method ...')
+                        pass
 
             # If it's playlist
             if "entries" in info:
