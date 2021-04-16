@@ -517,7 +517,8 @@ class MusicBot(discord.Client):
 
         channel = entry.meta.get('channel', None)
         author = entry.meta.get('author', None)
-        duration = ftimedelta(timedelta(seconds=player.current_entry.duration))
+        duration = ftimedelta(timedelta(seconds=player.current_entry.duration)
+                                ) if player.current_entry.duration != None else '~'
 
         if self.config.embeds: # check if embeds are enabled in config, if so, format the responses this way
 
@@ -2355,7 +2356,7 @@ class MusicBot(discord.Client):
             # TODO: Fix timedelta garbage with util function
             song_progress = ftimedelta(timedelta(seconds=player.progress))
             song_total = ftimedelta(timedelta(seconds=player.current_entry.duration)
-                                    ) if player.current_entry.duration != None else '(no duration data)'
+                                    ) if player.current_entry.duration != None else '~)'
 
             streaming = isinstance(player.current_entry, StreamPlaylistEntry)
             prog_str = ("`[{progress}]`" if streaming else "`[{progress}/{total}]`").format(
@@ -2421,7 +2422,8 @@ class MusicBot(discord.Client):
             # Recycled cmd_np code since it basically does what we want
             # to get the progress of the song along with the progress bar
             song_progress = ftimedelta(timedelta(seconds=player.progress))
-            song_total = ftimedelta(timedelta(seconds=player.current_entry.duration))
+            song_total = ftimedelta(timedelta(seconds=player.current_entry.duration)
+                                    ) if player.current_entry.duration != None else '~'
 
             streaming = isinstance(player.current_entry, StreamPlaylistEntry)
             prog_str = ('`[{progress}]`' if streaming else '`[{progress}/{total}]`').format(
@@ -2878,7 +2880,7 @@ class MusicBot(discord.Client):
             # TODO: Fix timedelta garbage with util function
             song_progress = ftimedelta(timedelta(seconds=player.progress))
             song_total = ftimedelta(timedelta(seconds=player.current_entry.duration)
-                                    ) if player.current_entry.duration != None else '(no duration data)'
+                                    ) if player.current_entry.duration != None else '~'
             prog_str = '`[%s/%s]`' % (song_progress, song_total)
 
             if player.current_entry.meta.get('channel', False) and player.current_entry.meta.get('author', False):
