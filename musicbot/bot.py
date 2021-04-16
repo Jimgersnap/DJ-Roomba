@@ -515,6 +515,7 @@ class MusicBot(discord.Client):
         if self.config.write_current_song:
             await self.write_current_song(player.voice_client.channel.guild, entry)
 
+        streaming = isinstance(player.current_entry, StreamPlaylistEntry)
         channel = entry.meta.get('channel', None)
         author = entry.meta.get('author', None)
         duration = ftimedelta(timedelta(seconds=player.current_entry.duration)
@@ -530,11 +531,19 @@ class MusicBot(discord.Client):
                          entry.title, entry.meta['author'].name)
                     player.skip()
                 elif self.config.now_playing_mentions:
-                    newmsg = '**%s** added by %s. `(%s)`' % (
-                        entry.title, entry.meta['author'].mention, duration)
+                    if streaming:
+                        newmsg = '**%s** added by %s.\n\nType `.skip` or `.stop` to end the stream.' % (
+                            entry.title, entry.meta['author'].mention)
+                    else:
+                        newmsg = '**%s** added by %s. `(%s)`' % (
+                            entry.title, entry.meta['author'].mention, duration)
                 else:
-                    newmsg = '**%s** added by **%s**. `(%s)`' % (
-                        entry.title, entry.meta['author'].name, duration)
+                    if streaming:
+                        newmsg = '**%s** added by **%s**.\n\nType `.skip` or `.stop` to end the stream.' % (
+                            entry.title, entry.meta['author'].name)
+                    else:
+                        newmsg = '**%s** added by **%s**. `(%s)`' % (
+                            entry.title, entry.meta['author'].name, duration)
             else:
                 # no author (and channel), it's an autoplaylist (or autostream from my other PR) entry.
                 newmsg = 'Autoplaylist entry **%s**. `(%s)`' % (
@@ -550,11 +559,19 @@ class MusicBot(discord.Client):
                         player.voice_client.channel.name, entry.title, entry.meta['author'].name)
                     player.skip()
                 elif self.config.now_playing_mentions:
-                    newmsg = 'Now playing in `%s`:\n**%s** added by %s. `(%s)`' % (
-                        player.voice_client.channel.name, entry.title, entry.meta['author'].mention, duration)
+                    if streaming:
+                        newmsg = 'Now streaming in `%s`:\n**%s** added by %s.\n\nType `.skip` or `.stop` to end the stream.' % (
+                            player.voice_client.channel.name, entry.title, entry.meta['author'].mention)
+                    else:
+                        newmsg = 'Now playing in `%s`:\n**%s** added by %s. `(%s)`' % (
+                            player.voice_client.channel.name, entry.title, entry.meta['author'].mention, duration)
                 else:
-                    newmsg = 'Now playing in `%s`:\n**%s** added by **%s**. `(%s)`' % (
-                        player.voice_client.channel.name, entry.title, entry.meta['author'].name, duration)
+                    if streaming:
+                        newmsg = 'Now streaming in `%s`:\n**%s** added by **%s**.\n\nType `.skip` or `.stop` to end the stream.' % (
+                            player.voice_client.channel.name, entry.title, entry.meta['author'].name)
+                    else:
+                        newmsg = 'Now streaming in `%s`:\n**%s** added by **%s**. `(%s)`' % (
+                            player.voice_client.channel.name, entry.title, entry.meta['author'].name, duration)
             else:
                 # no author (and channel), it's an autoplaylist (or autostream from my other PR) entry.
                 newmsg = 'Now playing autoplaylist entry **%s** in `%s`. `(%s)`' % (
@@ -589,7 +606,11 @@ class MusicBot(discord.Client):
             # send it in specified channel
             if self.config.embeds: # if embeds are enabled in config, use embeded responses
                 embed = self._gen_embed()
-                embed.add_field(name='Now playing in `{}`:'.format(player.voice_client.channel.name), value='{}'.format(newmsg), inline=True)
+                if streaming:
+                    embed.add_field(name='Now streaming in `{}`:'.format(player.voice_client.channel.name), value='{}'.format(newmsg), inline=True)
+                else:
+                    embed.add_field(name='Now playing in `{}`:'.format(player.voice_client.channel.name), value='{}'.format(newmsg), inline=True)
+
             self.server_specific_data[guild]['last_np_msg'] = await self.safe_send_message(channel, embed if self.config.embeds else newmsg)
 
         # TODO: Check channel voice state?
@@ -2356,10 +2377,10 @@ class MusicBot(discord.Client):
             # TODO: Fix timedelta garbage with util function
             song_progress = ftimedelta(timedelta(seconds=player.progress))
             song_total = ftimedelta(timedelta(seconds=player.current_entry.duration)
-                                    ) if player.current_entry.duration != None else '~)'
+                                    ) if player.current_entry.duration != None else "~"
 
             streaming = isinstance(player.current_entry, StreamPlaylistEntry)
-            prog_str = ("`[{progress}]`" if streaming else "`[{progress}/{total}]`").format(
+            prog_str = ("`({progress})`" if streaming else "`({progress} / {total})`").format(
                 progress=song_progress, total=song_total
             )
             prog_bar_str = ""
@@ -2423,16 +2444,16 @@ class MusicBot(discord.Client):
             # to get the progress of the song along with the progress bar
             song_progress = ftimedelta(timedelta(seconds=player.progress))
             song_total = ftimedelta(timedelta(seconds=player.current_entry.duration)
-                                    ) if player.current_entry.duration != None else '~'
+                                    ) if player.current_entry.duration != None else "~"
 
             streaming = isinstance(player.current_entry, StreamPlaylistEntry)
-            prog_str = ('`[{progress}]`' if streaming else '`[{progress}/{total}]`').format(
+            prog_str = ("`({progress})`" if streaming else "`({progress} / {total})`").format(
                 progress=song_progress, total=song_total
             )
             prog_bar_str = ''
 
             percentage = 0.0
-            if player.current_entry.duration > 0:
+            if player.current_entry.duration and player.current_entry.duration > 0:
                 percentage = player.progress / player.current_entry.duration
 
             progress_bar_length = 30
@@ -2881,7 +2902,7 @@ class MusicBot(discord.Client):
             song_progress = ftimedelta(timedelta(seconds=player.progress))
             song_total = ftimedelta(timedelta(seconds=player.current_entry.duration)
                                     ) if player.current_entry.duration != None else '~'
-            prog_str = '`[%s/%s]`' % (song_progress, song_total)
+            prog_str = '`(%s / %s)`' % (song_progress, song_total)
 
             if player.current_entry.meta.get('channel', False) and player.current_entry.meta.get('author', False):
                 lines.append(self.str.get('cmd-queue-playing-author', "Currently playing: **{0}** added by **{1}**. {2}\n").format(
