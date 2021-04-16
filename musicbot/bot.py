@@ -1754,8 +1754,8 @@ class MusicBot(discord.Client):
                 if not listlen - drop_count:
                     raise exceptions.CommandError(
                         self.str.get(
-                            'cmd-play-playlist-maxduration', "No songs were added because all songs were over max duration `(%ss)`.") % permissions.max_song_length,
-                        expire_in=30
+                            'cmd-play-nodata', "I'm having issues extracting the info from the search string since youtubedl returned no data and might be broken." 
+                            "You may need to restart me if this continues to happen."), expire_in=30
                     )
 
                 reply_text = self.str.get(
