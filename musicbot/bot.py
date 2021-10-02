@@ -628,6 +628,26 @@ class MusicBot(discord.Client):
         log.debug("Running on_player_stop")
         await self.update_now_playing_status()
 
+        # If there are no autojoin channels in config
+        # and bot isn't playing anything, leave after 5 min
+        # NOTE: If autojoin in config, we can infer 24/7 vc presence is preferred
+        guild = player.voice_client.guild
+        voicechannel = player.voice_client.channel
+        if not self.config.autojoin_channels:
+            await asyncio.sleep(300)
+            if player.is_stopped:
+                await self.disconnect_voice_client(guild)
+
+                log.debug("Disconnected from {} on {} due to inactivity."
+                .format(voicechannel.name, guild.name))
+
+                # TODO: Find a good way for the bot to know what channel to put
+                # a leaving message into since there is no invoker for on_player_stop
+
+                # Doesn't work, but I'll leave this here anyway
+                return Response("Disconnected from {} due to inactivity.",
+                voicechannel.name, delete_after=300)
+
     async def on_player_finished_playing(self, player, **_):
         log.debug("Running on_player_finished_playing")
 
@@ -1754,7 +1774,7 @@ class MusicBot(discord.Client):
                 if not listlen - drop_count:
                     raise exceptions.CommandError(
                         self.str.get(
-                            'cmd-play-nodata', "I'm having issues extracting the info from the search string since youtubedl returned no data and might be broken." 
+                            'cmd-play-nodata', "I'm having issues extracting the info from the search string since youtubedl returned no data and might be broken."
                             "You may need to restart me if this continues to happen."), expire_in=30
                     )
 
