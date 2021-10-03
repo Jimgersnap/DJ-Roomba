@@ -161,7 +161,9 @@ class SetupTask(object):
         if item.endswith("_dist"):
             try:
                 # check for dist aliases, ex: setup_dist -> setup_win32
-                return object.__getattribute__(self, item.rsplit("_", 1)[0] + "_" + SYS_PLATFORM)
+                return object.__getattribute__(
+                    self, item.rsplit("_", 1)[0] + "_" + SYS_PLATFORM
+                )
             except:
                 try:
                     # If there's no dist variant, try to fallback to the generic, ex: setup_dist -> setup
@@ -261,7 +263,9 @@ class EnsurePython(SetupTask):
         # Restart into the new executable.
         print("Rebooting into Python {}...".format(TARGET_PY_VERSION))
         # Use os.execl to switch program
-        os.execl("/usr/local/bin/{}".format(executable), "{}".format(executable), __file__)
+        os.execl(
+            "/usr/local/bin/{}".format(executable), "{}".format(executable), __file__
+        )
 
     def download_darwin(self):
         pkg, _ = tmpdownload(self.PYTHON_PKG.format(ver=TARGET_PY_VERSION))
@@ -390,7 +394,9 @@ class EnsureFFmpeg(SetupTask):
 
     def check(self):
         try:
-            data = subprocess.check_output(["ffmpeg", "-version"], stderr=subprocess.STDOUT)
+            data = subprocess.check_output(
+                ["ffmpeg", "-version"], stderr=subprocess.STDOUT
+            )
         except FileNotFoundError:
             return False
         else:
@@ -524,9 +530,13 @@ class GitCloneMusicbot(SetupTask):
     def download(self):
         print("Cloning files using Git...")
         if os.path.isdir(INSTALL_DIR):
-            r = yes_no("A folder called %s already exists here. Overwrite?" % INSTALL_DIR)
+            r = yes_no(
+                "A folder called %s already exists here. Overwrite?" % INSTALL_DIR
+            )
             if r is False:
-                print("Exiting. Use the --dir parameter when running this script to specify a different folder.")
+                print(
+                    "Exiting. Use the --dir parameter when running this script to specify a different folder."
+                )
                 sys.exit(1)
             else:
                 os.rmdir(INSTALL_DIR)

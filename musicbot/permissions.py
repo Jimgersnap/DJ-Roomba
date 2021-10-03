@@ -32,6 +32,8 @@ class PermissionsDefaults:
     BypassKaraokeMode = False
     SummonNoVoice = False
 
+    SummonNoVoice = False
+
     Extractors = "generic youtube youtube:playlist"
 
 
@@ -54,6 +56,8 @@ class Permissive:
     BypassKaraokeMode = True
     SummonNoVoice = True
 
+    SummonNoVoice = True
+
     Extractors = ""
 
 
@@ -71,7 +75,11 @@ class Permissions:
 
             except Exception as e:
                 traceback.print_exc()
-                raise RuntimeError("Unable to copy config/example_permissions.ini to {}: {}".format(config_file, e))
+                raise RuntimeError(
+                    "Unable to copy config/example_permissions.ini to {}: {}".format(
+                        config_file, e
+                    )
+                )
 
         self.default_group = PermissionGroup("Default", self.config["Default"])
         self.groups = set()
@@ -81,14 +89,20 @@ class Permissions:
                 self.groups.add(PermissionGroup(section, self.config[section]))
 
         if self.config.has_section("Owner (auto)"):
-            owner_group = PermissionGroup("Owner (auto)", self.config["Owner (auto)"], fallback=Permissive)
+            owner_group = PermissionGroup(
+                "Owner (auto)", self.config["Owner (auto)"], fallback=Permissive
+            )
 
         else:
-            log.info("[Owner (auto)] section not found, falling back to permissive default")
+            log.info(
+                "[Owner (auto)] section not found, falling back to permissive default"
+            )
             # Create a fake section to fallback onto the default permissive values to grant to the owner
             # noinspection PyTypeChecker
             owner_group = PermissionGroup(
-                "Owner (auto)", configparser.SectionProxy(self.config, "Owner (auto)"), fallback=Permissive
+                "Owner (auto)",
+                configparser.SectionProxy(self.config, "Owner (auto)"),
+                fallback=Permissive,
             )
 
         if hasattr(grant_all, "__iter__"):
@@ -206,7 +220,9 @@ class PermissionGroup:
             self.max_search_items = 100
 
     @staticmethod
-    def _process_list(seq, *, split=" ", lower=True, strip=", ", coerce=str, rcoerce=list):
+    def _process_list(
+        seq, *, split=" ", lower=True, strip=", ", coerce=str, rcoerce=list
+    ):
         lower = str.lower if lower else None
         _strip = (lambda x: x.strip(strip)) if strip else None
         coerce = coerce if callable(coerce) else None

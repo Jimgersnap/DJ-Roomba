@@ -20,8 +20,9 @@ class Config:
         config = configparser.ConfigParser(interpolation=None)
         config.read(config_file, encoding="utf-8")
 
-        confsections = {"Credentials", "Permissions",
-                        "Chat", "MusicBot"}.difference(config.sections())
+        confsections = {"Credentials", "Permissions", "Chat", "MusicBot"}.difference(
+            config.sections()
+        )
         if confsections:
             raise HelpfulError(
                 "One or more required config sections are missing.",
@@ -36,7 +37,8 @@ class Config:
         self._confpreface2 = "An error has occured validating the config:\n"
 
         self._login_token = config.get(
-            'Credentials', 'Token', fallback=ConfigDefaults.token)
+            "Credentials", "Token", fallback=ConfigDefaults.token
+        )
 
         self.auth = ()
 
@@ -125,7 +127,10 @@ class Config:
             'MusicBot', 'ActivityStatus', fallback=ConfigDefaults.activitystatus)
         self.streamer = config.get(
             'MusicBot', 'Streamer', fallback=ConfigDefaults.streamer)
-
+        self.searchlist = config.getboolean(
+            "MusicBot", "SearchList", fallback=ConfigDefaults.searchlist)
+        self.defaultsearchresults = config.getint(
+            'MusicBot', 'DefaultSearchResults', fallback=ConfigDefaults.defaultsearchresults)
         self.debug_level = config.get(
             'MusicBot', 'DebugLevel', fallback=ConfigDefaults.debug_level)
         self.debug_level_str = self.debug_level
@@ -164,16 +169,22 @@ class Config:
                 return
             ex_keys = self.get_all_keys(exconf)
             if set(usr_keys) != set(ex_keys):
-                # to raise this as an issue in bot.py later
-                self.missing_keys = set(ex_keys) - set(usr_keys)
+                self.missing_keys = set(ex_keys) - set(
+                    usr_keys
+                )  # to raise this as an issue in bot.py later
 
     def run_checks(self):
         """
         Validation logic for bot settings.
         """
-        if self.i18n_file != ConfigDefaults.i18n_file and not os.path.isfile(self.i18n_file):
-            log.warning('i18n file does not exist. Trying to fallback to {0}.'.format(
-                ConfigDefaults.i18n_file))
+        if self.i18n_file != ConfigDefaults.i18n_file and not os.path.isfile(
+            self.i18n_file
+        ):
+            log.warning(
+                "i18n file does not exist. Trying to fallback to {0}.".format(
+                    ConfigDefaults.i18n_file
+                )
+            )
             self.i18n_file = ConfigDefaults.i18n_file
 
         if not os.path.isfile(self.i18n_file):
@@ -234,7 +245,9 @@ class Config:
 
         if self.bot_exception_ids:
             try:
-                self.bot_exception_ids = set(int(x) for x in self.bot_exception_ids.replace(",", " ").split())
+                self.bot_exception_ids = set(
+                    int(x) for x in self.bot_exception_ids.replace(",", " ").split()
+                )
             except:
                 log.warning(
                     "BotExceptionIDs data is invalid, will ignore all bots")
@@ -242,26 +255,39 @@ class Config:
 
         if self.bound_channels:
             try:
-                self.bound_channels = set(int(x) for x in self.bound_channels.replace(",", " ").split() if x)
+                self.bound_channels = set(
+                    int(x) for x in self.bound_channels.replace(",", " ").split() if x
+                )
             except:
                 log.warning(
-                    "BindToChannels data is invalid, will not bind to any channels")
+                    "BindToChannels data is invalid, will not bind to any channels"
+                )
                 self.bound_channels = set()
 
         if self.autojoin_channels:
             try:
-                self.autojoin_channels = set(int(x) for x in self.autojoin_channels.replace(",", " ").split() if x)
+                self.autojoin_channels = set(
+                    int(x)
+                    for x in self.autojoin_channels.replace(",", " ").split()
+                    if x
+                )
             except:
                 log.warning(
-                    "AutojoinChannels data is invalid, will not autojoin any channels")
+                    "AutojoinChannels data is invalid, will not autojoin any channels"
+                )
                 self.autojoin_channels = set()
 
         if self.nowplaying_channels:
             try:
-                self.nowplaying_channels = set(int(x) for x in self.nowplaying_channels.replace(",", " ").split() if x)
+                self.nowplaying_channels = set(
+                    int(x)
+                    for x in self.nowplaying_channels.replace(",", " ").split()
+                    if x
+                )
             except:
                 log.warning(
-                    "NowPlayingChannels data is invalid, will use the default behavior for all servers")
+                    "NowPlayingChannels data is invalid, will use the default behavior for all servers"
+                )
                 self.nowplaying_channels = set()
 
         self._spotify = False
@@ -272,12 +298,18 @@ class Config:
 
         ap_path, ap_name = os.path.split(self.auto_playlist_file)
         apn_name, apn_ext = os.path.splitext(ap_name)
-        self.auto_playlist_removed_file = os.path.join(ap_path, apn_name + "_removed" + apn_ext)
+        self.auto_playlist_removed_file = os.path.join(
+            ap_path, apn_name + "_removed" + apn_ext
+        )
 
         if hasattr(logging, self.debug_level.upper()):
             self.debug_level = getattr(logging, self.debug_level.upper())
         else:
-            log.warning('Invalid DebugLevel option "{}" given, falling back to INFO'.format(self.debug_level_str))
+            log.warning(
+                'Invalid DebugLevel option "{}" given, falling back to INFO'.format(
+                    self.debug_level_str
+                )
+            )
             self.debug_level = logging.INFO
             self.debug_level_str = "INFO"
 
@@ -304,7 +336,8 @@ class Config:
             if not bot.user.bot:
                 raise HelpfulError(
                     'Invalid parameter "auto" for OwnerID option.',
-                    'Only bot accounts can use the "auto" option.  Please ' "set the OwnerID in the config.",
+                    'Only bot accounts can use the "auto" option.  Please '
+                    "set the OwnerID in the config.",
                     preface=self._confpreface2,
                 )
 
@@ -358,10 +391,13 @@ class Config:
                 # load the config again and check to see if the user edited that one
                 c.read(self.config_file, encoding="utf-8")
 
-                if not int(c.get("Permissions", "OwnerID", fallback=0)):  # jake pls no flame
+                if not int(
+                    c.get("Permissions", "OwnerID", fallback=0)
+                ):  # jake pls no flame
                     print(flush=True)
                     log.critical(
-                        "Please configure config/options.ini and re-run the bot.")
+                        "Please configure config/options.ini and re-run the bot."
+                    )
                     sys.exit(1)
 
             except ValueError:  # Config id value was changed but its not valid
@@ -375,7 +411,11 @@ class Config:
             except Exception as e:
                 print(flush=True)
                 log.critical(
-                    "Unable to copy config/example_options.ini to {}".format(self.config_file), exc_info=e)
+                    "Unable to copy config/example_options.ini to {}".format(
+                        self.config_file
+                    ),
+                    exc_info=e,
+                )
                 sys.exit(2)
 
     def find_autoplaylist(self):
@@ -437,6 +477,8 @@ class ConfigDefaults:
     status = 'online'
     activitystatus = '0'
     streamer = 'https://www.twitch.tv/'
+    searchlist = True
+    defaultsearchresults = 5
     footer_text = 'DJ-Roomba ({})'.format(BOTVERSION)
 
     options_file = 'config/options.ini'
