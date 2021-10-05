@@ -687,12 +687,12 @@ class MusicBot(discord.Client):
         await self.update_now_playing_status()
 
         # If there are no autojoin channels in config
-        # and bot isn't playing anything, leave after 5 min
+        # and bot isn't playing anything, leave after 15 min
         # NOTE: If autojoin in config, we can infer 24/7 vc presence is preferred
         guild = player.voice_client.guild
         voicechannel = player.voice_client.channel
         if not self.config.autojoin_channels:
-            await asyncio.sleep(300)
+            await asyncio.sleep(900)
             if player.is_stopped:
                 await self.disconnect_voice_client(guild)
 
