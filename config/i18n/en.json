@@ -36,7 +36,7 @@
     "cmd-play-playlist-reply-secs": "Your requested playlist containing **{0}** songs has been added to the queue. Shuffle the queue by typing `{1}shuffle`.",
     "cmd-play-song-limit": "That song exceeds the maximum duration you are allowed to queue: `({0} > {1})` seconds.",
     "cmd-play-song-reply": "Added **%s** to the queue.\nPosition in queue: **%s**",
-    "cmd-play-next": "Up next.",
+    "cmd-play-next": "Up next.\n\nIf your song doesn't play immediately, it is downloading.\nPlease wait..."",
     "cmd-play-eta": "\n\nEstimated time until playing: **%s**",
     "cmd-play-badextractor": "Sorry, but you do not have permission to play media from this service.",
     "cmd-promote-nothing-playing": "Nothing is currently playing so the queue cannot be modified.",

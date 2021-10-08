@@ -1681,15 +1681,7 @@ class MusicBot(discord.Client):
         return True
 
     async def _cmd_play(
-        self,
-        message,
-        _player,
-        channel,
-        author,
-        permissions,
-        leftover_args,
-        song_url,
-        head,
+        self, message, _player, channel, author, permissions, leftover_args, song_url, head
     ):
         if _player:
             player = _player
@@ -2033,7 +2025,7 @@ class MusicBot(discord.Client):
                 btext = entry.title
 
             if position == 1 and player.is_stopped:
-                position = self.str.get('cmd-play-next', "Up next.")
+                position = self.str.get('cmd-play-next', "Up next.\n\nIf it doesn't play immediately, please be patient. Some songs take a bit to download.")
                 reply_text %= (btext, position)
 
             else:
