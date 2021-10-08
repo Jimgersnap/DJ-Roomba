@@ -2025,7 +2025,7 @@ class MusicBot(discord.Client):
                 btext = entry.title
 
             if position == 1 and player.is_stopped:
-                position = self.str.get('cmd-play-next', "Up next.\n\nIf it doesn't play immediately, please be patient. Some songs take a bit to download.")
+                position = self.str.get('cmd-play-next', "Up next.\n\nIf your song doesn't play immediately, it is downloading.\nPlease wait...")
                 reply_text %= (btext, position)
 
             else:
