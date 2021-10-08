@@ -2172,24 +2172,16 @@ class MusicBot(discord.Client):
             {command_prefix}play text to search for
             {command_prefix}play spotify_uri
 
-        Adds the song to the playlist.  If a link is not provided, the first
-        result from a youtube search is added to the queue.
+        Queues a song to be played.
+
+        If a link is not provided, the first result from a youtube search is added to the queue.
 
         If enabled in the config, the bot will also support Spotify URIs and URLs, however
         it will use the metadata (e.g song name and artist) to find a YouTube
         equivalent of the song. Streaming from Spotify is not possible.
         """
 
-        return await self._cmd_play(
-            message,
-            _player,
-            channel,
-            author,
-            permissions,
-            leftover_args,
-            song_url,
-            head=False,
-        )
+        return await self._cmd_play(message, _player, channel, author, permissions, leftover_args, song_url, head=False)
 
     async def cmd_playnext(
         self, message, _player, channel, author, permissions, leftover_args, song_url
@@ -2200,24 +2192,16 @@ class MusicBot(discord.Client):
             {command_prefix}playnext text to search for
             {command_prefix}playnext spotify_uri
 
-        Adds the song to the playlist next.  If a link is not provided, the first
-        result from a youtube search is added to the queue.
+        Adds the song to the top of the queue to play next.
+
+        If a link is not provided, the first result from a youtube search is added to the queue.
 
         If enabled in the config, the bot will also support Spotify URIs, however
         it will use the metadata (e.g song name and artist) to find a YouTube
         equivalent of the song. Streaming from Spotify is not possible.
         """
 
-        return await self._cmd_play(
-            message,
-            _player,
-            channel,
-            author,
-            permissions,
-            leftover_args,
-            song_url,
-            head=True,
-        )
+        return await self._cmd_play(message, _player, channel, author, permissions, leftover_args, song_url, head=True)
 
     async def cmd_promote(self, player, position=None):
         """
