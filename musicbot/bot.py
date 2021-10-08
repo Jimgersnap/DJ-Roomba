@@ -2222,10 +2222,10 @@ class MusicBot(discord.Client):
             await asyncio.sleep(0.3)
             _player.skip()
             return Response(", skipping to your requested song now.\n\n"
-            "If it doesn't play immediately, please be patient. Some songs take a bit to download.", author, delete_after=20)
+            "If your song doesn't play immediately, it is downloading.\nPlease wait...", author, delete_after=20)
 
         return Response(", your song will be played now.\n\n"
-        "If it doesn't play immediately, please be patient. Some songs take a bit to download.", author, delete_after=20)
+        "If your song doesn't play immediately, it is downloading.\nPlease wait...", author, delete_after=20)
 
     async def cmd_promote(self, player, position=None):
         """
