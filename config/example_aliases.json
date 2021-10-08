@@ -1,5 +1,14 @@
 {
+    "summon": ["su"],
     "play": ["p"],
+    "playnow": ["pn"],
+    "playnext": ["pnx"],
     "skip": ["s"],
-    "queue": ["q"]
+    "queue": ["q"],
+    "volume": ["v"],
+    "songprogress": ["sp"],
+    "nowplaying": ["np"],
+    "clean": ["purge"],
+    "stop": ["end"],
+    "help": ["h"]
 }
