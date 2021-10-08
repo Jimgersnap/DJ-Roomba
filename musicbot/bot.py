@@ -2203,6 +2203,38 @@ class MusicBot(discord.Client):
 
         return await self._cmd_play(message, _player, channel, author, permissions, leftover_args, song_url, head=True)
 
+    async def cmd_playnow(
+        self, message, _player, channel, author, permissions, leftover_args, song_url
+    ):
+        """
+        Usage:
+            {command_prefix}playnext song_link
+            {command_prefix}playnext text to search for
+            {command_prefix}playnext spotify_uri
+
+        Adds the song to the top of the queue and skips to it as soon as possible.
+        Skipping may take a few moments if the song isn't cached and needs to be downloaded.
+
+        If a link is not provided, the first result from a youtube search is added to the queue.
+
+        If enabled in the config, the bot will also support Spotify URIs, however
+        it will use the metadata (e.g song name and artist) to find a YouTube
+        equivalent of the song. Streaming from Spotify is not possible.
+        """
+
+        await self._cmd_play(message, _player, channel, author, permissions, leftover_args, song_url, head=True)
+
+        if _player.is_playing:
+            # Must wait a moment for entry to be added before skipping
+            # otherwise an error will occur
+            await asyncio.sleep(0.3)
+            _player.skip()
+            return Response(", skipping to your requested song now.\n\n"
+            "If it doesn't play immediately, please be patient. Some songs take a bit to download.", author, delete_after=20)
+
+        return Response(", your song will be played now.\n\n"
+        "If it doesn't play immediately, please be patient. Some songs take a bit to download.", author, delete_after=20)
+
     async def cmd_promote(self, player, position=None):
         """
         Usage:
