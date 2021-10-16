@@ -2,7 +2,7 @@ import os
 import asyncio
 import logging
 import functools
-import youtube_dl
+import yt_dlp
 
 from concurrent.futures import ThreadPoolExecutor
 
@@ -24,7 +24,7 @@ ytdl_format_options = {
 }
 
 # Fuck your useless bugreports message that gets two link embeds and confuses users
-youtube_dl.utils.bug_reports_message = lambda: ""
+yt_dlp.utils.bug_reports_message = lambda: ""
 
 """
     Alright, here's the problem.  To catch youtube-dl errors for their useful information, I have to
@@ -38,8 +38,8 @@ youtube_dl.utils.bug_reports_message = lambda: ""
 class Downloader:
     def __init__(self, download_folder=None):
         self.thread_pool = ThreadPoolExecutor(max_workers=2)
-        self.unsafe_ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
-        self.safe_ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
+        self.unsafe_ytdl = yt_dlp.YoutubeDL(ytdl_format_options)
+        self.safe_ytdl = yt_dlp.YoutubeDL(ytdl_format_options)
         self.safe_ytdl.params["ignoreerrors"] = True
         self.download_folder = download_folder
 
@@ -72,7 +72,7 @@ class Downloader:
 
             except Exception as e:
 
-                # (youtube_dl.utils.ExtractorError, youtube_dl.utils.DownloadError)
+                # (yt_dlp.utils.ExtractorError, yt_dlp.utils.DownloadError)
                 # I hope I don't have to deal with ContentTooShortError's
                 if asyncio.iscoroutinefunction(on_error):
                     asyncio.ensure_future(on_error(e), loop=loop)

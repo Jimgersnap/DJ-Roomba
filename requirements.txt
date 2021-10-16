@@ -2,6 +2,6 @@ pynacl
 discord.py[voice]
 pip
 aiohttp
-youtube_dl
+yt_dlp
 colorlog
 cffi --only-binary all; sys_platform == 'win32'
