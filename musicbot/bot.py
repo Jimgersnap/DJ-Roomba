@@ -2040,7 +2040,7 @@ class MusicBot(discord.Client):
                 except:
                     traceback.print_exc()
 
-        return Response(reply_text, delete_after=60)
+        return Response(reply_text, delete_after=30)
 
     async def _cmd_play_playlist_async(
         self, player, channel, author, permissions, playlist_url, extractor_type
@@ -2222,10 +2222,10 @@ class MusicBot(discord.Client):
             await asyncio.sleep(0.3)
             _player.skip()
             return Response("**, skipping to your requested song now.**\n\n"
-            "**If your song doesn't play immediately, it is downloading.\nPlease wait...**", author, delete_after=60)
+            "**If your song doesn't play immediately, it is downloading.\nPlease wait...**", author, delete_after=30)
 
         return Response("**, your song will be played now.**\n\n"
-        "**If your song doesn't play immediately, it is downloading.\nPlease wait...**", author, delete_after=60)
+        "**If your song doesn't play immediately, it is downloading.\nPlease wait...**", author, delete_after=30)
 
     async def cmd_promote(self, player, position=None):
         """
