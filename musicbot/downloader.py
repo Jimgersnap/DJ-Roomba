@@ -2,7 +2,8 @@ import os
 import asyncio
 import logging
 import functools
-import yt_dlp
+import yt_dlp as youtube_dl
+import copy
 
 from concurrent.futures import ThreadPoolExecutor
 
@@ -14,7 +15,7 @@ ytdl_format_options = {
     "restrictfilenames": True,
     "noplaylist": True,
     "nocheckcertificate": True,
-    "ignoreerrors": False,
+    "ignoreerrors": True,
     "logtostderr": False,
     "quiet": True,
     "no_warnings": True,
@@ -23,8 +24,17 @@ ytdl_format_options = {
     "usenetrc": True,
 }
 
+"""
+ Due to this borked commmit:
+ https://github.com/yt-dlp/yt-dlp/commit/819e05319baff2d896df026f1ef905e1f21be942#diff-d3ba8be45cae8dd7889a71c3360c9e4ac1160de8a5f3443b6e4a656395267f9bL491
+
+ If this gets resolved, I'll remove this
+"""
+unsafe_ytdl_format_options = copy.deepcopy(ytdl_format_options)
+unsafe_ytdl_format_options["ignoreerrors"] = False
+
 # Fuck your useless bugreports message that gets two link embeds and confuses users
-yt_dlp.utils.bug_reports_message = lambda: ""
+youtube_dl.utils.bug_reports_message = lambda: ""
 
 """
     Alright, here's the problem.  To catch youtube-dl errors for their useful information, I have to
@@ -38,18 +48,18 @@ yt_dlp.utils.bug_reports_message = lambda: ""
 class Downloader:
     def __init__(self, download_folder=None):
         self.thread_pool = ThreadPoolExecutor(max_workers=2)
-        self.unsafe_ytdl = yt_dlp.YoutubeDL(ytdl_format_options)
-        self.safe_ytdl = yt_dlp.YoutubeDL(ytdl_format_options)
-        self.safe_ytdl.params["ignoreerrors"] = True
         self.download_folder = download_folder
 
         if download_folder:
-            otmpl = self.unsafe_ytdl.params["outtmpl"]
-            self.unsafe_ytdl.params["outtmpl"] = os.path.join(download_folder, otmpl)
+            otmpl = unsafe_ytdl_format_options["outtmpl"]
+            unsafe_ytdl_format_options["outtmpl"] = os.path.join(download_folder, otmpl)
             # print("setting template to " + os.path.join(download_folder, otmpl))
 
-            otmpl = self.safe_ytdl.params["outtmpl"]
-            self.safe_ytdl.params["outtmpl"] = os.path.join(download_folder, otmpl)
+            otmpl = ytdl_format_options["outtmpl"]
+            ytdl_format_options["outtmpl"] = os.path.join(download_folder, otmpl)
+
+        self.unsafe_ytdl = youtube_dl.YoutubeDL(unsafe_ytdl_format_options)
+        self.safe_ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
 
     @property
     def ytdl(self):
@@ -72,7 +82,7 @@ class Downloader:
 
             except Exception as e:
 
-                # (yt_dlp.utils.ExtractorError, yt_dlp.utils.DownloadError)
+                # (youtube_dl.utils.ExtractorError, youtube_dl.utils.DownloadError)
                 # I hope I don't have to deal with ContentTooShortError's
                 if asyncio.iscoroutinefunction(on_error):
                     asyncio.ensure_future(on_error(e), loop=loop)
