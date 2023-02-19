@@ -1,5 +1,5 @@
 pynacl
-discord.py[voice]
+py-cord[voice]
 pip
 aiohttp
 yt_dlp

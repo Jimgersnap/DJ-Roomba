@@ -54,12 +54,16 @@ class Downloader:
             otmpl = unsafe_ytdl_format_options["outtmpl"]
             unsafe_ytdl_format_options["outtmpl"] = os.path.join(download_folder, otmpl)
             # print("setting template to " + os.path.join(download_folder, otmpl))
+            otmpl = ytdl_format_options["outtmpl"]
+            ytdl_format_options["outtmpl"] = os.path.join(download_folder, otmpl)
 
             otmpl = ytdl_format_options["outtmpl"]
             ytdl_format_options["outtmpl"] = os.path.join(download_folder, otmpl)
 
-        self.unsafe_ytdl = youtube_dl.YoutubeDL(unsafe_ytdl_format_options)
-        self.safe_ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
+        self.unsafe_ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
+        self.safe_ytdl = youtube_dl.YoutubeDL(
+            {**ytdl_format_options, "ignoreerrors": True}
+        )
 
     @property
     def ytdl(self):
