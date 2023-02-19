@@ -1689,12 +1689,12 @@ class MusicBot(discord.Client):
     async def _cmd_play(
         self, message, _player, channel, author, permissions, leftover_args, song_url, head
     ):
-        player = _player if _player else None
-
-        if permissions.summonplay:
-            voice_channel = author.voice.channel if author.voice else None
+        if _player:
+            player = _player
+        elif permissions.summonplay:
+            vc = author.voice.channel if author.voice else None
             response = await self.cmd_summon(
-                channel, channel.guild, author, voice_channel
+                channel, channel.guild, author, vc
             )  # @TheerapakG: As far as I know voice_channel param is unused
             if self.config.embeds:
                 content = self._gen_embed()
@@ -1724,7 +1724,6 @@ class MusicBot(discord.Client):
 
         # Make sure forward slashes work properly in search queries
         links_regex = r"((http(s)*:[/][/]|www.)([a-z]|[A-Z]|[0-9]|[/.]|[~])*)"
-        pattern = re.compile(linksRegex)
         match_url = re.compile(links_regex).match(song_url)
         song_url = song_url.replace("/", "%2F") if match_url is None else song_url
 
