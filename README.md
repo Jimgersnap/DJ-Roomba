@@ -5,6 +5,10 @@
 
 DJ Roomba is a Discord music bot written in [Python](https://www.python.org) 3.10–3.13, using the [discord.py](https://github.com/Rapptz/discord.py) library. It is a fork of [MusicBot](https://github.com/Just-Some-Bots/MusicBot) with additional commands, a cleaner visual style, and auto-deleting responses to keep your channels tidy. It plays requested songs from YouTube and other supported services, falls back to a configurable auto playlist when the queue is empty, and includes a permission system so owners can restrict commands to specific roles or users.
 
+### The name
+
+The name is a nod to *Parks and Recreation* — and it fits on two levels. Like a Roomba, the bot quietly cleans up after itself, automatically deleting its own messages so your channels stay uncluttered. And like a DJ, it's there to keep the music going for everyone in the voice channel. It shows up, does its job, and leaves no mess behind.
+
 <!-- Screenshot placeholder: add a screenshot of DJ Roomba in action once available -->
 
 ## What's different from MusicBot
