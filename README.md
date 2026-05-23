@@ -3,24 +3,38 @@
 [![Python version](https://img.shields.io/badge/python-3.10%20to%203.13-blue.svg)](https://python.org)
 [![GitHub license](https://img.shields.io/github/license/Jimgersnap/DJ-Roomba.svg)](LICENSE)
 
-DJ Roomba is a Discord music bot written in [Python](https://www.python.org) 3.10–3.13, using the [discord.py](https://github.com/Rapptz/discord.py) library. It is a fork of [MusicBot](https://github.com/Just-Some-Bots/MusicBot) with additional commands, a cleaner visual style, and auto-deleting responses to keep your channels tidy.
+DJ Roomba is a Discord music bot written in [Python](https://www.python.org) 3.10–3.13, using the [discord.py](https://github.com/Rapptz/discord.py) library. It is a fork of [MusicBot](https://github.com/Just-Some-Bots/MusicBot) with additional commands, a cleaner visual style, and auto-deleting responses to keep your channels tidy. It plays requested songs from YouTube and other supported services, falls back to a configurable auto playlist when the queue is empty, and includes a permission system so owners can restrict commands to specific roles or users.
 
-DJ Roomba plays requested songs from YouTube and other supported services into a Discord voice channel. When the queue is empty, it can automatically play from a configurable auto playlist. A permission system lets server owners restrict commands to specific roles or users.
+<!-- Screenshot placeholder: add a screenshot of DJ Roomba in action once available -->
+
+## Requirements
+
+- [Python](https://www.python.org) 3.10 or higher
+- [FFmpeg](https://ffmpeg.org) — must be installed and available on your system PATH
 
 ## Setup
 
-1. Install [Python](https://www.python.org) 3.10 or higher.
-2. Clone this repository.
-3. Run `pip install -r requirements.txt` to install dependencies.
-4. Copy `config/example_options.ini` to `config/options.ini` and fill in your bot token.
-5. Copy `config/example_permissions.ini` to `config/permissions.ini` if you want custom permissions.
-6. Run the bot with `./run.sh` (Linux/macOS) or `run.bat` (Windows).
+1. Create a bot application at the [Discord Developer Portal](https://discord.com/developers/applications) and copy your bot token.
+2. Clone this repository:
+   ```
+   git clone https://github.com/Jimgersnap/DJ-Roomba.git
+   cd DJ-Roomba
+   ```
+3. Install Python dependencies:
+   ```
+   pip install -r requirements.txt
+   ```
+4. Copy `config/example_options.ini` to `config/options.ini` and paste your bot token in the `Token` field.
+5. Optionally copy `config/example_permissions.ini` to `config/permissions.ini` to customize permissions.
+6. Start the bot:
+   - Linux/macOS: `./run.sh`
+   - Windows: `run.bat`
 
 See [`config/example_options.ini`](./config/example_options.ini) for all available configuration options.
 
 ## Commands
 
-DJ Roomba uses `!` as the default command prefix (configurable). Below are the available commands.
+DJ Roomba uses `!` as the default command prefix (configurable). Many commands have aliases — see [`config/example_aliases.json`](./config/example_aliases.json) for the defaults.
 
 ### Playback
 
@@ -43,6 +57,7 @@ DJ Roomba uses `!` as the default command prefix (configurable). Below are the a
 |---|---|
 | `queue` | Show the current song queue. |
 | `np` / `nowplaying` / `songprogress` | Show the currently playing song with progress. |
+| `search <query>` | Search for a song and pick from results. |
 | `shuffle` | Shuffle the queue. |
 | `clear` | Clear the queue. |
 | `remove <position>` | Remove a song from the queue by position. |
@@ -54,19 +69,11 @@ DJ Roomba uses `!` as the default command prefix (configurable). Below are the a
 | `summon` | Bring the bot to your voice channel. |
 | `disconnect` | Disconnect the bot from voice. |
 | `reconnect` | Reconnect the bot to voice, preserving the queue. |
-| `botinfo` | Show DJ Roomba version and info. |
-| `help` | Show command help. |
-
-### Other
-
-| Command | Description |
-|---|---|
-| `search <query>` | Search for a song and pick from results. |
 | `autoplaylist` | Manage the auto playlist. |
-| `perms` | Show your current permissions. |
 | `clean` | Remove DJ Roomba messages from the channel. |
-
-Many commands have aliases. See [`config/example_aliases.json`](./config/example_aliases.json) for the defaults.
+| `botinfo` | Show DJ Roomba version and info. |
+| `perms` | Show your current permissions. |
+| `help` | Show command help. |
 
 ## Permissions
 
