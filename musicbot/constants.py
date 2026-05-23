@@ -39,8 +39,8 @@ except (subprocess.SubprocessError, OSError, ValueError) as e:
     VERSION = "version_unknown"  # pylint: disable=invalid-name
 
 # constant string exempt from i18n
-DEFAULT_FOOTER_TEXT: str = f"Just-Some-Bots/MusicBot ({VERSION})"
-DEFAULT_BOT_NAME: str = "MusicBot"
+DEFAULT_FOOTER_TEXT: str = f"DJ Roomba ({VERSION})"
+DEFAULT_BOT_NAME: str = "DJ Roomba"
 DEFAULT_BOT_ICON: str = "https://i.imgur.com/gFHBoZA.png"
 DEFAULT_OWNER_GROUP_NAME: str = "Owner (auto)"
 DEFAULT_PERMS_GROUP_NAME: str = "Default"
