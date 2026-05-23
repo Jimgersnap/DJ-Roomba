@@ -1175,11 +1175,7 @@ class MusicBot(discord.Client):
             if not np_channel and ssd_.last_np_channel:
                 np_channel = ssd_.last_np_channel  # type: ignore[assignment]
 
-        auto_delete_np: Union[int, float] = 0
-        if self.config.delete_nowplaying:
-            auto_delete_np = self.config.delete_delay_short
-
-        content = Response("", delete_after=auto_delete_np)
+        content = Response("", delete_after=0)
         if entry.thumbnail_url:
             content.set_image(url=entry.thumbnail_url)
         else:
@@ -1267,6 +1263,12 @@ class MusicBot(discord.Client):
         """
         log.debug("Running on_player_stop")
         await self.update_now_playing_status()
+        if self.config.delete_nowplaying:
+            guild = player.voice_client.guild
+            last_np_msg = self.server_data[guild.id].last_np_msg
+            if last_np_msg:
+                await self.safe_delete_message(last_np_msg)
+                self.server_data[guild.id].last_np_msg = None
         self.create_task(
             self.handle_player_inactivity(player), name="MB_HandleInactivePlayer"
         )
