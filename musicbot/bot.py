@@ -2966,14 +2966,14 @@ class MusicBot(discord.Client):
         if player.is_stopped:
             raise exceptions.CommandError(
                 "Nothing is currently playing so the queue cannot be modified.",
-                expire_in=20,
+                delete_after=20,
             )
 
         length = len(player.playlist.entries)
         if length < 2:
             raise exceptions.CommandError(
                 "Nothing can be promoted since there are not enough songs in the queue.",
-                expire_in=20,
+                delete_after=20,
             )
 
         entries_list = list(player.playlist.entries)
@@ -2988,19 +2988,19 @@ class MusicBot(discord.Client):
                 raise exceptions.CommandError(
                     "That's not a valid song position. Please choose a number between `2` and `%(max)s`.",
                     fmt_args={"max": length},
-                    expire_in=20,
+                    delete_after=20,
                 ) from e
 
             if pos == 1:
                 raise exceptions.CommandError(
                     "That song is already going to play next.",
-                    expire_in=20,
+                    delete_after=20,
                 )
             if pos < 1 or pos > length:
                 raise exceptions.CommandError(
                     "I can't find that song in the queue. Please choose a number between `2` and `%(max)s`.",
                     fmt_args={"max": length},
-                    expire_in=20,
+                    delete_after=20,
                 )
             entry = entries_list.pop(pos - 1)
             entries_list.insert(0, entry)
@@ -3036,11 +3036,11 @@ class MusicBot(discord.Client):
         if not author.voice:
             raise exceptions.CommandError(
                 "You must be in a voice channel to stop the queue session.",
-                expire_in=20,
+                delete_after=20,
             )
 
         if not player.is_playing:
-            raise exceptions.CommandError("I'm not playing anything right now.", expire_in=20)
+            raise exceptions.CommandError("I'm not playing anything right now.", delete_after=20)
 
         player.skip()
         player.playlist.clear()
@@ -3071,7 +3071,7 @@ class MusicBot(discord.Client):
         if not player:
             raise exceptions.CommandError(
                 "I am not connected to a voice channel.",
-                expire_in=15,
+                delete_after=15,
             )
 
         voice_channel = player.voice_client.channel
