@@ -156,8 +156,6 @@ class GuildSpecificData:
         self._last_np_msg = value
         if value is not None:
             self._last_np_ch_id = value.channel.id
-        else:
-            self._last_np_ch_id = 0
         self._bot.create_task(
             self.save_guild_options_file(), name="MB_SaveGuildOptions"
         )
