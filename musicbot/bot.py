@@ -1720,7 +1720,7 @@ class MusicBot(discord.Client):
 
         # Apply DJ-Roomba configurable activity type when a static status message is set.
         if self.config.status_message and activity:
-            activity_type = await lookup_activity(self.config.activity_status)
+            activity_type = lookup_activity(self.config.activity_status)
             name = getattr(activity, "name", "") or ""
             if activity_type == discord.ActivityType.streaming:
                 url = (
@@ -1731,7 +1731,7 @@ class MusicBot(discord.Client):
                 activity = discord.Activity(type=activity_type, name=name, url=url)
             else:
                 activity = discord.Activity(type=activity_type, name=name)
-            status = await lookup_status(self.config.status)
+            status = lookup_status(self.config.status)
 
         async with self.aiolocks[_func_()]:
             if activity != self.last_status:

@@ -520,7 +520,7 @@ def check_extractor(target: str, contains: str) -> bool:
     return all(p in target for p in parts)
 
 
-async def lookup_status(string: str) -> "discord.Status":
+def lookup_status(string: str) -> "discord.Status":
     """Map a status string to a discord.Status value."""
     import discord  # pylint: disable=import-outside-toplevel
     string = string.lower().strip()
@@ -533,7 +533,7 @@ async def lookup_status(string: str) -> "discord.Status":
     return discord.Status.online
 
 
-async def lookup_activity(string: str) -> "discord.ActivityType":
+def lookup_activity(string: str) -> "discord.ActivityType":
     """Map an activity string or number to a discord.ActivityType value."""
     import discord  # pylint: disable=import-outside-toplevel
     string = str(string).lower().strip()
