@@ -2939,7 +2939,7 @@ class MusicBot(discord.Client):
         Displays DJ Roomba bot info including version, GitHub links, and credits.
         """
         return Response(
-            "DJ Roomba is a Python-based Discord music bot, a fork of Just-Some-Bots/MusicBot, "
+            f"DJ Roomba `{BOTVERSION}` — a Python-based Discord music bot, a fork of Just-Some-Bots/MusicBot, "
             "with additional features and a cleaner Discord presence.\n\n"
             f"DJ Roomba GitHub: `https://github.com/Jimgersnap/DJ-Roomba`\n"
             f"MusicBot GitHub: `https://github.com/Just-Some-Bots/MusicBot`\n\n"
