@@ -3075,12 +3075,17 @@ class MusicBot(discord.Client):
             )
 
         voice_channel = player.voice_client.channel
+        saved_entries = list(player.playlist.entries)
+
         await self.disconnect_voice_client(guild)
         await asyncio.sleep(1)
-        await self.get_voice_client(voice_channel)
+
+        new_player = await self.get_player(voice_channel, create=True)
+        new_player.playlist.entries = deque(saved_entries)
 
         return Response(
-            f"Reconnected to `{voice_channel.name}`. If music was playing, use `{self.config.command_prefix}play` to resume.",
+            f"Reconnected to `{voice_channel.name}`."
+            + (f" Queue restored with **{len(saved_entries)}** song(s)." if saved_entries else ""),
             delete_after=20,
         )
 
