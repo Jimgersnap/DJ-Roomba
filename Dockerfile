@@ -1,4 +1,4 @@
-FROM python:3.8-alpine
+FROM python:3.12-alpine
 
 # Add project source
 WORKDIR /musicbot
@@ -18,7 +18,8 @@ RUN apk update && apk add --no-cache \
   opus-dev \
   libffi \
   libsodium \
-  gcc
+  gcc \
+  git
 
 # Install pip dependencies
 RUN pip3 install --no-cache-dir -r requirements.txt

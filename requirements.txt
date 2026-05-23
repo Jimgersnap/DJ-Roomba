@@ -1,7 +1,11 @@
 pynacl
-py-cord[voice]
+discord.py [voice] == 2.7.1
+#discord.py [voice] @ git+https://github.com/Rapptz/discord.py
 pip
-aiohttp
-yt_dlp
+yt-dlp[default]
 colorlog
+colorama >= 0.4.6; sys_platform == 'win32'
 cffi --only-binary all; sys_platform == 'win32'
+certifi
+configupdater
+polib

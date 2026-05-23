@@ -1,20 +1,47 @@
-import shutil
-import textwrap
+from enum import Enum
+from typing import Any, Dict, Optional, Union
 
-# Base class for exceptions
+
 class MusicbotException(Exception):
-    def __init__(self, message, *, expire_in=0):
-        super().__init__(message)  # ???
+    """
+    MusicbotException is a base exception for all exceptions raised by MusicBot.
+    It allows translation of messages into log and UI contexts at display time, not before.
+    Thus, all messages passed to this and child exceptions must use placeholders for
+    variable message segments, and abide best practices for translated messages.
+
+    :param: message:  The untranslated string used as the exception message.
+    :param: fmt_args:  A mapping for variable substitution in messages.
+    :param: delete_after:  Optional timeout period to override the short delay.
+                           Used only when deletion options allow it.
+    """
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        delete_after: Union[None, float, int] = None,
+        fmt_args: Optional[Dict[str, Any]] = None,
+    ) -> None:
+        # This sets base exception args to the message.
+        # So str() will produce the raw, untranslated message only.
+        if fmt_args:
+            super().__init__(message, fmt_args)
+        else:
+            super().__init__(message)
+
         self._message = message
-        self.expire_in = expire_in
+        self._fmt_args = fmt_args if fmt_args is not None else {}
+        self.delete_after = delete_after
 
     @property
-    def message(self):
+    def message(self) -> str:
+        """Get raw message text, this has not been translated."""
         return self._message
 
     @property
-    def message_no_format(self):
-        return self._message
+    def fmt_args(self) -> Dict[str, Any]:
+        """Get any arguments that should be formatted into the message."""
+        return self._fmt_args
 
 
 # Something went wrong during the processing of a command
@@ -33,12 +60,8 @@ class InvalidDataError(MusicbotException):
 
 
 # The no processing entry type failed and an entry was a playlist/vice versa
-# TODO: Add typing options instead of is_playlist
 class WrongEntryTypeError(ExtractionError):
-    def __init__(self, message, is_playlist, use_url):
-        super().__init__(message)
-        self.is_playlist = is_playlist
-        self.use_url = use_url
+    pass
 
 
 # FFmpeg complained about something
@@ -51,74 +74,37 @@ class FFmpegWarning(MusicbotException):
     pass
 
 
-# Some issue retrieving something from Spotify's API
-class SpotifyError(MusicbotException):
+# Some issue retrieving something from Spotify's API or processing it.
+class SpotifyError(ExtractionError):
     pass
 
 
 # The user doesn't have permission to use a command
 class PermissionsError(CommandError):
-    @property
-    def message(self):
-        return (
-            "You don't have permission to use that command.\nReason: " + self._message
-        )
+    pass
 
 
 # Error with pretty formatting for hand-holding users through various errors
 class HelpfulError(MusicbotException):
-    def __init__(
-        self,
-        issue,
-        solution,
-        *,
-        preface="An error has occured:",
-        footnote="",
-        expire_in=0
-    ):
-        self.issue = issue
-        self.solution = solution
-        self.preface = preface
-        self.footnote = footnote
-        self.expire_in = expire_in
-        self._message_fmt = "\n{preface}\n{problem}\n\n{solution}\n\n{footnote}"
-
-    @property
-    def message(self):
-        return self._message_fmt.format(
-            preface=self.preface,
-            problem=self._pretty_wrap(self.issue, "  Problem:"),
-            solution=self._pretty_wrap(self.solution, "  Solution:"),
-            footnote=self.footnote,
-        )
-
-    @property
-    def message_no_format(self):
-        return self._message_fmt.format(
-            preface=self.preface,
-            problem=self._pretty_wrap(self.issue, "  Problem:", width=None),
-            solution=self._pretty_wrap(self.solution, "  Solution:", width=None),
-            footnote=self.footnote,
-        )
-
-    @staticmethod
-    def _pretty_wrap(text, pretext, *, width=-1):
-        if width is None:
-            return "\n".join((pretext.strip(), text))
-        elif width == -1:
-            pretext = pretext.rstrip() + "\n"
-            width = shutil.get_terminal_size().columns
-
-        lines = textwrap.wrap(text, width=width - 5)
-        lines = (
-            ("    " + line).rstrip().ljust(width - 1).rstrip() + "\n" for line in lines
-        )
-
-        return pretext + "".join(lines).rstrip()
+    pass
 
 
 class HelpfulWarning(HelpfulError):
     pass
+
+
+# simple exception used to signal that initial config load should retry.
+class RetryConfigException(Exception):
+    pass
+
+
+# Signal codes used in RestartSignal
+class RestartCode(Enum):
+    RESTART_SOFT = 0
+    RESTART_FULL = 1
+    RESTART_UPGRADE_ALL = 2
+    RESTART_UPGRADE_PIP = 3
+    RESTART_UPGRADE_GIT = 4
 
 
 # Base class for control signals
@@ -126,11 +112,21 @@ class Signal(Exception):
     pass
 
 
-# signal to restart the bot
+# signal to restart or reload the bot
 class RestartSignal(Signal):
-    pass
+    def __init__(self, code: RestartCode = RestartCode.RESTART_SOFT):
+        self.restart_code = code
+
+    def get_code(self) -> int:
+        """Get the int value of the code contained in this signal"""
+        return self.restart_code.value
+
+    def get_name(self) -> str:
+        """Get the name of the restart code contained in this signal"""
+        return self.restart_code.name
 
 
 # signal to end the bot "gracefully"
 class TerminateSignal(Signal):
-    pass
+    def __init__(self, exit_code: int = 0):
+        self.exit_code: int = exit_code
