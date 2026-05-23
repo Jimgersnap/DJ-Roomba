@@ -6570,15 +6570,15 @@ class MusicBot(discord.Client):
                     "Queue page argument must be a whole number.",
                 ) from e
 
-        # check for no entries at all.
+        # check for no entries and nothing playing.
         total_entry_count = len(player.playlist.entries)
-        if not total_entry_count:
+        if not total_entry_count and not player.current_entry:
             raise exceptions.CommandError(
                 "There are no songs queued! Queue something with a play command.",
             )
 
         # now check if page number is out of bounds.
-        pages_total = math.ceil(total_entry_count / self.config.queue_length)
+        pages_total = math.ceil(total_entry_count / self.config.queue_length) if total_entry_count else 0
         if page_number > pages_total:
             raise exceptions.CommandError(
                 "Requested page number is out of bounds.\n"
@@ -6588,7 +6588,7 @@ class MusicBot(discord.Client):
 
         # Get current entry info if any.
         current_progress = ""
-        if player.is_playing and player.current_entry:
+        if player.current_entry:
             song_progress = format_song_duration(player.progress)
             song_total = (
                 format_song_duration(player.current_entry.duration_td)
@@ -6602,9 +6602,9 @@ class MusicBot(discord.Client):
                 added_by = cur_entry_author.name
 
             current_progress = _D(
-                "Currently playing: `%(title)s`\n"
+                "**Now Playing:** `%(title)s`\n"
                 "Added by: `%(user)s`\n"
-                "Progress: `[%(progress)s/%(total)s]`\n",
+                "Progress: `(%(progress)s / %(total)s)`\n\n",
                 ssd_,
             ) % {
                 "title": _D(player.current_entry.title, ssd_),
@@ -6658,21 +6658,23 @@ class MusicBot(discord.Client):
                 {"option": self.config.queue_length, "count": tracks_per_page},
             )
 
-        embed = Response(
-            _D(
-                "%(progress)s"
+        if total_entry_count:
+            queue_body = _D(
                 "There are `%(total)s` entries in the queue.\n"
                 "Here are the next %(per_page)s songs, starting at song #%(start)s\n"
                 "\n%(tracks)s",
                 ssd_,
-            )
-            % {
-                "progress": current_progress,
+            ) % {
                 "total": total_entry_count,
                 "per_page": self.config.queue_length,
                 "start": starting_at,
                 "tracks": tracks_list,
-            },
+            }
+        else:
+            queue_body = _D("The queue is empty.", ssd_)
+
+        embed = Response(
+            f"{current_progress}{queue_body}",
             title=_D("Songs in queue", ssd_),
             delete_after=self.config.delete_delay_long,
         )
