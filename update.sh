@@ -1,7 +1,7 @@
 #!/bin/bash
-# Assuming no files have been moved, 
-# make sure we're in MusicBot directory...
-cd "$(dirname "${BASH_SOURCE[0]}")" || { echo "Could not change directory to MusicBot."; exit 1; }
+# Assuming no files have been moved,
+# make sure we're in the DJ Roomba directory...
+cd "$(dirname "${BASH_SOURCE[0]}")" || { echo "Could not change directory to DJ Roomba."; exit 1; }
 
 # Check if this script is being run on windows and redirect the user.  
 if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]] ; then
@@ -14,7 +14,7 @@ fi
 # provides an exit that also deactivates venv.
 function do_exit() {
     if [ "${VIRTUAL_ENV}" != "" ] ; then
-        echo "Leaving MusicBot Venv..."
+        echo "Leaving DJ Roomba venv..."
         deactivate
     fi
     exit "$1"
@@ -22,7 +22,7 @@ function do_exit() {
 
 # attempt to find the "standard" venv and activate it.
 if [ -f "../bin/activate" ] ; then
-    echo "Detected MusicBot Venv & Loading it..."
+    echo "Detected venv, loading it..."
     # shellcheck disable=SC1091
     source "../bin/activate"
 fi
@@ -73,11 +73,11 @@ done
 
 # if we don't have a good version for python, bail.
 if [[ "$VerGood" == "0" ]]; then
-    echo "Python 3.9 or higher is required to update MusicBot."
+    echo "Python 3.9 or higher is required to update DJ Roomba."
     do_exit 1
 fi
 
-echo "Using '${Python_Bin}' to update MusicBot..."
+echo "Using '${Python_Bin}' to update DJ Roomba..."
 $Python_Bin update.py
 
 # exit using the code that python exited with.
