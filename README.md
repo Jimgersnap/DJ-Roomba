@@ -9,12 +9,33 @@ DJ Roomba is a Discord music bot written in [Python](https://www.python.org) 3.1
 
 ## What's different from MusicBot
 
-DJ Roomba started as a fork of MusicBot but has diverged in a few meaningful ways:
+DJ Roomba started as a fork of MusicBot but has diverged in several meaningful ways:
 
-- **Auto-deleting responses** — DJ Roomba deletes its own messages after a short delay, keeping your channels clean rather than filling them with bot clutter.
-- **Cleaner response style** — Responses use bold for song titles and names, backticks for channel names and command examples, and friendly first-person language with helpful command hints built in.
-- **Additional commands** — DJ Roomba adds `promote`, `stop`, `reconnect`, `botinfo`, `nowplaying`, and `songprogress` on top of the MusicBot command set.
-- **Activity status config** — You can configure the bot's Discord presence type (`playing`, `listening`, `watching`, `streaming`), status (`online`, `idle`, `dnd`, `offline`), and a streamer URL via `config/options.ini`.
+**Additional commands**
+
+| Command | What it does |
+|---|---|
+| `promote <position>` | Move any queued song to play next, without clearing the queue. |
+| `stop` | Stop playback and clear the queue while staying in voice. |
+| `reconnect` | Reconnect the bot to voice without losing the current queue. |
+| `botinfo` | Show the running version and a link to the repository. |
+| `nowplaying` / `songprogress` | Aliases for `np` with song progress display. |
+
+**Discord presence control**
+
+DJ Roomba adds three config options that MusicBot doesn't have:
+
+- `ActivityStatus` — Set the bot's activity type: `playing`, `listening`, `watching`, or `streaming`.
+- `Status` — Set the bot's online status: `online`, `idle`, `dnd`, or `offline`.
+- `Streamer` — Twitch URL used when activity is set to `streaming`.
+
+**Cleaner response style**
+
+Responses across all commands use bold for song titles, backticks for channel names and command examples, and friendly first-person language. Command hints are embedded in responses rather than requiring a separate `help` call.
+
+**Pre-configured aliases and permission groups**
+
+DJ Roomba ships with a ready-to-use alias set (`p` for `play`, `s` for `skip`, `q` for `queue`, `v` for `volume`, and more) and three permission groups (MusicMaster, DJ, Limited) so you can get up and running without writing configuration from scratch.
 
 ## Requirements
 
