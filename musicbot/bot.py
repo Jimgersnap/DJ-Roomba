@@ -1175,6 +1175,9 @@ class MusicBot(discord.Client):
             if not np_channel and ssd_.last_np_channel:
                 np_channel = ssd_.last_np_channel  # type: ignore[assignment]
 
+            if not np_channel and entry.channel:
+                np_channel = entry.channel  # type: ignore[assignment]
+
         content = Response("", delete_after=0)
         if entry.thumbnail_url:
             content.set_image(url=entry.thumbnail_url)
