@@ -1316,6 +1316,7 @@ class MusicBot(discord.Client):
             last_np_msg = self.server_data[guild.id].last_np_msg
             if last_np_msg:
                 await self.safe_delete_message(last_np_msg)
+                self.server_data[guild.id].last_np_msg = None
 
         # avoid downloading the next entries if the user is absent and we are configured to skip.
         notice_sent = False  # set a flag to avoid message spam.
