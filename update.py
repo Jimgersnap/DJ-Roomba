@@ -209,7 +209,7 @@ def check_for_process(proc_path: str) -> None:
     if proc_path in o:
         raise RuntimeError(
             f"Cannot continue because {name} is still in use!\n"
-            "Make sure MusicBot is shut down, or use Task Manager to stop the process first."
+            "Make sure DJ Roomba is shut down, or use Task Manager to stop the process first."
         )
 
 
@@ -239,7 +239,7 @@ def update_deno(cli_args: argparse.Namespace) -> None:
             "Since yt-dlp version 2025.11.12, a JS runtime is needed for YouTube.\n"
             "The recommended JS runtime is 'deno' which is not currently installed.\n"
             "  https://github.com/denoland/deno/\n\n"
-            "MusicBot will still function without deno, but may not be able to"
+            "DJ Roomba will still function without deno, but may not be able to"
             " play media from YouTube without it."
         )
         install_deno = yes_or_no_input(
@@ -291,7 +291,7 @@ def update_deno(cli_args: argparse.Namespace) -> None:
 
 def update_deps(cli_args: argparse.Namespace) -> None:
     """
-    Tries to upgrade MusicBot dependencies using pip module.
+    Tries to upgrade DJ Roomba dependencies using pip module.
     This will use the same exe/bin as is running this code without version checks.
     """
     do_pip = yes_or_no_input("Do you want to update dependencies?", cli_args.q_pip)
@@ -486,7 +486,7 @@ def update_ffmpeg(cli_args: argparse.Namespace) -> None:
 
     elif ffmpeg_bin.lower() == bundle_ffmpeg_bin.lower():
         do_dl = yes_or_no_input(
-            "Should we update the MusicBot bundled ffmpeg executables? [Y/n]",
+            "Should we update the DJ Roomba bundled ffmpeg executables? [Y/n]",
             cli_args.q_ffmpeg,
         )
         if do_dl:
@@ -496,7 +496,7 @@ def update_ffmpeg(cli_args: argparse.Namespace) -> None:
 
     else:
         print(
-            "We detected FFmpeg installed but it is not the exe bundled with MusicBot.\n"
+            "We detected FFmpeg installed but it is not the exe bundled with DJ Roomba.\n"
             "You will need to update your FFmpeg install manually."
         )
 
@@ -508,7 +508,7 @@ def finalize() -> None:
             VERSION,
         )
 
-        print(f"The current MusicBot version is:  {VERSION}")
+        print(f"The current DJ Roomba version is:  {VERSION}")
     except ImportError:
         print(
             "There was a problem fetching your current bot version. "
@@ -528,14 +528,12 @@ def parse_cli_args() -> argparse.Namespace:
     ap = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description=(
-            "Update script for MusicBot. Supports interactive and non-interactive modes.\n"
+            "Update script for DJ Roomba. Supports interactive and non-interactive modes.\n"
             "Use the listed command line flags in any combination to control non-interactive update process.\n"
             "Available via Github:"
-            "\n  https://github.com/Just-Some-Bots/MusicBot"
+            "\n  https://github.com/Jimgersnap/DJ-Roomba"
         ),
         epilog=(
-            "For help with this script or MusicBot, join our discord:"
-            "\n  https://discord.gg/bots\n\n"
             "This software is provided under the MIT License.\n"
             "See the `LICENSE` text file for complete details."
         ),
@@ -547,7 +545,7 @@ def parse_cli_args() -> argparse.Namespace:
         "--version",
         action="store_true",
         dest="show_version",
-        help="Print the MusicBot version information and exit.",
+        help="Print the DJ Roomba version information and exit.",
     )
 
     # dry run, does not run commands.
@@ -682,10 +680,10 @@ def parse_cli_args() -> argparse.Namespace:
         git_bin = shutil.which("git")
         if not git_bin:
             raise EnvironmentError(
-                "Could not determine MusicBot version.\n"
+                "Could not determine DJ Roomba version.\n"
                 "Check that `git` is installed and available in your environment path."
             )
-        print("Just-Some-Bots/MusicBot")
+        print("Jimgersnap/DJ-Roomba")
         get_bot_version(git_bin)
         print(f"Current Branch:  {get_bot_branch(git_bin)}\n")
         sys.exit(0)
@@ -728,7 +726,7 @@ def main() -> None:
     if sys.platform.startswith("win"):
         bin_path = os.path.abspath("bin/")
         print(
-            f"Adding MusicBot bin folder to environment path for this run:  {bin_path}",
+            f"Adding DJ Roomba bin folder to environment path for this run:  {bin_path}",
         )
         os.environ["PATH"] += ";" + bin_path
         sys.path.append(bin_path)  # might as well
@@ -771,13 +769,13 @@ def main() -> None:
         print(
             "Detected the following files have been modified:\n"
             f"{status_unclean}\n"
-            "To update MusicBot source code, you must first remove modifications made to the above source files.\n"
+            "To update DJ Roomba source code, you must first remove modifications made to the above source files.\n"
             "If you want to keep your changes, consider using `git stash` or otherwise back them up before you continue.\n"
             "This script can automatically revert your modifications, but cannot automatically save them.\n"
         )
         hard_reset = yes_or_no_input(
             "WARNING:  All changed files listed above will be reset!\n"
-            "Would you like to reset the Source code, to allow MusicBot to update?",
+            "Would you like to reset the source code, to allow DJ Roomba to update?",
             cli_args.q_reset,
         )
         if hard_reset:
@@ -785,7 +783,7 @@ def main() -> None:
             run_or_raise_error(
                 [git_bin, "reset", "--hard"],
                 "Could not hard reset the directory to a clean state.\n"
-                "You will need to manually reset the local git repository, or make a new clone of MusicBot.",
+                "You will need to manually reset the local git repository, or make a new clone of DJ Roomba.",
             )
         else:
             print("OK, skipping bot update via git pull.")

@@ -27,7 +27,7 @@ if [ -f "../bin/activate" ] ; then
     source "../bin/activate"
 fi
 
-# Suported versions of python using only major.minor format
+# Supported versions of python using only major.minor format
 PySupported=("3.13" "3.12" "3.11" "3.10" "3.9")
 
 # compile a list of bin names to try for.
