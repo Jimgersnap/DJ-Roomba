@@ -7,6 +7,15 @@ DJ Roomba is a Discord music bot written in [Python](https://www.python.org) 3.1
 
 <!-- Screenshot placeholder: add a screenshot of DJ Roomba in action once available -->
 
+## What's different from MusicBot
+
+DJ Roomba started as a fork of MusicBot but has diverged in a few meaningful ways:
+
+- **Auto-deleting responses** — DJ Roomba deletes its own messages after a short delay, keeping your channels clean rather than filling them with bot clutter.
+- **Cleaner response style** — Responses use bold for song titles and names, backticks for channel names and command examples, and friendly first-person language with helpful command hints built in.
+- **Additional commands** — DJ Roomba adds `promote`, `stop`, `reconnect`, `botinfo`, `nowplaying`, and `songprogress` on top of the MusicBot command set.
+- **Activity status config** — You can configure the bot's Discord presence type (`playing`, `listening`, `watching`, `streaming`), status (`online`, `idle`, `dnd`, `offline`), and a streamer URL via `config/options.ini`.
+
 ## Requirements
 
 - [Python](https://www.python.org) 3.10 or higher
