@@ -2890,6 +2890,11 @@ class MusicBot(discord.Client):
                 guild,
             )
             return
+
+        if player.is_playing:
+            log.debug("Player is already playing, skipping inactivity timer.")
+            return
+
         event.activate()
 
         try:
