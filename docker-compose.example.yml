@@ -1,8 +1,0 @@
-services:
-  musicbot:
-    build: .
-    volumes:
-      - ./config:/musicbot/config/
-      - ./audio_cache:/musicbot/audio_cache
-      - ./data:/musicbot/data
-      - ./logs:/musicbot/logs
