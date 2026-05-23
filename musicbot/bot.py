@@ -15,7 +15,7 @@ import sys
 import time
 import traceback
 import uuid
-from collections import defaultdict
+from collections import defaultdict, deque
 from io import BytesIO, StringIO
 from typing import TYPE_CHECKING, Any, DefaultDict, Dict, List, Optional, Set, Union
 
@@ -3005,7 +3005,6 @@ class MusicBot(discord.Client):
             entry = entries_list.pop(pos - 1)
             entries_list.insert(0, entry)
 
-        from collections import deque  # pylint: disable=import-outside-toplevel
         player.playlist.entries = deque(entries_list)
 
         try:
