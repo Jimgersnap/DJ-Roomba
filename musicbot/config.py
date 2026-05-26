@@ -842,7 +842,7 @@ class Config:
             default=ConfigDefaults.status,
             comment=_Dd(
                 "Set the bot's online status.\n"
-                "Options: online, idle, dnd, offline"
+                "Options: online, idle (or away), dnd, offline"
             ),
         )
         self.streamer: str = self.register.init_option(

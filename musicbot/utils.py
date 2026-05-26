@@ -528,7 +528,7 @@ def lookup_status(string: str) -> "discord.Status":
         return discord.Status.offline
     if string.startswith("d"):
         return discord.Status.dnd
-    if string.startswith("i"):
+    if string.startswith("i") or string.startswith("a"):  # idle / away
         return discord.Status.idle
     return discord.Status.online
 
