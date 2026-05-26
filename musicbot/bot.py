@@ -5285,13 +5285,48 @@ class MusicBot(discord.Client):
         self,
         ssd_: Optional[GuildSpecificData],
         player: MusicPlayer,
-        channel: MessageableChannel,
-        guild: discord.Guild,
     ) -> CommandResponse:
         """
         Shows only the progress bar and timing for the current song.
         """
-        return await self.cmd_np(ssd_, player, channel, guild)
+        if not player.current_entry:
+            return Response(
+                _D("There are no songs queued! Queue something with `%(prefix)splay`.", ssd_)
+                % {"prefix": self.config.command_prefix}
+            )
+
+        song_progress = format_song_duration(player.progress)
+        song_total = (
+            format_song_duration(player.current_entry.duration_td)
+            if player.current_entry.duration is not None
+            else "~"
+        )
+        streaming = isinstance(player.current_entry, StreamPlaylistEntry)
+        prog_str = (
+            "`({progress})`" if streaming else "`({progress} / {total})`"
+        ).format(progress=song_progress, total=song_total)
+
+        percentage = 0.0
+        if (
+            player.current_entry.duration
+            and player.current_entry.duration_td.total_seconds() > 0
+        ):
+            percentage = (
+                player.progress / player.current_entry.duration_td.total_seconds()
+            )
+
+        progress_bar_length = 30
+        prog_bar_str = ""
+        for i in range(progress_bar_length):
+            if percentage < 1 / progress_bar_length * i:
+                prog_bar_str += "□"
+            else:
+                prog_bar_str += "■"
+
+        return Response(
+            f"{prog_str}\n{prog_bar_str}",
+            title=_D(player.current_entry.title, ssd_),
+        )
 
     @command_helper(desc=_Dd("Tell MusicBot to join the channel you're in."))
     async def cmd_summon(
