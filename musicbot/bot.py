@@ -6630,9 +6630,7 @@ class MusicBot(discord.Client):
                 added_by = cur_entry_author.name
 
             current_progress = _D(
-                "**Now Playing:** `%(title)s`\n"
-                "Added by: `%(user)s`\n"
-                "Progress: `(%(progress)s / %(total)s)`\n\n",
+                "Currently playing: **%(title)s** added by **%(user)s**. `(%(progress)s / %(total)s)`\n\n",
                 ssd_,
             ) % {
                 "title": _D(player.current_entry.title, ssd_),
@@ -6666,9 +6664,7 @@ class MusicBot(discord.Client):
                 title = item.title[:40] + " ..."
 
             next_track_list = _D(
-                "**Entry #%(index)s:**"
-                "Title: `%(title)s`\n"
-                "Added by: `%(user)s`\n\n",
+                "%(index)s -- **%(title)s** added by **%(user)s**\n",
                 ssd_,
             ) % {"index": idx, "title": _D(title, ssd_), "user": added_by}
             # We limit the track list, and leave extra space for the rest of the description text.
@@ -6687,23 +6683,18 @@ class MusicBot(discord.Client):
             )
 
         if total_entry_count:
-            queue_body = _D(
-                "There are `%(total)s` entries in the queue.\n"
-                "Here are the next %(per_page)s songs, starting at song #%(start)s\n"
-                "\n%(tracks)s",
-                ssd_,
-            ) % {
-                "total": total_entry_count,
-                "per_page": self.config.queue_length,
-                "start": starting_at,
-                "tracks": tracks_list,
-            }
+            queue_body = tracks_list
+            if pages_total > 1:
+                queue_body += _D(
+                    "\nPage %(page)s/%(total)s",
+                    ssd_,
+                ) % {"page": page_number + 1, "total": pages_total}
         else:
             queue_body = _D("The queue is empty.", ssd_)
 
         embed = Response(
             f"{current_progress}{queue_body}",
-            title=_D("Songs in queue", ssd_),
+            title=_D("Queue", ssd_),
             delete_after=self.config.delete_delay_long,
         )
 
