@@ -1185,7 +1185,7 @@ class MusicBot(discord.Client):
             added_by = entry_author.name
 
         content = Response("", delete_after=0)
-        content.title = _D("Now playing", ssd_)
+        content.title = _D(entry.title, ssd_)
 
         if entry.thumbnail_url:
             content.set_image(url=entry.thumbnail_url)
@@ -1195,15 +1195,6 @@ class MusicBot(discord.Client):
                 entry.url,
             )
 
-        content.add_field(
-            name=(
-                _D("Currently streaming:", ssd_)
-                if streaming
-                else _D("Currently playing:", ssd_)
-            ),
-            value=_D(entry.title, ssd_),
-            inline=False,
-        )
         content.add_field(
             name=_D("Added By:", ssd_),
             value=_D("`%(user)s`", ssd_) % {"user": added_by},
@@ -5228,16 +5219,7 @@ class MusicBot(discord.Client):
             if entry_author:
                 added_by = entry_author.name
 
-            content = Response("", title=_D("Now playing", ssd_), delete_after=0)
-            content.add_field(
-                name=(
-                    _D("Currently streaming:", ssd_)
-                    if streaming
-                    else _D("Currently playing:", ssd_)
-                ),
-                value=_D(entry.title, ssd_),
-                inline=False,
-            )
+            content = Response("", title=_D(entry.title, ssd_), delete_after=0)
             content.add_field(
                 name=_D("Added By:", ssd_),
                 value=_D("`%(user)s`", ssd_) % {"user": added_by},
