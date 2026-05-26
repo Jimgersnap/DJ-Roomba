@@ -1694,8 +1694,6 @@ class MusicBot(discord.Client):
                     break
             if player and player.current_entry:
                 text = player.current_entry.title.strip()[:128]
-                if self.config.status_message:
-                    text = format_status_msg(player)
 
                 activity = discord.Activity(
                     type=discord.ActivityType.streaming,
@@ -1712,8 +1710,6 @@ class MusicBot(discord.Client):
                     break
             if player and player.current_entry:
                 text = player.current_entry.title.strip()[:128]
-                if self.config.status_message:
-                    text = format_status_msg(player)
 
                 status = discord.Status.idle
                 activity = discord.Activity(
@@ -1735,19 +1731,21 @@ class MusicBot(discord.Client):
                 name="Custom Status",  # seems required to make idle status work.
             )
 
-        # Apply DJ-Roomba configurable activity type when a static status message is set.
+        # Apply DJ-Roomba configurable activity type.
+        # When playing/paused, show the song title; when idle, show the static status message.
         if self.config.status_message and activity:
             activity_type = lookup_activity(self.config.activity_status)
-            name = getattr(activity, "name", "") or ""
+            if not playing and not paused:
+                text = format_status_msg(None)
             if activity_type == discord.ActivityType.streaming:
                 url = (
                     self.config.streamer
                     if self.config.streamer.startswith("https://www.twitch.tv/")
                     else "https://www.twitch.tv/"
                 )
-                activity = discord.Activity(type=activity_type, name=name, url=url)
+                activity = discord.Activity(type=activity_type, name=text, url=url)
             else:
-                activity = discord.Activity(type=activity_type, name=name)
+                activity = discord.Activity(type=activity_type, name=text)
             status = lookup_status(self.config.status)
 
         async with self.aiolocks[_func_()]:
