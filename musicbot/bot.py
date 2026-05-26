@@ -1178,7 +1178,15 @@ class MusicBot(discord.Client):
             if not np_channel and entry.channel:
                 np_channel = entry.channel  # type: ignore[assignment]
 
+        streaming = isinstance(entry, StreamPlaylistEntry)
+        entry_author = entry.author
+        added_by = _D("[autoplaylist]", ssd_)
+        if entry_author:
+            added_by = entry_author.name
+
         content = Response("", delete_after=0)
+        content.title = _D("Now playing", ssd_)
+
         if entry.thumbnail_url:
             content.set_image(url=entry.thumbnail_url)
         else:
@@ -1187,15 +1195,27 @@ class MusicBot(discord.Client):
                 entry.url,
             )
 
+        content.add_field(
+            name=(
+                _D("Currently streaming:", ssd_)
+                if streaming
+                else _D("Currently playing:", ssd_)
+            ),
+            value=_D(entry.title, ssd_),
+            inline=False,
+        )
+        content.add_field(
+            name=_D("Added By:", ssd_),
+            value=_D("`%(user)s`", ssd_) % {"user": added_by},
+            inline=False,
+        )
+
+        if self.config.now_playing_mentions and entry.author:
+            content.add_field(name="\n", value=entry.author.mention, inline=True)
+
         if len(entry.url) <= 1024:
             # TRANSLATORS:  URL field title for embeds.
             content.add_field(name=_D("URL:", ssd_), value=entry.url, inline=False)
-
-        if self.config.now_playing_mentions:
-            content.title = None
-            content.add_field(name="\n", value=newmsg, inline=True)
-        else:
-            content.title = newmsg
 
         # send it in specified channel
         if not np_channel:
