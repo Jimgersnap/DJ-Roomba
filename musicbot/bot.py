@@ -5186,6 +5186,11 @@ class MusicBot(discord.Client):
         # TODO: this may still need more tweaks for better i18n support.
         # Something to address the fragmented nature of strings in embeds.
         if player.current_entry:
+            last_np_msg = self.server_data[guild.id].last_np_msg
+            if last_np_msg:
+                await self.safe_delete_message(last_np_msg)
+                self.server_data[guild.id].last_np_msg = None
+
             song_progress = format_song_duration(player.progress)
             song_total = (
                 format_song_duration(player.current_entry.duration_td)
@@ -5223,7 +5228,7 @@ class MusicBot(discord.Client):
             if entry_author:
                 added_by = entry_author.name
 
-            content = Response("", title=_D("Now playing", ssd_))
+            content = Response("", title=_D("Now playing", ssd_), delete_after=0)
             content.add_field(
                 name=(
                     _D("Currently streaming:", ssd_)
@@ -5251,7 +5256,11 @@ class MusicBot(discord.Client):
             else:
                 log.warning("No thumbnail set for entry with URL: %s", entry.url)
 
-            return content
+            self.server_data[guild.id].last_np_msg = await self.safe_send_message(
+                channel,
+                content,
+            )
+            return None
 
         return Response(
             _D("There are no songs queued! Queue something with `%(prefix)splay`.", ssd_)
