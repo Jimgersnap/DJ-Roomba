@@ -1204,9 +1204,11 @@ class MusicBot(discord.Client):
         if self.config.now_playing_mentions and entry.author:
             content.add_field(name="\n", value=entry.author.mention, inline=True)
 
-        if len(entry.url) <= 1024:
+        # For streams, entry.url is the internal manifest URL — use the original input instead.
+        display_url = entry.info.input_subject if streaming else entry.url
+        if display_url and len(display_url) <= 1024:
             # TRANSLATORS:  URL field title for embeds.
-            content.add_field(name=_D("URL:", ssd_), value=entry.url, inline=False)
+            content.add_field(name=_D("URL:", ssd_), value=display_url, inline=False)
 
         # send it in specified channel
         if not np_channel:
@@ -1732,10 +1734,10 @@ class MusicBot(discord.Client):
             )
 
         # Apply DJ-Roomba configurable activity type.
-        # When playing/paused, show the song title; when idle, show the static status message.
-        if self.config.status_message and activity:
+        # When playing/paused: song title. When idle: static message (if set) or keep text as-is.
+        if activity:
             activity_type = lookup_activity(self.config.activity_status)
-            if not playing and not paused:
+            if not playing and not paused and self.config.status_message:
                 text = format_status_msg(None)
             if activity_type == discord.ActivityType.streaming:
                 url = (
@@ -5234,9 +5236,11 @@ class MusicBot(discord.Client):
                 value=f"{prog_str}\n{prog_bar_str}\n\n",
                 inline=False,
             )
-            if len(entry.url) <= 1024:
+            np_streaming = isinstance(entry, StreamPlaylistEntry)
+            display_url = entry.info.input_subject if np_streaming else entry.url
+            if display_url and len(display_url) <= 1024:
                 # TRANSLATORS:  URL field title for embeds.
-                content.add_field(name=_D("URL:", ssd_), value=entry.url, inline=False)
+                content.add_field(name=_D("URL:", ssd_), value=display_url, inline=False)
             if entry.thumbnail_url:
                 content.set_image(url=entry.thumbnail_url)
             else:
