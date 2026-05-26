@@ -3299,7 +3299,8 @@ class MusicBot(discord.Client):
 
         if option not in ["+", "-", "?", "add", "remove", "status"]:
             raise exceptions.CommandError(
-                "Invalid sub-command given. Use `help blockuser` for usage examples."
+                "Invalid sub-command given. Use `%(prefix)shelp blockuser` for usage examples.",
+                fmt_args={"prefix": self.config.command_prefix},
             )
 
         for p_user in leftover_args:
@@ -3310,7 +3311,7 @@ class MusicBot(discord.Client):
 
         if not user_mentions:
             raise exceptions.CommandError(
-                "MusicBot could not find the user(s) you specified.",
+                "I couldn't find the user(s) you specified.",
             )
 
         for user in user_mentions.copy():
@@ -3430,7 +3431,8 @@ class MusicBot(discord.Client):
 
         if option not in ["+", "-", "add", "remove"]:
             raise exceptions.CommandError(
-                "Invalid sub-command given. Use `help blocksong` for usage examples."
+                "Invalid sub-command given. Use `%(prefix)shelp blocksong` for usage examples.",
+                fmt_args={"prefix": self.config.command_prefix},
             )
 
         # allow management regardless, but tell the user if it will apply.
@@ -3562,7 +3564,8 @@ class MusicBot(discord.Client):
             "reload",
         ]:
             raise exceptions.CommandError(
-                "Invalid sub-command given. Use `help autoplaylist` for usage examples.",
+                "Invalid sub-command given. Use `%(prefix)shelp autoplaylist` for usage examples.",
+                fmt_args={"prefix": self.config.command_prefix},
             )
 
         def _get_url() -> str:
@@ -3575,7 +3578,8 @@ class MusicBot(discord.Client):
         if option in ["+", "add"] and opt_url.lower() == "all":
             if not player.playlist.entries:
                 raise exceptions.CommandError(
-                    "The queue is empty. Add some songs with a play command!",
+                    "The queue is empty. Add some songs with `%(prefix)splay`!",
+                    fmt_args={"prefix": self.config.command_prefix},
                 )
 
             added_songs = set()
@@ -4287,14 +4291,16 @@ class MusicBot(discord.Client):
         if not player.current_entry:
             return Response(
                 _D(
-                    "No songs are currently playing. Play something with a play command.",
+                    "I'm not playing anything right now. Queue something with `%(prefix)splay`.",
                     ssd_,
                 )
+                % {"prefix": self.config.command_prefix},
             )
 
         if option not in ["all", "playlist", "on", "off", "song", ""]:
             raise exceptions.CommandError(
-                "Invalid sub-command. Use the command `help repeat` for usage examples.",
+                "Invalid sub-command. Use `%(prefix)shelp repeat` for usage examples.",
+                fmt_args={"prefix": self.config.command_prefix},
             )
 
         if option in ["all", "playlist"]:
@@ -4309,30 +4315,28 @@ class MusicBot(discord.Client):
         if option == "song":
             player.repeatsong = not player.repeatsong
             if player.repeatsong:
-                return Response(_D("Player will now loop the current song.", ssd_))
+                return Response(_D("I'll now loop the current song.", ssd_))
 
-            return Response(_D("Player will no longer loop the current song.", ssd_))
+            return Response(_D("I'll no longer loop the current song.", ssd_))
 
         if option == "on":
             if player.repeatsong:
-                return Response(_D("Player is already looping a song!", ssd_))
+                return Response(_D("I'm already looping a song!", ssd_))
 
             player.repeatsong = True
-            return Response(_D("Player will now loop the current song.", ssd_))
+            return Response(_D("I'll now loop the current song.", ssd_))
 
         if option == "off":
             # TODO: This will fail to behave is both are somehow on.
             if player.repeatsong:
                 player.repeatsong = False
-                return Response(
-                    _D("Player will no longer loop the current song.", ssd_)
-                )
+                return Response(_D("I'll no longer loop the current song.", ssd_))
 
             if player.loopqueue:
                 player.loopqueue = False
                 return Response(_D("Playlist is no longer repeating.", ssd_))
 
-            raise exceptions.CommandError("The player is not currently looping.")
+            raise exceptions.CommandError("I'm not currently looping a song.")
 
         if player.repeatsong:
             player.loopqueue = True
@@ -4378,9 +4382,10 @@ class MusicBot(discord.Client):
         if not player.current_entry:
             return Response(
                 _D(
-                    "There are no songs queued. Play something with a play command.",
+                    "There are no songs queued. Queue something with `%(prefix)splay`.",
                     ssd_,
-                ),
+                )
+                % {"prefix": self.config.command_prefix},
             )
 
         indexes = []
@@ -4388,12 +4393,12 @@ class MusicBot(discord.Client):
             indexes.append(int(command) - 1)
             indexes.append(int(leftover_args[0]) - 1)
         except (ValueError, IndexError) as e:
-            raise exceptions.CommandError("Song positions must be integers!") from e
+            raise exceptions.CommandError("Song positions must be whole numbers.") from e
 
         for i in indexes:
             if i < 0 or i > len(player.playlist.entries) - 1:
                 raise exceptions.CommandError(
-                    "You gave a position outside the playlist size!"
+                    "That position is outside the queue range."
                 )
 
         await self.safe_send_message(
@@ -4911,7 +4916,8 @@ class MusicBot(discord.Client):
         def argcheck() -> None:
             if not leftover_args:
                 raise exceptions.CommandError(
-                    "Please specify a search query.  Use `help search` for more information.",
+                    "Please specify a search query. Use `%(prefix)shelp search` for more information.",
+                    fmt_args={"prefix": self.config.command_prefix},
                 )
 
         argcheck()
@@ -5420,7 +5426,7 @@ class MusicBot(discord.Client):
             m = user_mentions.pop(0)
             if not isinstance(m, discord.Member):
                 raise exceptions.CommandError(
-                    "MusicBot cannot follow a user that is not a member of the server.",
+                    "I can only follow members of this server.",
                 )
             bind_to_member = m
 
@@ -5448,7 +5454,7 @@ class MusicBot(discord.Client):
                 % {"channel": player.voice_client.channel},
             )
 
-        raise exceptions.CommandError("Player is not playing.")
+        raise exceptions.CommandError("I'm not playing anything right now.")
 
     @command_helper(desc=_Dd("Resumes playback if the player was previously paused."))
     async def cmd_resume(
@@ -5469,7 +5475,7 @@ class MusicBot(discord.Client):
             player.play()
             return Response(_D("Resumed music queue", ssd_))
 
-        return ErrorResponse(_D("Player is not paused.", ssd_))
+        return ErrorResponse(_D("I'm not currently paused.", ssd_))
 
     @command_helper(desc=_Dd("Shuffle all current tracks in the queue."))
     async def cmd_shuffle(
@@ -5523,7 +5529,8 @@ class MusicBot(discord.Client):
         # Ensure player is not none and that it's not empty
         if _player and len(_player.playlist) < 1:
             raise exceptions.CommandError(
-                "There is nothing currently playing. Play something with a play command."
+                "There is nothing currently playing. Queue something with `%(prefix)splay`.",
+                fmt_args={"prefix": self.config.command_prefix},
             )
 
         # Try to gracefully clear the guild queue if we're not in a vc.
@@ -5593,7 +5600,7 @@ class MusicBot(discord.Client):
         """
 
         if not player.playlist.entries:
-            raise exceptions.CommandError("Nothing in the queue to remove!")
+            raise exceptions.CommandError("There's nothing in the queue to remove.")
 
         # removing range (2 positions used, FROM and TO)
         if len(leftover_args) == 1:
@@ -5602,12 +5609,13 @@ class MusicBot(discord.Client):
                 indexes.append(int(position) - 1)
                 indexes.append(int(leftover_args[0]) - 1)
             except (ValueError, IndexError) as e:
-                raise exceptions.CommandError("Song positions must be integers!") from e
+                raise exceptions.CommandError("Song positions must be whole numbers.") from e
 
             for i in indexes:
                 if i < 0 or i > len(player.playlist.entries) - 1:
                     raise exceptions.CommandError(
-                        "Invalid positions. Use the queue command to find queue positions."
+                        "Invalid positions. Use `%(prefix)squeue` to find queue positions.",
+                        fmt_args={"prefix": self.config.command_prefix},
                     )
 
             # if wrong indices are the wrong order, simply reverse order
@@ -5680,12 +5688,14 @@ class MusicBot(discord.Client):
                 idx = int(position)
             except (TypeError, ValueError) as e:
                 raise exceptions.CommandError(
-                    "Invalid entry number. Use the queue command to find queue positions.",
+                    "Invalid entry number. Use `%(prefix)squeue` to find queue positions.",
+                    fmt_args={"prefix": self.config.command_prefix},
                 ) from e
 
         if idx < 1 or idx > len(player.playlist.entries):
             raise exceptions.CommandError(
-                "Invalid entry number. Use the queue command to find queue positions.",
+                "Invalid entry number. Use `%(prefix)squeue` to find queue positions.",
+                fmt_args={"prefix": self.config.command_prefix},
             )
 
         if (
@@ -5736,7 +5746,7 @@ class MusicBot(discord.Client):
         """
 
         if player.is_stopped:
-            raise exceptions.CommandError("Can't skip! The player is not playing!")
+            raise exceptions.CommandError("I'm not playing anything to skip.")
 
         if not player.current_entry:
             next_entry = player.playlist.peek()
@@ -5744,7 +5754,7 @@ class MusicBot(discord.Client):
                 if next_entry.is_downloading:
                     return Response(
                         _D(
-                            "The next song `%(track)s` is downloading, please wait.",
+                            "**%(track)s** is still downloading, please wait.",
                             ssd_,
                         )
                         % {"track": _D(next_entry.title, ssd_)},
@@ -6619,7 +6629,8 @@ class MusicBot(discord.Client):
         total_entry_count = len(player.playlist.entries)
         if not total_entry_count and not player.current_entry:
             raise exceptions.CommandError(
-                "There are no songs queued! Queue something with a play command.",
+                "There are no songs queued! Queue something with `%(prefix)splay`.",
+                fmt_args={"prefix": self.config.command_prefix},
             )
 
         # now check if page number is out of bounds.
@@ -6731,8 +6742,7 @@ class MusicBot(discord.Client):
         if not q_msg:
             log.warning("Could not post queue message, no message to add reactions to.")
             raise exceptions.CommandError(
-                "Try that again. MusicBot couldn't make or get a reference to the queue message.\n"
-                "If the issue persists, file a bug report."
+                "I couldn't get a reference to the queue message. Please try again."
             )
 
         # set up the page numbers to be used by reactions.
