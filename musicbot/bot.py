@@ -4685,7 +4685,7 @@ class MusicBot(discord.Client):
 
                 reply_text = _D(
                     "Your requested playlist containing **%(number)s** songs has been added to the queue.\n"
-                    "Position in queue: **%(position)s**",
+                    "Position in queue: %(position)s",
                     ssd_,
                 )
 
@@ -4720,7 +4720,7 @@ class MusicBot(discord.Client):
 
                 reply_text = _D(
                     "Added **%(track)s** to the queue.\n"
-                    "Position in queue: **%(position)s**",
+                    "Position in queue: %(position)s",
                     ssd_,
                 )
                 track_title = _D(entry.title, ssd_)
@@ -4728,7 +4728,7 @@ class MusicBot(discord.Client):
             log.debug("Added song(s) at position %s", position)
             if position == 1 and player.is_stopped:
                 pos_str = _D(
-                    "Up next.\n\nIf the song doesn't play immediately, it may still be downloading. Please wait...",
+                    "**Up next.**\n\nIf the song doesn't play immediately, it may still be downloading. Please wait...",
                     ssd_,
                 )
                 player.play()
@@ -4745,7 +4745,7 @@ class MusicBot(discord.Client):
                     self.server_data[guild.id].current_playing_url = ""
 
                 player.skip()
-                pos_str = _D("Skipping to your requested song now.", ssd_)
+                pos_str = _D("**Skipping to your requested song now.**", ssd_)
 
             else:
                 try:
