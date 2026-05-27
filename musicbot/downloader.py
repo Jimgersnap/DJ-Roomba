@@ -162,12 +162,6 @@ class Downloader:
         if bot.config.ytdlp_source_address != "*":
             ytdl_format_options["source_address"] = bot.config.ytdlp_source_address
 
-        # apply download concurrency settings.
-        if bot.config.ytdlp_concurrent_frags > 1:
-            ytdl_format_options["concurrent_fragment_downloads"] = (
-                bot.config.ytdlp_concurrent_frags
-            )
-
         # enable verbose ytdlp logs if debug mode is enabled.
         if bot.config.debug_mode:
             ytdl_format_options["no_warnings"] = False
