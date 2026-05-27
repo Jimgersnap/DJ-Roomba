@@ -878,7 +878,7 @@ class StreamPlaylistEntry(BasePlaylistEntry):
         if not vernum:
             log.error("Entry data is missing version number, cannot deserialize.")
             return None
-        if vernum != URLPlaylistEntry.SERIAL_VERSION:
+        if vernum != StreamPlaylistEntry.SERIAL_VERSION:
             log.error("Entry data has the wrong version number, cannot deserialize.")
             return None
 
