@@ -5792,11 +5792,7 @@ class MusicBot(discord.Client):
         force_skip = param.lower() in ["force", "f"]
 
         if permission_force_skip and (force_skip or self.config.legacy_skip):
-            if (
-                not permission_force_skip
-                and not permissions.skip_looped
-                and player.repeatsong
-            ):
+            if not permissions.skip_looped and player.repeatsong:
                 raise exceptions.PermissionsError(
                     "You do not have permission to force skip a looped song.",
                 )
