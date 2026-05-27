@@ -29,6 +29,7 @@ body:
       multiple: false
       options:
         - I am using the "master" branch
+        - I am using the "dev" branch
   - type: dropdown
     id: system
     attributes:
@@ -48,7 +49,7 @@ body:
       options:
         - label: I have confirmed that my issue has not already been reported.
           required: true
-        - label: I am using Python 3.8 or higher.
+        - label: I am using Python 3.10 or higher.
           required: true
         - label: I have updated my Python dependencies.
           required: true

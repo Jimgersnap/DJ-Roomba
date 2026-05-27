@@ -1,8 +1,8 @@
-# MusicBot Translation Guide  
+# DJ Roomba Translation Guide  
 
 ![Translations: 66.2%](https://img.shields.io/badge/Translations-66.2%25-orange?style=flat-square)  
 
-MusicBot provides some support for translations and customized display text.  
+DJ Roomba provides some support for translations and customized display text.  
 This guide will explain how you can make use of this feature for specific goals.  
 
 <details>
@@ -12,14 +12,14 @@ This guide will explain how you can make use of this feature for specific goals.
 
 Before you begin, there are some details you should be aware of.  
 
-MusicBot provides two domains for text:  
-- `musicbot_logs` - Text shown primarilly in logs or console.  
-- `musicbot_messages` - Text shown primarilly on discord.  
+DJ Roomba provides two domains for text:  
+- `musicbot_logs` - Text shown primarily in logs or console.  
+- `musicbot_messages` - Text shown primarily on discord.  
 
 Translation files use the GNU Gettext file formats. Those are:  
 - `.pot` - A blank template, with text extracted from source code but no translations.
 - `.po` - Similar to POT, with full or partial translations and a specific language code.
-- `.mo` - A compiled version of PO file, used at runtime.  MusicBot will compile these automatically.  
+- `.mo` - A compiled version of PO file, used at runtime.  DJ Roomba will compile these automatically.  
 
 The `.po` and `.pot` files are plain-text files.  
 You can edit them with a dedicated translation editor, like [Poedit](https://poedit.net/) 
@@ -29,7 +29,7 @@ For plain-text editing, please read the [PO-Files](https://www.gnu.org/software/
 Official languages use the Gettext [Locale-Names specification](https://www.gnu.org/savannah-checkouts/gnu/gettext/manual/html_node/Locale-Names.html) for compatibility with system language codes.  
 Users should review the above specification when picking language codes for contributing new languages or to avoid conflicts between "custom" codes and official codes.  
 
-Lastly, MusicBot provides four ways to set language:  
+Lastly, DJ Roomba provides four ways to set language:  
 - Command line options:  
   - `--lang=` - Set language for logs and discord text.  
   - `--log_lang=` - Set language for only the log text.  
@@ -49,12 +49,12 @@ Lastly, MusicBot provides four ways to set language:
 
 ## How to customize text
 
-To customize MusicBot text you have two options:  
+To customize DJ Roomba text you have two options:  
 - Edit the source code directly.  
 - Edit a translation file.  
 
 We recommend copying an existing language and making edits to it.  
-This will make it easy to keep your changes when MusicBot updates, if there are changes to language files.  
+This will make it easy to keep your changes when DJ Roomba updates, if there are changes to language files.  
 
 The basic steps are:  
 1. Copy your language folder, for example: `en_US`  
@@ -93,7 +93,7 @@ Follow these steps to add a new language:
 
 ### Placeholders in Strings:
 
-Regarding "placeholders", MusicBot sometimes needs to include variable data in output text.  
+Regarding "placeholders", DJ Roomba sometimes needs to include variable data in output text.  
 To do this, we use traditional percent or modulo (`%`) formatting placeholders in Python that resembles C-style `sprintf` string formatting.  
 For example, the placeholders: `%(user)s` or `%s` get replaced at runtime with potentially non-translatable data.
 
@@ -108,13 +108,13 @@ They are not used by Python's format functions and if changed may quietly fail t
 
 ### Updating Source Strings
 
-While working on MusicBot you might want to change some text in the source or add new strings for translation.  
+While working on DJ Roomba you might want to change some text in the source or add new strings for translation.  
 There are some important things to remember when changing strings in source code:  
 
 1. The string in the source code is the `msgid` in the PO files.  
   If the source string changes, the `msgid` is invalid and new translation is needed for each language.
 
-2. MusicBot has two different message domains. One for text in the logs and the other for text sent to discord.  
+2. DJ Roomba has two different message domains. One for text in the logs and the other for text sent to discord.  
    That is `musicbot_logs` and `musicbot_messages` respectively.  
 
 3. Certain objects or function calls will mark strings as translatable but do not immediately translate them:  
@@ -144,7 +144,7 @@ There are some important things to remember when changing strings in source code
 The scripts contained in the `i18n` directory provide cross-platform tools to aid in translation tasks.  
 Each script supports the `-h` or `--help` command line option to display usage documentation.  
 
-A breif summary for each script file:  
+A brief summary for each script file:  
 - `lang.py`  -  Language tool, the primary script used for most translation tasks.  
 - `msgfmt.py`  -  Modified version of python's msgfmt compatible utility.  
 - `pygettext.py`  -  Modified version of python's xgettext compatible utility.  
@@ -214,4 +214,3 @@ The script provides these command line flags:
 ---
 
 </details>
-
