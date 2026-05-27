@@ -456,7 +456,7 @@ def req_check_deps() -> None:
         if discord.version_info.major < 2:
             log.critical(
                 (
-                    "This version of MusicBot requires a newer version of discord.py. "
+                    "This version of DJ-Roomba requires a newer version of discord.py. "
                     "Your version is %s. Try running the update.py script."
                 ),
                 discord.__version__,
@@ -482,7 +482,7 @@ def req_ensure_env() -> None:
         # be aware this project depends on git for version information
         # as well as ease of updating the bot.
         log.critical(
-            "MusicBot was not installed using Git.\n"
+            "DJ-Roomba was not installed using Git.\n"
             "Check the documentation for install guides:\n"
             "  https://just-some-bots.github.io/MusicBot/"
         )
@@ -523,11 +523,11 @@ def req_ensure_env() -> None:
             basedir = os.getcwd()
 
         log.critical(
-            "MusicBot could not write files in the following directory:\n%(dir)s",
+            "DJ-Roomba could not write files in the following directory:\n%(dir)s",
             {"dir": basedir},
         )
         log.critical(
-            "Please make sure MusicBot can read and write in the above directory."
+            "Please make sure DJ-Roomba can read and write in the above directory."
         )
         bugger_off()
     finally:
@@ -551,12 +551,12 @@ def req_ensure_env() -> None:
     # make sure ffmpeg is available.
     if not ffmpeg_bin:
         log.critical(
-            "MusicBot could not locate FFmpeg binary in your environment.\n"
+            "DJ-Roomba could not locate FFmpeg binary in your environment.\n"
             "Please install FFmpeg so it is available in your environment PATH variable."
         )
         if sys.platform.startswith("win"):
             log.info(
-                "On Windows, you can add a pre-compiled EXE to the MusicBot `bin` folder,\n"
+                "On Windows, you can add a pre-compiled EXE to the DJ-Roomba `bin` folder,\n"
                 "or you can install FFmpeg system-wide using WinGet or by running the install.bat file."
             )
         elif sys.platform.startswith("darwin"):
@@ -577,7 +577,7 @@ def req_ensure_env() -> None:
         # Note: consider this check/warning as transitional code, could be removed later.
         log.warning(
             "YouTube support may not work!\n"
-            "MusicBot could not find the yt-dlp EJS package.\n"
+            "DJ-Roomba could not find the yt-dlp EJS package.\n"
             "Update your pip packages, and make sure 'yt-dlp[default]' is in your requirements.txt"
         )
 
@@ -601,7 +601,7 @@ def req_ensure_env() -> None:
     if not deno_bin and not node_bin:
         log.warning(
             "YouTube support may not work!\n"
-            "MusicBot could not find deno or node executables in your environment.\n"
+            "DJ-Roomba could not find deno or node executables in your environment.\n"
             "Install deno from:  https://github.com/denoland/deno/\n"
             " -OR-\n"
             "Install node (version 25 or newer) via your package manager.\n"
@@ -624,7 +624,7 @@ def opt_check_updates() -> None:
     """
     Runs a collection of git and pip commands and logs if updates are available.
     """
-    log.info("\nChecking for updates to MusicBot or dependencies...")
+    log.info("\nChecking for updates to DJ-Roomba or dependencies...")
     needs_update = False
     if GIT.works():
         git_branch = GIT.show_branch()
@@ -632,7 +632,7 @@ def opt_check_updates() -> None:
         if commit_at and commit_to:
             log.warning(
                 (
-                    "MusicBot updates are available through `git` command.\n"
+                    "DJ-Roomba updates are available through `git` command.\n"
                     "Your current branch is:  %s\n"
                     "The latest commit ID is:  %s"
                 ),
@@ -641,7 +641,7 @@ def opt_check_updates() -> None:
             )
             needs_update = True
         else:
-            log.info("No MusicBot updates available via `git` command.")
+            log.info("No DJ-Roomba updates available via `git` command.")
     else:
         log.warning(
             "Could not check for updates using `git` commands.  You should check manually."
@@ -747,7 +747,7 @@ def parse_cli_args() -> argparse.Namespace:
         metavar="LOCALE",
         type=str,
         help=_L(
-            "Override the default / system detected language for all text in MusicBot."
+            "Override the default / system detected language for all text in DJ-Roomba."
         ),
     )
     # Lang in log domain.
@@ -757,7 +757,7 @@ def parse_cli_args() -> argparse.Namespace:
         default=DEFAULT_I18N_LANG,
         metavar="LOCALE",
         type=str,
-        help=_L("Use this language for all server-side log messages from MusicBot."),
+        help=_L("Use this language for all server-side log messages from DJ-Roomba."),
     )
     # Lang in discord message domain.
     ap.add_argument(
@@ -767,7 +767,7 @@ def parse_cli_args() -> argparse.Namespace:
         metavar="LOCALE",
         type=str,
         help=_L(
-            "Use this language for all messages sent to discord from MusicBot.\n"
+            "Use this language for all messages sent to discord from DJ-Roomba.\n"
             "This does not prevent per-guild language selection."
         ),
     )
@@ -778,7 +778,7 @@ def parse_cli_args() -> argparse.Namespace:
         "--version",
         dest="show_version",
         action="store_true",
-        help=_L("Print the MusicBot version information and exit."),
+        help=_L("Print the DJ-Roomba version information and exit."),
     )
 
     # No Startup Checks option.
@@ -811,7 +811,7 @@ def parse_cli_args() -> argparse.Namespace:
         dest="no_install_deps",
         action="store_true",
         help=_L(
-            "Disable MusicBot from trying to install dependencies when it cannot import them."
+            "Disable DJ-Roomba from trying to install dependencies when it cannot import them."
         ),
     )
 
@@ -860,9 +860,9 @@ def parse_cli_args() -> argparse.Namespace:
         metavar="PATH",
         type=str,
         help=_L(
-            "Supply a directory where MusicBot can store all mutable files.\n"
+            "Supply a directory where DJ-Roomba can store all mutable files.\n"
             "Essentially treats the install directory as read-only.\n"
-            "MusicBot must have permission to create this directory.\n"
+            "DJ-Roomba must have permission to create this directory.\n"
         ),
     )
 
@@ -959,7 +959,7 @@ def respawn_bot_process() -> None:
             exec_args,
             creationflags=subprocess.CREATE_NEW_CONSOLE,  # type: ignore[attr-defined]
         )
-        print(_L("Opened a new MusicBot instance. This terminal can be safely closed!"))
+        print(_L("Opened a new DJ-Roomba instance. This terminal can be safely closed!"))
         sys.exit(0)
     else:
         # On Unix/Linux/Mac this should immediately replace the current program.
@@ -1011,14 +1011,14 @@ def set_console_title() -> None:
 
     # Update the console title, ignore if it fails.
     try:
-        sys.stdout.write(f"\x1b]2;MusicBot {BOTVERSION}\x07")
+        sys.stdout.write(f"\x1b]2;DJ-Roomba {BOTVERSION}\x07")
     except (TypeError, OSError):
         pass
 
 
 async def mk_docs(m) -> None:  # type: ignore[no-untyped-def]
     """
-    This function is used for automation of MusicBot documentation.
+    This function is used for automation of DJ-Roomba documentation.
     It creates github-flavored markdown documents which can update github pages.
     """
     file_config = "export_config.md"
@@ -1081,7 +1081,7 @@ async def mk_docs(m) -> None:  # type: ignore[no-untyped-def]
 
 def main() -> None:
     """
-    All of the MusicBot starts here.
+    All of the DJ-Roomba starts here.
     """
     # Attempt to set console title.
     set_console_title()
@@ -1093,7 +1093,7 @@ def main() -> None:
     cli_args = parse_cli_args()
 
     # Log file creation is deferred until this first write.
-    log.info("Loading MusicBot version:  %s", BOTVERSION)
+    log.info("Loading DJ-Roomba version:  %s", BOTVERSION)
     log.info("Log opened:  %s", time.ctime())
     log.info("Python version:  %s", sys.version)
 
@@ -1113,7 +1113,7 @@ def main() -> None:
                 " a new directory location."
             )
             log.error(
-                "For best results, start `run.py` from the same folder you cloned MusicBot into.\n"
+                "For best results, start `run.py` from the same folder you cloned DJ-Roomba into.\n"
                 "If you did not use git to clone the repository, you are strongly urged to."
             )
             time.sleep(3)  # make sure they see the message.
@@ -1232,14 +1232,14 @@ def main() -> None:
             if cli_args.no_install_deps:
                 log.error(
                     # fmt: off
-                    "Cannot start MusicBot due to an error!\n"
+                    "Cannot start DJ-Roomba due to an error!\n"
                     "\n"
                     "Problem:\n"
-                    "  There was an error importing MusicBot or a dependency package.\n"
+                    "  There was an error importing DJ-Roomba or a dependency package.\n"
                     "\n"
                     "Solution:\n"
-                    "  You need to manually install pip packages for MusicBot\n"
-                    "  or launch without `--no-install-deps` and MusicBot will try to install them for you."
+                    "  You need to manually install pip packages for DJ-Roomba\n"
+                    "  or launch without `--no-install-deps` and DJ-Roomba will try to install them for you."
                     # fmt: on
                 )
                 break
@@ -1247,7 +1247,7 @@ def main() -> None:
             if not PIP.works():
                 log.critical(
                     (
-                        "MusicBot could not import dependency modules and we cannot run `pip` automatically!\n"
+                        "DJ-Roomba could not import dependency modules and we cannot run `pip` automatically!\n"
                         "You will need to manually install `pip` package for your version of python.\n"
                     )
                 )
@@ -1255,7 +1255,7 @@ def main() -> None:
                     (
                         "If you already installed `pip` but still get this error:\n"
                         " - Check that you installed it for this python version: %s\n"
-                        " - Check installed packages are accessible to the user running MusicBot"
+                        " - Check installed packages are accessible to the user running DJ-Roomba"
                     ),
                     sys.version.split(maxsplit=1)[0],
                 )
@@ -1265,7 +1265,7 @@ def main() -> None:
                 tried_requirementstxt = True
 
                 log.info(
-                    "Attempting to install MusicBot dependency packages automatically...\n"
+                    "Attempting to install DJ-Roomba dependency packages automatically...\n"
                 )
                 pip_exit_code = PIP.run_upgrade_requirements(quiet=False)
 
@@ -1274,7 +1274,7 @@ def main() -> None:
                     print()
                     log.critical(
                         # fmt: off
-                        "MusicBot dependencies may not be installed!\n"
+                        "DJ-Roomba dependencies may not be installed!\n"
                         "\n"
                         "Problem:\n"
                         "  The pip install process ended with a possible error.\n"
@@ -1282,12 +1282,12 @@ def main() -> None:
                         "\n"
                         "Solution:\n"
                         "  You must manually install dependency packages.\n"
-                        "  Open a CMD prompt / terminal to the MusicBot directory.\n"
+                        "  Open a CMD prompt / terminal to the DJ-Roomba directory.\n"
                         "  You can try using the update scripts install packages.\n"
                         "  Or try this manual command:\n"
                         "    %(py_bin)s -m pip install -U -r ./requirements.txt\n"
                         "\n"
-                        "You can also ask for help in MusicBot's support discord:\n"
+                        "You can also ask for help in DJ-Roomba's support discord:\n"
                         "  https://discord.gg/bots",
                         # fmt: on
                         {"py_bin": sys.executable}
@@ -1324,11 +1324,11 @@ def main() -> None:
 
         except RestartSignal as e:
             if e.get_name() == "RESTART_SOFT":
-                log.info("MusicBot is doing a soft restart...")
+                log.info("DJ-Roomba is doing a soft restart...")
                 retries = 1
                 continue
 
-            log.info("MusicBot is doing a full process restart...")
+            log.info("DJ-Roomba is doing a full process restart...")
             exit_signal = e
             retries = 1
             break
