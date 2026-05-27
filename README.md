@@ -13,37 +13,6 @@ The name fits this bot on two levels. Like Tom's Roomba, it quietly cleans up af
 
 <!-- Screenshot placeholder: add a screenshot of DJ Roomba in action once available -->
 
-## What's different from MusicBot
-
-DJ Roomba started as a fork of MusicBot but has diverged in several meaningful ways:
-
-**Additional commands**
-
-| Command | What it does |
-|---|---|
-| `promote <position>` | Move any queued song to play next, without clearing the queue. |
-| `stop` | Stop playback and clear the queue while staying in voice. |
-| `reconnect` | Reconnect the bot to voice without losing the current queue. |
-| `botinfo` | Show the running version and a link to the repository. |
-| `nowplaying` / `songprogress` | Aliases for `np` with song progress display. |
-
-**Discord presence control**
-
-DJ Roomba adds four config options that MusicBot doesn't have:
-
-- `ActivityStatus` — Set the bot's activity type: `playing`, `listening`, `watching`, or `streaming`.
-- `Status` — Set the bot's online status: `online`, `idle`, `dnd`, or `offline`.
-- `Streamer` — Twitch URL used when activity is set to `streaming`.
-- `TeamDevs` — Automatically grant dev-level access to Discord app team members.
-
-**Cleaner response style**
-
-Responses across all commands use bold for song titles, backticks for channel names and command examples, and friendly first-person language. Command hints are embedded in responses rather than requiring a separate `help` call.
-
-**Pre-configured aliases and permission groups**
-
-DJ Roomba ships with a ready-to-use alias set (`p` for `play`, `s` for `skip`, `q` for `queue`, `v` for `volume`, and more) and three permission groups (MusicMaster, DJ, Limited) so you can get up and running without writing configuration from scratch.
-
 ## Requirements
 
 - [Python](https://www.python.org) 3.10 or higher
