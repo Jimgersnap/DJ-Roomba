@@ -2889,7 +2889,7 @@ class MusicBot(discord.Client):
         guild = channel.guild
         event = self.server_data[guild.id].get_event("inactive_player_timer")
 
-        if str(channel.id) in str(self.config.autojoin_channels):
+        if channel.id in self.config.autojoin_channels:
             log.debug(
                 "Ignoring player inactivity in auto-joined channel:  %s",
                 channel.name,
