@@ -825,14 +825,15 @@ class Config:
                 " {p0_url}      = The track URL for the currently playing track."
             ),
         )
-        self.activity_status: str = self.register.init_option(
+        self.activity_status: bool = self.register.init_option(
             section="MusicBot",
             option="ActivityStatus",
             dest="activity_status",
             default=ConfigDefaults.activity_status,
+            getter="getboolean",
             comment=_Dd(
-                "Set the activity type shown in the bot's status.\n"
-                "0 = Playing, 1 = Streaming (requires Streamer URL), 2 = Listening to, 3 = Watching"
+                "If enabled, the bot's activity status will update to show the current song title.\n"
+                "When multiple servers are playing, shows 'Jamming in X servers' instead."
             ),
         )
         self.status: str = self.register.init_option(
@@ -843,15 +844,6 @@ class Config:
             comment=_Dd(
                 "Set the bot's online status.\n"
                 "Options: online, idle (or away), dnd, offline"
-            ),
-        )
-        self.streamer: str = self.register.init_option(
-            section="MusicBot",
-            option="Streamer",
-            dest="streamer",
-            default=ConfigDefaults.streamer,
-            comment=_Dd(
-                "Twitch URL used when ActivityStatus is set to 1 (Streaming)."
             ),
         )
         self.status_include_paused: bool = self.register.init_option(
@@ -1590,9 +1582,8 @@ class ConfigDefaults:
     delete_delay_long: float = 60.0
     persistent_queue: bool = True
     status_message: str = ""
-    activity_status: str = "0"
+    activity_status: bool = True
     status: str = "online"
-    streamer: str = "https://www.twitch.tv/"
     status_include_paused: bool = False
     write_current_song: bool = False
     allow_author_skip: bool = True

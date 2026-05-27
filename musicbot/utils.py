@@ -531,16 +531,3 @@ def lookup_status(string: str) -> "discord.Status":
     if string.startswith("i") or string.startswith("a"):  # idle / away
         return discord.Status.idle
     return discord.Status.online
-
-
-def lookup_activity(string: str) -> "discord.ActivityType":
-    """Map an activity string or number to a discord.ActivityType value."""
-    import discord  # pylint: disable=import-outside-toplevel
-    string = str(string).lower().strip()
-    if string.startswith("s") or string.startswith("1"):
-        return discord.ActivityType.streaming
-    if string.startswith("l") or string.startswith("2"):
-        return discord.ActivityType.listening
-    if string.startswith("w") or string.startswith("3"):
-        return discord.ActivityType.watching
-    return discord.ActivityType.playing

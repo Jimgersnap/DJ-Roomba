@@ -87,7 +87,6 @@ from .utils import (
     format_song_duration,
     format_time_to_seconds,
     is_empty_voice_channel,
-    lookup_activity,
     lookup_status,
     owner_only,
     slugify,
@@ -1666,87 +1665,40 @@ class MusicBot(discord.Client):
                 msg = msg.replace("{p0_url}", "")
             return msg
 
-        # multiple servers are playing or paused.
-        if total > 1:
-            if paused > playing:
-                status = discord.Status.idle
+        status = lookup_status(self.config.status)
+        text = None  # type: Optional[str]
 
-            text = f"music on {total} servers"
-            if self.config.status_message:
+        if self.config.activity_status:
+            # multiple servers active
+            if total > 1:
+                text = f"Jamming in {total} servers"
+            # single server playing
+            elif playing:
                 player = None
                 for p in self.players.values():
                     if p.is_playing:
                         player = p
                         break
-                text = format_status_msg(player)
+                if player and player.current_entry:
+                    text = player.current_entry.title.strip()[:128]
+            # single server paused
+            elif paused:
+                player = None
+                for p in self.players.values():
+                    if p.is_paused:
+                        player = p
+                        break
+                if player and player.current_entry:
+                    text = player.current_entry.title.strip()[:128]
 
-            activity = discord.Activity(
-                type=discord.ActivityType.playing,
-                name=text,
-            )
+        # fall back to StatusMessage when idle or activity_status is off
+        if text is None and self.config.status_message:
+            text = format_status_msg(None)
 
-        # only 1 server is playing.
-        elif playing:
-            player = None
-            for p in self.players.values():
-                if p.is_playing:
-                    player = p
-                    break
-            if player and player.current_entry:
-                text = player.current_entry.title.strip()[:128]
-
-                activity = discord.Activity(
-                    type=discord.ActivityType.streaming,
-                    url=player.current_entry.url,
-                    name=text,
-                )
-
-        # only 1 server is paused.
-        elif paused:
-            player = None
-            for p in self.players.values():
-                if p.is_paused:
-                    player = p
-                    break
-            if player and player.current_entry:
-                text = player.current_entry.title.strip()[:128]
-
-                status = discord.Status.idle
-                activity = discord.Activity(
-                    type=discord.ActivityType.custom,
-                    state=text,
-                    name="Custom Status",  # seemingly required.
-                )
-
-        # nothing going on.
+        if text:
+            activity = discord.Activity(type=discord.ActivityType.playing, name=text)
         else:
-            text = f" ~ {EMOJI_IDLE_ICON} ~ "
-            if self.config.status_message:
-                text = format_status_msg(None)
-
-            status = discord.Status.idle
-            activity = discord.CustomActivity(
-                type=discord.ActivityType.custom,
-                state=text,
-                name="Custom Status",  # seems required to make idle status work.
-            )
-
-        # Apply DJ-Roomba configurable activity type.
-        # When playing/paused: song title. When idle: static message (if set) or keep text as-is.
-        if activity:
-            activity_type = lookup_activity(self.config.activity_status)
-            if not playing and not paused and self.config.status_message:
-                text = format_status_msg(None)
-            if activity_type == discord.ActivityType.streaming:
-                url = (
-                    self.config.streamer
-                    if self.config.streamer.startswith("https://www.twitch.tv/")
-                    else "https://www.twitch.tv/"
-                )
-                activity = discord.Activity(type=activity_type, name=text, url=url)
-            else:
-                activity = discord.Activity(type=activity_type, name=text)
-            status = lookup_status(self.config.status)
+            activity = None
 
         async with self.aiolocks[_func_()]:
             if activity != self.last_status:
