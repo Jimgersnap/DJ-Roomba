@@ -125,7 +125,7 @@ class Config:
             default=ConfigDefaults._debug_level(),
             getter="getdebuglevel",
             comment=_Dd(
-                "Set the log verbosity of MusicBot. Normally this should be set to INFO.\n"
+                "Set the log verbosity of DJ-Roomba. Normally this should be set to INFO.\n"
                 "It can be set to one of the following:\n"
                 " CRITICAL, ERROR, WARNING, INFO, DEBUG, VOICEDEBUG, FFMPEG, NOISY, or EVERYTHING"
             ),
@@ -162,8 +162,8 @@ class Config:
             dest="spotify_clientid",
             default=ConfigDefaults.spotify_clientid,
             comment=_Dd(
-                "Provide your own Spotify Client ID to enable MusicBot to interact with Spotify API.\n"
-                "MusicBot will try to use the web player API (guest mode) if nothing is set here.\n"
+                "Provide your own Spotify Client ID to enable DJ-Roomba to interact with Spotify API.\n"
+                "DJ-Roomba will try to use the web player API (guest mode) if nothing is set here.\n"
                 "Using your own API credentials grants higher usage limits than guest mode."
             ),
             editable=False,
@@ -174,7 +174,7 @@ class Config:
             dest="spotify_clientsecret",
             default=ConfigDefaults.spotify_clientsecret,
             comment=_Dd(
-                "Provide your Spotify Client Secret to enable MusicBot to interact with Spotify API.\n"
+                "Provide your Spotify Client Secret to enable DJ-Roomba to interact with Spotify API.\n"
                 "This is required if you set the Spotify_ClientID option above."
             ),
             editable=False,
@@ -219,7 +219,7 @@ class Config:
             getter="getidset",
             default=ConfigDefaults.bot_exception_ids,
             comment=_Dd(
-                "Discord Member IDs for other bots that MusicBot should not ignore.\n"
+                "Discord Member IDs for other bots that DJ-Roomba should not ignore.\n"
                 "Use spaces to separate multiple IDs.\n"
                 "All bots are ignored by default."
             ),
@@ -246,7 +246,7 @@ class Config:
             dest="command_prefix",
             default=ConfigDefaults.command_prefix,
             comment=_Dd(
-                "Command prefix is how all MusicBot commands must be started in Discord messages.\n"
+                "Command prefix is how all DJ-Roomba commands must be started in Discord messages.\n"
                 "E.g., if you set this to * the play command is trigger by *play ..."
             ),
         )
@@ -269,7 +269,7 @@ class Config:
             default=ConfigDefaults.bound_channels,
             getter="getidset",
             comment=_Dd(
-                "ID numbers for text channels that MusicBot should exclusively use for commands.\n"
+                "ID numbers for text channels that DJ-Roomba should exclusively use for commands.\n"
                 "This can contain IDs for channels in multiple servers.\n"
                 "Use spaces to separate multiple IDs.\n"
                 "All channels are used if this is not set."
@@ -294,7 +294,7 @@ class Config:
             default=ConfigDefaults.usealias,
             getter="getboolean",
             comment=_Dd(
-                "If enabled, MusicBot will allow commands to have multiple names using data in:  config/aliases.json"
+                "If enabled, DJ-Roomba will allow commands to have multiple names using data in:  config/aliases.json"
             ),
             comment_args={"filepath": DEFAULT_COMMAND_ALIAS_FILE},
         )
@@ -306,7 +306,7 @@ class Config:
             getter="getboolean",
             comment=_Dd(
                 # TRANSLATORS: setprefix should not be translated.
-                "Allow MusicBot to save a per-server command prefix, and enables the setprefix command."
+                "Allow DJ-Roomba to save a per-server command prefix, and enables the setprefix command."
             ),
         )
 
@@ -320,7 +320,7 @@ class Config:
             default=ConfigDefaults.dm_nowplaying,
             getter="getboolean",
             comment=_Dd(
-                "MusicBot will try to send Now Playing notices directly to the member who requested the song instead of posting in a server channel."
+                "DJ-Roomba will try to send Now Playing notices directly to the member who requested the song instead of posting in a server channel."
             ),
         )
         self.no_nowplaying_auto: bool = self.register.init_option(
@@ -340,7 +340,7 @@ class Config:
             default=ConfigDefaults.nowplaying_channels,
             getter="getidset",
             comment=_Dd(
-                "Forces MusicBot to use a specific channel to send now playing messages.\n"
+                "Forces DJ-Roomba to use a specific channel to send now playing messages.\n"
                 "Only one text channel ID can be used per server."
             ),
         )
@@ -350,7 +350,7 @@ class Config:
             dest="delete_nowplaying",
             default=ConfigDefaults.delete_nowplaying,
             getter="getboolean",
-            comment=_Dd("MusicBot will automatically delete Now Playing messages."),
+            comment=_Dd("DJ-Roomba will automatically delete Now Playing messages."),
         )
 
         self.now_playing_mentions: bool = self.register.init_option(
@@ -370,7 +370,7 @@ class Config:
             getter="getboolean",
             comment=_Dd(
                 # TRANSLATORS: DeleteDelayShort and DeleteDelayLong should not be translated.
-                "Allow MusicBot to automatically delete messages it sends, after a delay.\n"
+                "Allow DJ-Roomba to automatically delete messages it sends, after a delay.\n"
                 "Delay period is controlled by DeleteDelayShort and DeleteDelayLong."
             ),
         )
@@ -410,7 +410,7 @@ class Config:
             dest="embeds",
             default=ConfigDefaults.embeds,
             getter="getboolean",
-            comment=_Dd("Allow MusicBot to format its messages as embeds."),
+            comment=_Dd("Allow DJ-Roomba to format its messages as embeds."),
         )
         self.footer_text: str = self.register.init_option(
             section="ChatResponses",
@@ -419,7 +419,7 @@ class Config:
             default=ConfigDefaults.footer_text,
             comment=_Dd(
                 # TRANSLATORS: UseEmbeds should not be translated.
-                "Replace MusicBot name/version in embed footer with custom text.\n"
+                "Replace DJ-Roomba name/version in embed footer with custom text.\n"
                 "Only applied when UseEmbeds is enabled and it is not blank."
             ),
             default_is_empty=True,
@@ -481,7 +481,7 @@ class Config:
             default=ConfigDefaults.default_volume,
             getter="getpercent",
             comment=_Dd(
-                "Sets the default volume level MusicBot will play songs at.\n"
+                "Sets the default volume level DJ-Roomba will play songs at.\n"
                 "You can use any value from 0 to 1, or 0% to 100% volume."
             ),
         )
@@ -492,7 +492,7 @@ class Config:
             default=ConfigDefaults.default_speed,
             getter="getfloat",
             comment=_Dd(
-                "Sets the default speed MusicBot will play songs at.\n"
+                "Sets the default speed DJ-Roomba will play songs at.\n"
                 "Must be a value from 0.5 to 100.0 for ffmpeg to use it.\n"
                 "A value of 1 is normal playback speed.\n"
                 "Note: Streamed media does not support speed adjustments."
@@ -550,7 +550,7 @@ class Config:
             dest="auto_pause",
             default=ConfigDefaults.auto_pause,
             getter="getboolean",
-            comment="MusicBot will automatically pause playback when no users are listening.",
+            comment="DJ-Roomba will automatically pause playback when no users are listening.",
         )
 
         self.persistent_queue: bool = self.register.init_option(
@@ -560,7 +560,7 @@ class Config:
             default=ConfigDefaults.persistent_queue,
             getter="getboolean",
             comment=_Dd(
-                "Allow MusicBot to save the song queue, so queued songs will survive restarts."
+                "Allow DJ-Roomba to save the song queue, so queued songs will survive restarts."
             ),
         )
         self.pre_download_next_song: bool = self.register.init_option(
@@ -570,7 +570,7 @@ class Config:
             default=ConfigDefaults.pre_download_next_song,
             getter="getboolean",
             comment=_Dd(
-                "Enable MusicBot to download the next song in the queue while a song is playing.\n"
+                "Enable DJ-Roomba to download the next song in the queue while a song is playing.\n"
                 "Currently this option does not apply to auto playlist or songs added to an empty queue."
             ),
         )
@@ -592,7 +592,7 @@ class Config:
             default=ConfigDefaults.defaultround_robin_queue,
             getter="getboolean",
             comment=_Dd(
-                "If enabled and multiple members are adding songs, MusicBot will organize playback for one song per member."
+                "If enabled and multiple members are adding songs, DJ-Roomba will organize playback for one song per member."
             ),
         )
         self.enable_local_media: bool = self.register.init_option(
@@ -616,7 +616,7 @@ class Config:
             default=ConfigDefaults.auto_unpause_on_play,
             getter="getboolean",
             comment=_Dd(
-                "Allow MusicBot to automatically unpause when play commands are used."
+                "Allow DJ-Roomba to automatically unpause when play commands are used."
             ),
         )
         self.use_opus_audio: bool = self.register.init_option(
@@ -650,7 +650,7 @@ class Config:
             default=ConfigDefaults.default_search_service,
             getter="getstr",
             comment=_Dd(
-                "This option sets the default search service used by MusicBot through ytdlp.\n"
+                "This option sets the default search service used by DJ-Roomba through ytdlp.\n"
                 "Read ytdlp's list of supported sites to find supported prefixes you can use here.\n"
                 "Some prefix examples:   ytsearch, scsearch, gvsearch, yvsearch, bilisearch, nicosearch"
             ),
@@ -666,7 +666,7 @@ class Config:
             default=ConfigDefaults.auto_playlist,
             getter="getboolean",
             comment=_Dd(
-                "Enable MusicBot to automatically play music from the auto playlist when the queue is empty."
+                "Enable DJ-Roomba to automatically play music from the auto playlist when the queue is empty."
             ),
         )
         self.auto_playlist_random: bool = self.register.init_option(
@@ -707,7 +707,7 @@ class Config:
             default=ConfigDefaults.enable_queue_history_global,
             getter="getboolean",
             comment=_Dd(
-                "Enable saving all songs played by MusicBot to a global playlist file:  %(filename)s\n"
+                "Enable saving all songs played by DJ-Roomba to a global playlist file:  %(filename)s\n"
                 "This will contain all songs from all servers."
             ),
             comment_args={"filename": hist_file},
@@ -734,7 +734,7 @@ class Config:
             default=ConfigDefaults.remove_ap,
             getter="getboolean",
             comment=_Dd(
-                "Enable MusicBot to automatically remove unplayable entries from the auto playlist."
+                "Enable DJ-Roomba to automatically remove unplayable entries from the auto playlist."
             ),
         )
 
@@ -748,7 +748,7 @@ class Config:
             default=ConfigDefaults.autojoin_channels,
             getter="getidset",
             comment=_Dd(
-                "A list of Voice Channel IDs that MusicBot should automatically join on start up.\n"
+                "A list of Voice Channel IDs that DJ-Roomba should automatically join on start up.\n"
                 "Use spaces to separate multiple IDs."
             ),
         )
@@ -759,7 +759,7 @@ class Config:
             default=ConfigDefaults.save_videos,
             getter="getboolean",
             comment=_Dd(
-                "Allow MusicBot to keep downloaded media, or delete it right away."
+                "Allow DJ-Roomba to keep downloaded media, or delete it right away."
             ),
         )
         self.storage_limit_bytes: int = self.register.init_option(
@@ -872,7 +872,7 @@ class Config:
             getter="getboolean",
             comment=_Dd(
                 # TRANSLATORS: [Server ID] is a descriptive placeholder and may be translated.
-                "If enabled, MusicBot will save the track title to:  data/[Server ID]/current.txt"
+                "If enabled, DJ-Roomba will save the track title to:  data/[Server ID]/current.txt"
             ),
         )
         self.show_config_at_start: bool = self.register.init_option(
@@ -881,7 +881,7 @@ class Config:
             dest="show_config_at_start",
             default=ConfigDefaults.show_config_at_start,
             getter="getboolean",
-            comment=_Dd("Display MusicBot config settings in the logs at startup."),
+            comment=_Dd("Display DJ-Roomba config settings in the logs at startup."),
         )
         self.leavenonowners: bool = self.register.init_option(
             section="MusicBot",
@@ -890,7 +890,7 @@ class Config:
             default=ConfigDefaults.leavenonowners,
             getter="getboolean",
             comment=_Dd(
-                "If enabled, MusicBot will leave servers if the owner is not in their member list."
+                "If enabled, DJ-Roomba will leave servers if the owner is not in their member list."
             ),
         )
         self.self_deafen: bool = self.register.init_option(
@@ -900,7 +900,7 @@ class Config:
             default=ConfigDefaults.self_deafen,
             getter="getboolean",
             comment=_Dd(
-                "MusicBot will automatically deafen itself when entering a voice channel."
+                "DJ-Roomba will automatically deafen itself when entering a voice channel."
             ),
         )
         self.leave_inactive_channel: bool = self.register.init_option(
@@ -911,7 +911,7 @@ class Config:
             getter="getboolean",
             comment=_Dd(
                 # TRANSLATORS: LeaveInactiveVCTimeOut should not be translated.
-                "If enabled, MusicBot will leave a voice channel when no users are listening,\n"
+                "If enabled, DJ-Roomba will leave a voice channel when no users are listening,\n"
                 "after waiting for a period set in LeaveInactiveVCTimeOut option.\n"
                 "Listeners are channel members, excluding bots, who are not deafened."
             ),
@@ -934,7 +934,7 @@ class Config:
             default=ConfigDefaults.leave_after_queue_empty,
             getter="getboolean",
             comment=_Dd(
-                "If enabled, MusicBot will leave the channel immediately when the song queue is empty."
+                "If enabled, DJ-Roomba will leave the channel immediately when the song queue is empty."
             ),
         )
         self.leave_player_inactive_for: float = self.register.init_option(
@@ -956,9 +956,9 @@ class Config:
             default=ConfigDefaults.enable_network_checker,
             getter="getboolean",
             comment=_Dd(
-                "Allow MusicBot to use timed pings to detect network outage and availability.\n"
+                "Allow DJ-Roomba to use timed pings to detect network outage and availability.\n"
                 "This may be useful if you keep the bot joined to a channel or playing music 24/7.\n"
-                "MusicBot must be restarted to enable network testing.\n"
+                "DJ-Roomba must be restarted to enable network testing.\n"
                 "By default this is disabled."
             ),
         )
@@ -1031,7 +1031,7 @@ class Config:
             default=ConfigDefaults.downloader_threads_max,
             getter="getint",
             comment=_Dd(
-                "The number of threads MusicBot may use for yt-dlp calls.\n"
+                "The number of threads DJ-Roomba may use for yt-dlp calls.\n"
                 "Most useful for multi-server bot's with high traffic.\n"
                 "These threads are spawned as-needed, not immediately.\n"
                 "NOTE: Each thread may spawn up to YtdlpConcurrentFrags child-threads."
@@ -1127,7 +1127,7 @@ class Config:
             default=ConfigDefaults.audio_cache_path,
             getter="getpathlike",
             comment=_Dd(
-                "An optional directory path where MusicBot will store long and short-term cache for playback."
+                "An optional directory path where DJ-Roomba will store long and short-term cache for playback."
             ),
             default_is_empty=True,
         )
@@ -1176,11 +1176,11 @@ class Config:
                     "Error creating default config options file.\n"
                     "\n"
                     "Problem:\n"
-                    "  MusicBot attempted to generate the config files but failed due to an error:\n"
+                    "  DJ-Roomba attempted to generate the config files but failed due to an error:\n"
                     "  %(raw_error)s\n"
                     "\n"
                     "Solution:\n"
-                    "  Make sure MusicBot can read and write to your config files.\n",
+                    "  Make sure DJ-Roomba can read and write to your config files.\n",
                     # fmt: on
                     fmt_args={"raw_error": e},
                 ) from e
@@ -1370,7 +1370,7 @@ class Config:
                 )
 
         if not bot.user:
-            log.critical("MusicBot does not have a user instance, cannot proceed.")
+            log.critical("DJ-Roomba does not have a user instance, cannot proceed.")
             raise RuntimeError("This cannot continue.")
 
         if self.owner_id == bot.user.id:
@@ -1429,7 +1429,7 @@ class Config:
                 else:
                     log.error(
                         "Could not locate config options or example options files.\n"
-                        "MusicBot will generate the config files at the location:\n"
+                        "DJ-Roomba will generate the config files at the location:\n"
                         "  %(cfg_file)s",
                         {"cfg_file": self.config_file.parent},
                     )
@@ -1446,7 +1446,7 @@ class Config:
                     "  %(raw_error)s\n"
                     "\n"
                     "Solution:\n"
-                    "  Verify the config folder and files exist and can be read by MusicBot.",
+                    "  Verify the config folder and files exist and can be read by DJ-Roomba.",
                     # fmt: on
                     fmt_args={"raw_error": e},
                 ) from e
@@ -1460,7 +1460,7 @@ class Config:
                 "Error loading config.\n"
                 "\n"
                 "Problem:\n"
-                "  MusicBot could not read config file due to an error:\n"
+                "  DJ-Roomba could not read config file due to an error:\n"
                 "  %(raw_error)s\n"
                 "\n"
                 "Solution:\n"
@@ -1678,7 +1678,7 @@ class ConfigOption:
         default_is_empty: bool = False,
     ) -> None:
         """
-        Defines a configuration option in MusicBot and attributes used to
+        Defines a configuration option in DJ-Roomba and attributes used to
         identify the option both at runtime and in the INI file.
 
         :param: section:    The section this option belongs to, case sensitive.
@@ -2203,11 +2203,11 @@ class ConfigOptionRegistry:
             # add comments to head of file.
             adder = cu[MUSICBOT_CONFIG_SECTIONS_ORDERED[0]].add_before
             head_comment = (
-                "This is the configuration file for MusicBot. Do not edit this file using Notepad.\n"
+                "This is the configuration file for DJ-Roomba. Do not edit this file using Notepad.\n"
                 "Use Notepad++ or a code editor like Visual Studio Code.\n"
                 "For help, see: https://just-some-bots.github.io/MusicBot/ \n"
                 "\n"
-                "This file was generated by MusicBot, it contains all options set to their default values."
+                "This file was generated by DJ-Roomba, it contains all options set to their default values."
             )
             for line in head_comment.split("\n"):
                 adder.comment(line)
@@ -2374,7 +2374,7 @@ class ExtendedConfigParser(configparser.ConfigParser):
                 "  The config option [%(section)s] > %(option)s is not a valid file location.\n"
                 "\n"
                 "Solution:\n"
-                "  Check the path setting and make sure the file exists and is accessible to MusicBot.",
+                "  Check the path setting and make sure the file exists and is accessible to DJ-Roomba.",
                 # fmt: on
                 fmt_args={"section": section, "option": key},
             ) from e
@@ -2886,7 +2886,7 @@ class UserBlocklist(Blocklist):
         create_file_ifnoexist(
             blocklist_file,
             [
-                f"{c} MusicBot discord user block list denies all access to bot.\n",
+                f"{c} DJ-Roomba discord user block list denies all access to bot.\n",
                 f"{c} Add one User ID or username per each line.\n",
                 f"{c} Nick-names or server-profile names are not checked.\n",
                 f"{c} User ID is prefered. Usernames with discriminators (ex: User#1234) may not work.\n",
@@ -2943,7 +2943,7 @@ class SongBlocklist(Blocklist):
         create_file_ifnoexist(
             blocklist_file,
             [
-                f"{c} MusicBot discord song block list denies songs by URL or Title.\n",
+                f"{c} DJ-Roomba discord song block list denies songs by URL or Title.\n",
                 f"{c} Add one URL or Title per line. Leading and trailing space is ignored.\n",
                 f"{c} This list is matched loosely, with case sensitivity, so adding 'press'\n",
                 f"{c} will block 'juice press' and 'press release' but not 'Press'\n",

@@ -171,7 +171,7 @@ class MusicBot(discord.Client):
         aliases_file: Optional[pathlib.Path] = None,
         use_certifi: bool = False,
     ) -> None:
-        log.info("Initializing MusicBot %s", BOTVERSION)
+        log.info("Initializing DJ-Roomba %s", BOTVERSION)
         load_opus_lib()
 
         if config_file is None:
@@ -459,8 +459,8 @@ class MusicBot(discord.Client):
             ping_status = await p.wait()
         except FileNotFoundError:
             log.error(
-                "MusicBot could not locate a `ping` command path.  Will attempt to use HTTP ping instead."
-                "\nMusicBot tried the following command:   %s"
+                "DJ-Roomba could not locate a `ping` command path.  Will attempt to use HTTP ping instead."
+                "\nDJ-Roomba tried the following command:   %s"
                 "\nYou should enable ping in your system or container environment for best results."
                 "\nAlternatively disable network checking via config.",
                 " ".join(ping_cmd),
@@ -469,8 +469,8 @@ class MusicBot(discord.Client):
             return 1
         except PermissionError:
             log.error(
-                "MusicBot was denied permission to execute the `ping` command.  Will attempt to use HTTP ping instead."
-                "\nMusicBot tried the following command:   %s"
+                "DJ-Roomba was denied permission to execute the `ping` command.  Will attempt to use HTTP ping instead."
+                "\nDJ-Roomba tried the following command:   %s"
                 "\nYou should enable ping in your system or container environment for best results."
                 "\nAlternatively disable network checking via config.",
                 " ".join(ping_cmd),
@@ -480,7 +480,7 @@ class MusicBot(discord.Client):
         except OSError:
             log.error(
                 "Your environment may not allow the `ping` system command.  Will attempt to use HTTP ping instead."
-                "\nMusicBot tried the following command:   %s"
+                "\nDJ-Roomba tried the following command:   %s"
                 "\nYou should enable ping in your system or container environment for best results."
                 "\nAlternatively disable network checking via config.",
                 " ".join(ping_cmd),
@@ -492,9 +492,9 @@ class MusicBot(discord.Client):
 
     def on_network_up(self) -> None:
         """
-        Event called by MusicBot when it detects network returned from outage.
+        Event called by DJ-Roomba when it detects network returned from outage.
         """
-        log.info("MusicBot detected network is available again.")
+        log.info("DJ-Roomba detected network is available again.")
         for gid, player in self.players.items():
             if player.is_paused and not player.paused_auto:
                 if not player.voice_client.is_connected():
@@ -512,9 +512,9 @@ class MusicBot(discord.Client):
 
     def on_network_down(self) -> None:
         """
-        Event called by MusicBot when it detects network outage.
+        Event called by DJ-Roomba when it detects network outage.
         """
-        log.info("MusicBot detected a network outage.")
+        log.info("DJ-Roomba detected a network outage.")
         for gid, player in self.players.items():
             if player.is_playing:
                 log.info(
@@ -661,7 +661,7 @@ class MusicBot(discord.Client):
                         continue
 
                 else:
-                    log.debug("MusicBot will make a new MusicPlayer now...")
+                    log.debug("DJ-Roomba will make a new MusicPlayer now...")
                     try:
                         player = await self.get_player(
                             channel,
@@ -694,7 +694,7 @@ class MusicBot(discord.Client):
             suffix = "mbps"
             bw_usage /= 1000
         log.info(
-            "MusicBot may use up to %(rate).2f %(suffix)s of bandwidth.",
+            "DJ-Roomba may use up to %(rate).2f %(suffix)s of bandwidth.",
             {"rate": bw_usage, "suffix": suffix},
         )
 
@@ -727,7 +727,7 @@ class MusicBot(discord.Client):
     ) -> str:
         """
         Fetch Application Info from discord and generate an OAuth invite
-        URL for MusicBot.
+        URL for DJ-Roomba.
         """
         if not self.cached_app_info:
             log.debug("Getting bot Application Info.")
@@ -746,7 +746,7 @@ class MusicBot(discord.Client):
             If `channel` is not a discord.VoiceChannel or discord.StageChannel
 
         :raises: musicbot.exceptions.PermissionsError
-            If MusicBot does not have permissions required to join or speak in the `channel`.
+            If DJ-Roomba does not have permissions required to join or speak in the `channel`.
         """
         if not isinstance(channel, (discord.VoiceChannel, discord.StageChannel)):
             raise TypeError("[BUG] Channel passed must be a voice channel")
@@ -755,20 +755,20 @@ class MusicBot(discord.Client):
         chperms = channel.permissions_for(channel.guild.me)
         if not chperms.connect:
             log.error(
-                "MusicBot does not have permission to Connect in channel:  %s",
+                "DJ-Roomba does not have permission to Connect in channel:  %s",
                 channel.name,
             )
             raise exceptions.PermissionsError(
-                "MusicBot does not have permission to Connect in channel:  `%(name)s`",
+                "DJ-Roomba does not have permission to Connect in channel:  `%(name)s`",
                 fmt_args={"name": channel.name},
             )
         if not chperms.speak:
             log.error(
-                "MusicBot does not have permission to Speak in channel:  %s",
+                "DJ-Roomba does not have permission to Speak in channel:  %s",
                 channel.name,
             )
             raise exceptions.PermissionsError(
-                "MusicBot does not have permission to Speak in channel:  `%(name)s`",
+                "DJ-Roomba does not have permission to Speak in channel:  `%(name)s`",
                 fmt_args={"name": channel.name},
             )
 
@@ -801,7 +801,7 @@ class MusicBot(discord.Client):
                     self_deaf=self.config.self_deafen,
                 )
                 log.voicedebug(  # type: ignore[attr-defined]
-                    "MusicBot has a VoiceClient now..."
+                    "DJ-Roomba has a VoiceClient now..."
                 )
                 break
             except asyncio.exceptions.TimeoutError:
@@ -811,34 +811,34 @@ class MusicBot(discord.Client):
                 )
             except asyncio.exceptions.CancelledError as e:
                 log.exception(
-                    "MusicBot VoiceClient connection attempt was cancelled. No retry."
+                    "DJ-Roomba VoiceClient connection attempt was cancelled. No retry."
                 )
                 raise exceptions.CommandError(
-                    "MusicBot connection to voice was cancelled. This is odd. Maybe restart?"
+                    "DJ-Roomba connection to voice was cancelled. This is odd. Maybe restart?"
                 ) from e
         else:
             log.critical(
-                "MusicBot is unable to connect to the channel right now:  %(channel)s",
+                "DJ-Roomba is unable to connect to the channel right now:  %(channel)s",
                 {"channel": channel},
             )
             raise exceptions.CommandError(
-                "MusicBot could not connect to the channel.\n"
+                "DJ-Roomba could not connect to the channel.\n"
                 "Try again later, or restart the bot if this continues."
             )
 
         # request speaker automatically in stage channels.
         if isinstance(channel, discord.StageChannel):
             try:
-                log.info("MusicBot is requesting to speak in channel: %s", channel.name)
+                log.info("DJ-Roomba is requesting to speak in channel: %s", channel.name)
                 # this has the same effect as edit(suppress=False)
                 await channel.guild.me.request_to_speak()
             except discord.Forbidden as e:
                 raise exceptions.PermissionsError(
-                    "MusicBot does not have permission to speak."
+                    "DJ-Roomba does not have permission to speak."
                 ) from e
             except (discord.HTTPException, discord.ClientException) as e:
                 raise exceptions.MusicbotException(
-                    "MusicBot could not request to speak."
+                    "DJ-Roomba could not request to speak."
                 ) from e
 
         return client
@@ -881,7 +881,7 @@ class MusicBot(discord.Client):
         for vc in self.voice_clients:
             if not isinstance(vc, discord.VoiceClient):
                 log.debug(
-                    "MusicBot has a VoiceProtocol that is not a VoiceClient. Disconnecting anyway..."
+                    "DJ-Roomba has a VoiceProtocol that is not a VoiceClient. Disconnecting anyway..."
                 )
                 try:
                     await vc.disconnect(force=True)
@@ -928,7 +928,7 @@ class MusicBot(discord.Client):
                     log.warning("The disconnect failed or was cancelled.")
             else:
                 log.warning(
-                    "MusicBot.voice_clients list contains a non-VoiceClient object?\n"
+                    "DJ-Roomba.voice_clients list contains a non-VoiceClient object?\n"
                     "The object is actually of type:  %s",
                     type(vc),
                 )
@@ -980,7 +980,7 @@ class MusicBot(discord.Client):
         :raises:  TypeError
             If given `channel` is not a discord.VoiceChannel or discord.StageChannel
         :raises:  musicbot.exceptions.PermissionsError
-            If MusicBot is not permitted to join the given `channel`.
+            If DJ-Roomba is not permitted to join the given `channel`.
         """
         guild = channel.guild
 
@@ -1031,7 +1031,7 @@ class MusicBot(discord.Client):
         self, player: MusicPlayer, *, guild: Optional[discord.Guild] = None
     ) -> MusicPlayer:
         """
-        Connect a brand-new MusicPlayer instance with the MusicBot event
+        Connect a brand-new MusicPlayer instance with the DJ-Roomba event
         handler functions, and store the player reference for reuse.
 
         :returns: The player with it's event connections.
@@ -1474,12 +1474,12 @@ class MusicBot(discord.Client):
 
                 except exceptions.MusicbotException:
                     log.exception(
-                        "MusicBot needs to stop the auto playlist extraction and bail."
+                        "DJ-Roomba needs to stop the auto playlist extraction and bail."
                     )
                     return
                 except Exception:  # pylint: disable=broad-exception-caught
                     log.exception(
-                        "MusicBot got an unhandled exception in player finished event."
+                        "DJ-Roomba got an unhandled exception in player finished event."
                     )
                     break
 
@@ -2164,11 +2164,11 @@ class MusicBot(discord.Client):
         loop for signals registered in run.py.
         On Windows, this method is called by custom signal handling set up at
         the start of run_musicbot().
-        This allows MusicBot to handle external signals and triggering a clean
-        shutdown of MusicBot in response to them.
+        This allows DJ-Roomba to handle external signals and triggering a clean
+        shutdown of DJ-Roomba in response to them.
 
-        It essentially just calls logout, and the rest of MusicBot tear-down is
-        finished up in `MusicBot.run_musicbot()` instead.
+        It essentially just calls logout, and the rest of DJ-Roomba tear-down is
+        finished up in `DJ-Roomba.run_musicbot()` instead.
 
         Signals handled here are registered with the event loop in run.py.
         """
@@ -2178,7 +2178,7 @@ class MusicBot(discord.Client):
 
         try:
             if self and not self.logout_called:
-                log.info("Disconnecting and closing down MusicBot...")
+                log.info("Disconnecting and closing down DJ-Roomba...")
                 await self.logout()
         except Exception as e:
             log.exception("Exception thrown while handling interrupt signal!")
@@ -2186,7 +2186,7 @@ class MusicBot(discord.Client):
 
     async def run_musicbot(self) -> None:
         """
-        This method is to be used in an event loop to start the MusicBot.
+        This method is to be used in an event loop to start the DJ-Roomba.
         It handles cleanup of bot session, while the event loop is closed separately.
         """
         # Windows specifically needs some help with signals.
@@ -2194,9 +2194,9 @@ class MusicBot(discord.Client):
 
         # handle start up and teardown.
         try:
-            log.info("MusicBot is now doing start up steps...")
+            log.info("DJ-Roomba is now doing start up steps...")
             await self.start(*self.config.auth)
-            log.info("MusicBot is now doing shutdown steps...")
+            log.info("DJ-Roomba is now doing shutdown steps...")
             if self.exit_signal is None:
                 self.exit_signal = exceptions.TerminateSignal()
 
@@ -2207,7 +2207,7 @@ class MusicBot(discord.Client):
                 "Failed Discord API Login!\n"
                 "\n"
                 "Problem:\n"
-                "  MusicBot could not log into Discord API.\n"
+                "  DJ-Roomba could not log into Discord API.\n"
                 "  Your Token may be incorrect or there may be an API outage.\n"
                 "\n"
                 "Solution:\n"
@@ -2281,7 +2281,7 @@ class MusicBot(discord.Client):
 
     async def logout(self) -> None:
         """
-        Disconnect all voice clients and signal MusicBot to close it's connections to discord.
+        Disconnect all voice clients and signal DJ-Roomba to close it's connections to discord.
         """
         log.noise("Logout has been called.")  # type: ignore[attr-defined]
         await self.update_now_playing_status(set_offline=True)
@@ -2318,12 +2318,12 @@ class MusicBot(discord.Client):
         Event called by discord.py when the client resumed an existing session.
         https://discordpy.readthedocs.io/en/stable/api.html#discord.on_resume
         """
-        log.info("MusicBot resumed a session with discord.")
+        log.info("DJ-Roomba resumed a session with discord.")
         await self._auto_join_channels(from_resume=True)
 
     async def on_ready(self) -> None:
         """
-        Event called by discord.py typically when MusicBot has finished login.
+        Event called by discord.py typically when DJ-Roomba has finished login.
         May be called multiple times, and may not be the first event dispatched!
         See documentations for specifics:
         https://discordpy.readthedocs.io/en/stable/api.html#discord.on_ready
@@ -2342,7 +2342,7 @@ class MusicBot(discord.Client):
         A version of on_ready that will only ever be called once, at first login.
         """
         mute_discord_console_log()
-        log.debug("Logged in, now getting MusicBot ready...")
+        log.debug("Logged in, now getting DJ-Roomba ready...")
 
         if not self.user:
             log.critical("ClientUser is somehow none, we gotta bail...")
@@ -2354,7 +2354,7 @@ class MusicBot(discord.Client):
         await self._on_ready_sanity_checks()
 
         log.info(
-            "MusicBot:  %(id)s/%(name)s#%(desc)s",
+            "DJ-Roomba:  %(id)s/%(name)s#%(desc)s",
             {
                 "id": self.user.id,
                 "name": self.user.name,
@@ -2546,7 +2546,7 @@ class MusicBot(discord.Client):
                 "\n"
                 "Solution:\n"
                 "  Add the new options listed above to your options.ini file.\n"
-                "  You can do this with MusicBot config command, the configure.py tool, or any text editor.\n"
+                "  You can do this with DJ-Roomba config command, the configure.py tool, or any text editor.\n"
                 "  If you recently updated, check example_options.ini for documentation and default values.\n\n",
                 # fmt: on
                 {"missing": missing_list},
@@ -2822,7 +2822,7 @@ class MusicBot(discord.Client):
 
     async def handle_vc_inactivity(self, guild: discord.Guild) -> None:
         """
-        Manage a server-specific event timer when MusicBot's voice channel becomes idle,
+        Manage a server-specific event timer when DJ-Roomba's voice channel becomes idle,
         if the bot is configured to do so.
         """
         if not guild.voice_client or not guild.voice_client.channel:
@@ -2962,7 +2962,7 @@ class MusicBot(discord.Client):
             f"DJ Roomba `{BOTVERSION}` — a Python-based Discord music bot, a fork of Just-Some-Bots/MusicBot, "
             "with additional features and a cleaner Discord presence.\n\n"
             f"DJ Roomba GitHub: `https://github.com/Jimgersnap/DJ-Roomba`\n"
-            f"MusicBot GitHub: `https://github.com/Just-Some-Bots/MusicBot`\n\n"
+            f"DJ-Roomba GitHub: `https://github.com/Just-Some-Bots/MusicBot`\n\n"
             "DJ Roomba avatar created by VeryBear: `https://www.teepublic.com/user/verybear`",
             delete_after=60,
         )
@@ -3144,7 +3144,7 @@ class MusicBot(discord.Client):
         command: Optional[str] = None,
     ) -> CommandResponse:
         """
-        Display help text for usage of MusicBot or specific commmands.
+        Display help text for usage of DJ-Roomba or specific commmands.
         """
         commands = []
         is_all = False
@@ -3725,7 +3725,7 @@ class MusicBot(discord.Client):
 
             premsg = _D(
                 "The tracks in playlist `%(playlist)s` will be added to the queue.\n"
-                "Please wait while MusicBot processes the playlist.",
+                "Please wait while DJ-Roomba processes the playlist.",
                 ssd_,
             ) % {"playlist": plname}
             await self.safe_send_message(
@@ -4013,7 +4013,7 @@ class MusicBot(discord.Client):
             "You may supply a URL to a video or audio file or the URL of a service supported by yt-dlp.\n"
             "Playlist links will be extracted into multiple links and added to the queue.\n"
             "If you enter a non-URL, the input will be used as search criteria on YouTube and the first result played.\n"
-            "MusicBot also supports Spotify URIs and URLs, but audio is fetched from YouTube regardless.\n"
+            "DJ-Roomba also supports Spotify URIs and URLs, but audio is fetched from YouTube regardless.\n"
         ),
     )
     async def cmd_play(
@@ -5316,7 +5316,7 @@ class MusicBot(discord.Client):
             title=_D(player.current_entry.title, ssd_),
         )
 
-    @command_helper(desc=_Dd("Tell MusicBot to join the channel you're in."))
+    @command_helper(desc=_Dd("Tell DJ-Roomba to join the channel you're in."))
     async def cmd_summon(
         self,
         ssd_: Optional[GuildSpecificData],
@@ -5380,7 +5380,7 @@ class MusicBot(discord.Client):
 
     @command_helper(
         desc=_Dd(
-            "Makes MusicBot follow a user when they change channels in a server.\n"
+            "Makes DJ-Roomba follow a user when they change channels in a server.\n"
         )
     )
     async def cmd_follow(
@@ -5391,7 +5391,7 @@ class MusicBot(discord.Client):
         user_mentions: UserMentions,
     ) -> CommandResponse:
         """
-        Bind a user to be followed by MusicBot between channels in a server.
+        Bind a user to be followed by DJ-Roomba between channels in a server.
         """
         # If MusicBot is already following a user, either change user or un-follow.
         followed_user = self.server_data[guild.id].follow_user
@@ -5904,9 +5904,9 @@ class MusicBot(discord.Client):
     @command_helper(
         usage=["{cmd} [VOLUME]"],
         desc=_Dd(
-            "Set the output volume level of MusicBot from 1 to 100.\n"
+            "Set the output volume level of DJ-Roomba from 1 to 100.\n"
             "Volume parameter allows a leading + or - for relative adjustments.\n"
-            "The volume setting is retained until MusicBot is restarted.\n"
+            "The volume setting is retained until DJ-Roomba is restarted.\n"
         ),
     )
     async def cmd_volume(
@@ -5916,7 +5916,7 @@ class MusicBot(discord.Client):
         new_volume: str = "",
     ) -> CommandResponse:
         """
-        Command to set volume level of MusicBot output for the session.
+        Command to set volume level of DJ-Roomba output for the session.
         """
 
         if not new_volume:
@@ -7427,7 +7427,7 @@ class MusicBot(discord.Client):
             _D("Set the bot's username to `%(name)s`", ssd_) % {"name": name}
         )
 
-    @command_helper(usage=["{cmd} <NICK>"], desc=_Dd("Change the MusicBot's nickname."))
+    @command_helper(usage=["{cmd} <NICK>"], desc=_Dd("Change the DJ-Roomba's nickname."))
     async def cmd_setnick(
         self,
         ssd_: Optional[GuildSpecificData],
@@ -7587,7 +7587,7 @@ class MusicBot(discord.Client):
     @command_helper(
         usage=["{cmd} [URL]"],
         desc=_Dd(
-            "Change MusicBot's avatar.\n"
+            "Change DJ-Roomba's avatar.\n"
             "Attaching a file and omitting the url parameter also works.\n"
         ),
     )
@@ -7624,7 +7624,7 @@ class MusicBot(discord.Client):
         return Response(_D("Changed the bot's avatar.", ssd_))
 
     @command_helper(
-        desc=_Dd("Force MusicBot to disconnect from the discord server."),
+        desc=_Dd("Force DJ-Roomba to disconnect from the discord server."),
     )
     async def cmd_disconnect(self, guild: discord.Guild) -> CommandResponse:
         """
@@ -7642,7 +7642,7 @@ class MusicBot(discord.Client):
         for vc in self.voice_clients:
             if not hasattr(vc.channel, "guild"):
                 log.warning(
-                    "MusicBot found a %s with no guild!  This could be a problem.",
+                    "DJ-Roomba found a %s with no guild!  This could be a problem.",
                     type(vc),
                 )
                 continue
@@ -7664,19 +7664,19 @@ class MusicBot(discord.Client):
             "{cmd} [soft]\n"
             + _Dd("    Attempt to reload without process restart. The default option.\n"),
             "{cmd} full\n"
-            + _Dd("    Attempt to restart the entire MusicBot process, reloading everything.\n"),
+            + _Dd("    Attempt to restart the entire DJ-Roomba process, reloading everything.\n"),
             "{cmd} uppip\n"
             + _Dd("    Full restart, but attempt to update pip packages before restart.\n"),
             "{cmd} upgit\n"
-            + _Dd("    Full restart, but update MusicBot source code with git first.\n"),
+            + _Dd("    Full restart, but update DJ-Roomba source code with git first.\n"),
             "{cmd} upgrade\n"
             + _Dd("    Attempt to update all dependency and source code before fully restarting.\n"),
         ],
         # fmt: on
         desc=_Dd(
-            "Attempts to restart the MusicBot in a number of different ways.\n"
+            "Attempts to restart the DJ-Roomba in a number of different ways.\n"
             "With no option supplied, a `soft` restart is implied.\n"
-            "It can be used to remotely update a MusicBot installation, but should be used with care.\n"
+            "It can be used to remotely update a DJ-Roomba installation, but should be used with care.\n"
             "If you have a service manager, we recommend using it instead of this command for restarts.\n"
         ),
     )
@@ -7755,7 +7755,7 @@ class MusicBot(discord.Client):
         return None
 
     @command_helper(
-        desc=_Dd("Disconnect from all voice channels and close the MusicBot process.")
+        desc=_Dd("Disconnect from all voice channels and close the DJ-Roomba process.")
     )
     async def cmd_shutdown(
         self, guild: discord.Guild, channel: MessageableChannel
@@ -7763,7 +7763,7 @@ class MusicBot(discord.Client):
         """
         Disconnects from voice channels and raises the TerminateSignal
         which is hopefully respected by all the loopy async processes
-        and then results in MusicBot cleanly shutting down.
+        and then results in DJ-Roomba cleanly shutting down.
         """
         await self.safe_send_message(
             channel,
@@ -7785,7 +7785,7 @@ class MusicBot(discord.Client):
         ],
         # fmt: on
         desc=_Dd(
-            "Force MusicBot to leave the given Discord server.\n"
+            "Force DJ-Roomba to leave the given Discord server.\n"
             "Names are case-sensitive, so using an ID number is more reliable.\n"
         ),
     )
@@ -7863,7 +7863,7 @@ class MusicBot(discord.Client):
     @command_helper(
         desc=_Dd(
             "This command issues a log at level CRITICAL, but does nothing else.\n"
-            "Can be used to manually pinpoint events in the MusicBot log file.\n"
+            "Can be used to manually pinpoint events in the DJ-Roomba log file.\n"
         ),
     )
     async def cmd_breakpoint(self, guild: discord.Guild) -> CommandResponse:
@@ -7958,7 +7958,7 @@ class MusicBot(discord.Client):
             "Multi-line code can be executed if wrapped in code-block.\n"
             "Otherwise only a single line may be executed.\n"
             "\n"
-            "This command may be removed in a future version, and is used by developers to debug MusicBot behaviour.\n"
+            "This command may be removed in a future version, and is used by developers to debug DJ-Roomba behaviour.\n"
             "The danger of this command cannot be understated. Do not use it or give access to it if you do not understand the risks!\n"
         ),
     )
@@ -7974,7 +7974,7 @@ class MusicBot(discord.Client):
         data: str,
     ) -> CommandResponse:
         """
-        Command for debugging MusicBot in real-time.
+        Command for debugging DJ-Roomba in real-time.
         It is dangerous and should maybe be removed in later versions...
         """
         codeblock = "```py\n{}\n```"
@@ -8114,7 +8114,7 @@ class MusicBot(discord.Client):
     @owner_only
     @command_helper(
         desc=_Dd(
-            "Display the current bot version and check for updates to MusicBot or dependencies.\n"
+            "Display the current bot version and check for updates to DJ-Roomba or dependencies.\n"
         ),
     )
     async def cmd_checkupdates(
@@ -8124,8 +8124,8 @@ class MusicBot(discord.Client):
         Usage:
             {command_prefix}checkupdates
 
-        Display the current bot version and check for updates to MusicBot or dependencies.
-        The option `GitUpdatesBranch` must be set to check for updates to MusicBot.
+        Display the current bot version and check for updates to DJ-Roomba or dependencies.
+        The option `GitUpdatesBranch` must be set to check for updates to DJ-Roomba.
         """
         git_status = ""
         pip_status = ""
@@ -8229,9 +8229,9 @@ class MusicBot(discord.Client):
             pip_status = _D("Error while checking, see logs for details.", ssd_)
 
         if updates:
-            header = _D("There are updates for MusicBot available for download.", ssd_)
+            header = _D("There are updates for DJ-Roomba available for download.", ssd_)
         else:
-            header = _D("MusicBot is totally up-to-date!", ssd_)
+            header = _D("DJ-Roomba is totally up-to-date!", ssd_)
 
         return Response(
             _D(
@@ -8249,14 +8249,14 @@ class MusicBot(discord.Client):
         )
 
     @command_helper(
-        desc=_Dd("Displays the MusicBot uptime, or time since last start / restart."),
+        desc=_Dd("Displays the DJ-Roomba uptime, or time since last start / restart."),
     )
     async def cmd_uptime(self, ssd_: Optional[GuildSpecificData]) -> CommandResponse:
         """
         Usage:
             {command_prefix}uptime
 
-        Displays the MusicBot uptime, since last start/restart.
+        Displays the DJ-Roomba uptime, since last start/restart.
         """
         uptime = time.time() - self._init_time
         delta = format_song_duration(uptime)
@@ -8319,7 +8319,7 @@ class MusicBot(discord.Client):
         )
 
     @command_helper(
-        desc=_Dd("Display API latency and Voice latency if MusicBot is connected."),
+        desc=_Dd("Display API latency and Voice latency if DJ-Roomba is connected."),
     )
     async def cmd_latency(
         self, ssd_: Optional[GuildSpecificData], guild: discord.Guild
@@ -8348,12 +8348,12 @@ class MusicBot(discord.Client):
         )
 
     @command_helper(
-        desc=_Dd("Display MusicBot version number in the chat."),
+        desc=_Dd("Display DJ-Roomba version number in the chat."),
     )
     async def cmd_botversion(
         self, ssd_: Optional[GuildSpecificData]
     ) -> CommandResponse:
-        """Command to check MusicBot version string in discord."""
+        """Command to check DJ-Roomba version string in discord."""
         return Response(
             _D(
                 "https://github.com/Just-Some-Bots/MusicBot\n"
@@ -8497,7 +8497,7 @@ class MusicBot(discord.Client):
             )
 
         # lastly check if we allow bot mentions for commands.
-        self_mention = "<@MusicBot>"  # placeholder
+        self_mention = "<@DJ-Roomba>"  # placeholder
         if self.user:
             self_mention = f"<@{self.user.id}>"
         if not message_content.startswith(command_prefix) and (
@@ -8593,7 +8593,7 @@ class MusicBot(discord.Client):
             and message.channel.id not in self.config.bound_channels
         ):
             log.debug(
-                "MusicBot has bound channel config and caller channel is not in bound channels."
+                "DJ-Roomba has bound channel config and caller channel is not in bound channels."
             )
             if self.config.unbound_servers:
                 if any(
@@ -8981,7 +8981,7 @@ class MusicBot(discord.Client):
         self, voice_channel: VoiceableChannel
     ) -> None:
         """
-        A generic event called by MusicBot when configured channel or player
+        A generic event called by DJ-Roomba when configured channel or player
         activity timers reach their end.
         """
         guild = voice_channel.guild
@@ -9007,11 +9007,11 @@ class MusicBot(discord.Client):
     async def on_connect(self) -> None:
         """Event called by discord.py when the Client has connected to the API."""
         if self.init_ok:
-            log.info("MusicBot has become connected.")
+            log.info("DJ-Roomba has become connected.")
 
     async def on_disconnect(self) -> None:
         """Event called by discord.py any time bot is disconnected, or fails to connect."""
-        log.info("MusicBot has become disconnected.")
+        log.info("DJ-Roomba has become disconnected.")
 
     async def on_socket_event_type(self, event_type: str) -> None:
         """Event called by discord.py on any socket event."""
@@ -9114,15 +9114,15 @@ class MusicBot(discord.Client):
             ):
                 try:
                     log.info(
-                        "MusicBot is requesting to speak in channel: %s",
+                        "DJ-Roomba is requesting to speak in channel: %s",
                         after.channel.name,
                     )
                     # this has the same effect as edit(suppress=False)
                     await after.channel.guild.me.request_to_speak()
                 except discord.Forbidden:
-                    log.exception("MusicBot does not have permission to speak.")
+                    log.exception("DJ-Roomba does not have permission to speak.")
                 except (discord.HTTPException, discord.ClientException):
-                    log.exception("MusicBot could not request to speak.")
+                    log.exception("DJ-Roomba could not request to speak.")
 
         if before.channel:
             player = self.get_player_in(before.channel.guild)
@@ -9175,7 +9175,7 @@ class MusicBot(discord.Client):
 
     async def _handle_api_disconnect(self, before: discord.VoiceState) -> bool:
         """
-        Method called from on_voice_state_update when MusicBot is disconnected from voice.
+        Method called from on_voice_state_update when DJ-Roomba is disconnected from voice.
         """
         if not before.channel:
             log.debug("VoiceState disconnect before.channel is None.")

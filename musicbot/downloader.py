@@ -173,7 +173,7 @@ class Downloader:
         # check if we should apply a cookies file to ytdlp.
         if bot.config.cookies_path.is_file():
             log.info(
-                "MusicBot will use cookies for yt-dlp from:  %s",
+                "DJ-Roomba will use cookies for yt-dlp from:  %s",
                 bot.config.cookies_path,
             )
             ytdl_format_options["cookiefile"] = bot.config.cookies_path
@@ -377,7 +377,7 @@ class Downloader:
             if event loop is closed and cannot be used for extraction.
 
         :raises: musicbot.exceptions.ExtractionError
-            for errors in MusicBot's internal filtering and pre-processing of extraction queries.
+            for errors in DJ-Roomba's internal filtering and pre-processing of extraction queries.
 
         :raises: musicbot.exceptions.SpotifyError
             for issues with Musicbot's Spotify API request and data handling.
@@ -466,7 +466,7 @@ class Downloader:
             if event loop is closed and cannot be used for extraction.
 
         :raises: musicbot.exceptions.ExtractionError
-            for errors in MusicBot's internal filtering and pre-processing of extraction queries.
+            for errors in DJ-Roomba's internal filtering and pre-processing of extraction queries.
 
         :raises: musicbot.exceptions.SpotifyError
             for issues with Musicbot's Spotify API request and data handling.
@@ -713,12 +713,12 @@ class Downloader:
                     continue
                 # else, just bail.
                 log.exception(
-                    "MusicBot needs to stop the auto playlist extraction and bail."
+                    "DJ-Roomba needs to stop the auto playlist extraction and bail."
                 )
                 break
             except Exception:  # pylint: disable=broad-exception-caught
                 log.exception(
-                    "MusicBot got an unhandled exception while adding auto playlist to the queue."
+                    "DJ-Roomba got an unhandled exception while adding auto playlist to the queue."
                 )
                 break
 

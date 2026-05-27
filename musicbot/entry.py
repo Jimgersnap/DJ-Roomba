@@ -256,7 +256,7 @@ class URLPlaylistEntry(BasePlaylistEntry):
         if self.duration is None:
             log.info(
                 "Extraction did not provide a duration for this entry.\n"
-                "MusicBot cannot estimate queue times until it is downloaded.\n"
+                "DJ-Roomba cannot estimate queue times until it is downloaded.\n"
                 "Entry name:  %s",
                 self.title,
             )
@@ -533,7 +533,7 @@ class URLPlaylistEntry(BasePlaylistEntry):
 
                 if not self.duration:
                     log.error(
-                        "MusicBot could not get duration data for this entry.\n"
+                        "DJ-Roomba could not get duration data for this entry.\n"
                         "Queue time estimation may be unavailable until this track is cleared.\n"
                         "Entry file: %s",
                         self.filename,
@@ -1208,7 +1208,7 @@ class LocalFilePlaylistEntry(BasePlaylistEntry):
 
                 if not self.duration:
                     log.error(
-                        "MusicBot could not get duration data for this entry.\n"
+                        "DJ-Roomba could not get duration data for this entry.\n"
                         "Queue time estimation may be unavailable until this track is cleared.\n"
                         "Entry file: %s",
                         self.filename,

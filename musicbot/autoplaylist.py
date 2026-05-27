@@ -257,7 +257,7 @@ class AutoPlaylist(StrUserList):
                 with open(self._file, "r+", encoding="utf8") as fh:
                     lines = fh.readlines()
                     if not lines:
-                        lines.append("# MusicBot Auto Playlist\n")
+                        lines.append("# DJ-Roomba Auto Playlist\n")
                     if lines[-1].endswith("\n"):
                         lines.append(f"{song_subject}\n")
                     else:
@@ -343,7 +343,7 @@ class AutoPlaylistManager:
 
     @property
     def global_history(self) -> AutoPlaylist:
-        """Returns the MusicBot global history file."""
+        """Returns the DJ-Roomba global history file."""
         if self._apl_file_history.stem in self._playlists:
             return self._playlists[self._apl_file_history.stem]
 

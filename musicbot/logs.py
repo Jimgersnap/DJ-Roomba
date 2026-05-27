@@ -318,7 +318,7 @@ def shutdown_loggers() -> None:
 
     # This is the last log line of the logger session.
     log = logging.getLogger("musicbot.logs")
-    log.info("MusicBot loggers have been called to shut down.")
+    log.info("DJ-Roomba loggers have been called to shut down.")
 
     setattr(logging, "_mb_logs_open", False)
 
