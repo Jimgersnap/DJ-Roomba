@@ -308,9 +308,8 @@ function clone_branch_selection() {
 
     if [ "$USING_BRANCH" == "" ] ; then
         echo ""
-        echo "DJ-Roomba currently has three branches available."
-        echo "  master - An older DJ-Roomba, for older discord.py. May not work without tweaks!"
-        echo "  review - Newer DJ-Roomba, usually stable with less updates than the dev branch."
+        echo "DJ-Roomba currently has two branches available."
+        echo "  master - The stable DJ-Roomba release branch."
         echo "  dev    - The newest DJ-Roomba, latest features and changes which may need testing."
         if [ "$UNLISTED_BRANCHES" == "1" ] ; then
         echo "  *      - WARNING: Any branch name is allowed, if it exists on github."
@@ -324,10 +323,6 @@ function clone_branch_selection() {
     "dev")
         echo "Installing from 'dev' branch..."
         git clone "${MusicBotGitURL}" "${CloneDir}" -b dev
-        ;;
-    "review")
-        echo "Installing from 'review' branch..."
-        git clone "${MusicBotGitURL}" "${CloneDir}" -b review
         ;;
     "master")
         echo "Installing from 'master' branch..."
