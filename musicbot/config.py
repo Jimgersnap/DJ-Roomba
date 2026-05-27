@@ -2865,6 +2865,7 @@ class Blocklist:
                         continue
                     f.write(f"{line}\n")
 
+            return True
         except OSError:
             log.error(
                 "Could not update the block list file:  %s",
