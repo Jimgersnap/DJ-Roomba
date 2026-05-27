@@ -18,7 +18,7 @@ fi
 
 #-----------------------------------------------Configs-----------------------------------------------#
 MusicBotGitURL="https://github.com/Just-Some-Bots/MusicBot.git"
-CloneDir="MusicBot"
+CloneDir="DJ-Roomba"
 VenvDir="MusicBotVenv"
 InstallDir=""
 ServiceName="musicbot"
@@ -90,7 +90,7 @@ function list_supported() {
     # List off "supported" linux distro/versions if asked to and exit.
     echo "We detected your OS is:  $(distro_supported)"
     echo ""
-    echo "The MusicBot installer might have support for these flavors of Linux:"
+    echo "The DJ-Roomba installer might have support for these flavors of Linux:"
     get_supported
     echo ""
     exit 0
@@ -98,7 +98,7 @@ function list_supported() {
 
 function show_help() {
     # provide help text for the installer and exit.
-    echo "MusicBot Installer script usage:"
+    echo "DJ-Roomba Installer script usage:"
     echo "  $0 [OPTIONS]"
     echo ""
     echo "By default, the installer script installs as the user who runs the script."
@@ -113,14 +113,14 @@ function show_help() {
     echo "  --list      List potentially supported versions and exits."
     echo "  --help      Show this help text and exit."
     echo "  --sys-only  Install only system packages, no bot or pip libraries."
-    echo "  --service   Install only the systemd service file for MusicBot."
+    echo "  --service   Install only the systemd service file for DJ-Roomba."
     echo "  --no-sys    Bypass system packages, install bot and pip libraries."
     echo "  --no-sudo   Skip all steps that use sudo. This implies --no-sys."
     echo "  --debug     Enter debug mode, with extra output."
     echo "  --auto      Bypass all prompts using default values."
     echo "  --any-branch    Allow any existing branch to be given at the branch prompt."
     echo "  --branch [NAME] Bypass branch prompt and use the given branch name."
-    echo "  --dir [PATH]    Directory into which MusicBot will be installed. Default is user Home directory."
+    echo "  --dir [PATH]    Directory into which DJ-Roomba will be installed. Default is user Home directory."
     echo ""
     exit 0
 }
@@ -308,10 +308,10 @@ function clone_branch_selection() {
 
     if [ "$USING_BRANCH" == "" ] ; then
         echo ""
-        echo "MusicBot currently has three branches available."
-        echo "  master - An older MusicBot, for older discord.py. May not work without tweaks!"
-        echo "  review - Newer MusicBot, usually stable with less updates than the dev branch."
-        echo "  dev    - The newest MusicBot, latest features and changes which may need testing."
+        echo "DJ-Roomba currently has three branches available."
+        echo "  master - An older DJ-Roomba, for older discord.py. May not work without tweaks!"
+        echo "  review - Newer DJ-Roomba, usually stable with less updates than the dev branch."
+        echo "  dev    - The newest DJ-Roomba, latest features and changes which may need testing."
         if [ "$UNLISTED_BRANCHES" == "1" ] ; then
         echo "  *      - WARNING: Any branch name is allowed, if it exists on github."
         fi
@@ -350,7 +350,7 @@ function pull_musicbot_git() {
     # Check if we're running inside a previously pulled repo.
     # ignore this if InstallDir is set.
     if in_existing_repo && [ "$InstallDir" == "" ]; then
-        echo "Existing MusicBot repo detected."
+        echo "Existing DJ-Roomba repo detected."
         UsePwd="y"
         ask_input "Would you like to install using the current repo? [Y/n]" UsePwd "y"
         if [ "${UsePwd,,}" == "y" ] || [ "${UsePwd,,}" == "yes" ] ; then
@@ -373,7 +373,7 @@ function pull_musicbot_git() {
             fi
             return 0
         fi
-        echo "Installer will attempt to create a new directory for MusicBot."
+        echo "Installer will attempt to create a new directory for DJ-Roomba."
     fi
 
     # test if we install at home-directory or a specified path.
@@ -394,7 +394,7 @@ function pull_musicbot_git() {
 
     clone_branch_selection
 
-    cd "${CloneDir}" || exit_err "Fatal:  Could not change to MusicBot directory."
+    cd "${CloneDir}" || exit_err "Fatal:  Could not change to DJ-Roomba directory."
 
     # find python before using it
     find_python
@@ -459,7 +459,7 @@ function install_as_venv() {
 }
 
 function issue_root_warning() {
-    echo "Just like my opinion, but root and MusicBot shouldn't mix."
+    echo "Just like my opinion, but root and DJ-Roomba shouldn't mix."
     echo "The installer will prevent this for the benefit of us all."
 }
 
@@ -603,7 +603,7 @@ function setup_as_service() {
             fi
         else
             echo "The installer cannot generate a service file without an existing installation."
-            echo "Please add the --dir option or install the MusicBot first."
+            echo "Please add the --dir option or install the DJ-Roomba first."
             echo ""
             return 1
         fi
@@ -622,8 +622,8 @@ function setup_as_service() {
     Inst_User="$(id -un)"
     Inst_Group="$(id -gn)"
     echo ""
-    echo "The installer can also install MusicBot as a system service."
-    echo "This starts the MusicBot at boot and restarts after failures."
+    echo "The installer can also install DJ-Roomba as a system service."
+    echo "This starts the DJ-Roomba at boot and restarts after failures."
     SERVICE="n"
     ask_input "Install the musicbot system service? [N/y] " SERVICE "n"
     case $SERVICE in
@@ -644,7 +644,7 @@ function setup_as_service() {
         SrvInstFile="/etc/systemd/system/${ServiceName}.service"
         
         echo ""
-        echo "Setting up MusicBot as a service named:  ${ServiceName}"
+        echo "Setting up DJ-Roomba as a service named:  ${ServiceName}"
         echo "Generated File:  ${SrvCpyFile}"
 
         generate_service_file "${SrvCpyFile}"
@@ -660,9 +660,9 @@ function setup_as_service() {
             echo "Installed File:  ${SrvInstFile}"
 
             echo ""
-            echo "MusicBot will start automatically after the next reboot."
+            echo "DJ-Roomba will start automatically after the next reboot."
             StartService="n"
-            ask_input "Would you like to start MusicBot now? [N/y]" StartService "n"
+            ask_input "Would you like to start DJ-Roomba now? [N/y]" StartService "n"
             case $StartService in
             [Yy]*)
                 echo "Running:  sudo systemctl start $ServiceName"
@@ -701,7 +701,7 @@ function configure_bot() {
     fi
     find_python
 
-    echo "You can now configure MusicBot!"
+    echo "You can now configure DJ-Roomba!"
     YesConfig="n"
     ask_input "Would you like to launch the 'configure.py' tool? [N/y]" YesConfig "n"
     if [[ "${YesConfig,,}" != "y" && "${YesConfig,,}" != "yes" ]] ; then
@@ -839,13 +839,13 @@ fi
 
 # display preamble
 cat << EOF
-MusicBot Installer
+DJ-Roomba Installer
 
-MusicBot and this installer are provided under an MIT license.
+DJ-Roomba and this installer are provided under an MIT license.
 This software is provided "as is" and may not be fit for any particular use, stated or otherwise.
 Please read the LICENSE file for full details.
 
-This installer attempts to provide automatic install for MusicBot and dependency packages.
+This installer attempts to provide automatic install for DJ-Roomba and dependency packages.
 It may use methods which are out-of-date on older OS versions, or fail on newer versions.
 It is recommended that you personally check the installer script before running it,
 and verify the steps for your OS and distro version are correct.
@@ -876,8 +876,8 @@ if [ "$(id -u)" -eq "0" ] && [ "$INSTALL_BOT_BITS" == "1" ] ;  then
     # in theory, we could prompt for a user and do all the setup.
     # better that folks learn to admin their own systems though.
     echo ""
-    echo -e "\e[1;37m\e[41m  Warning  \e[0m  You are using root and installing MusicBot."
-    echo "        This can break python permissions and will create MusicBot files as root."
+    echo -e "\e[1;37m\e[41m  Warning  \e[0m  You are using root and installing DJ-Roomba."
+    echo "        This can break python permissions and will create DJ-Roomba files as root."
     echo "        Meaning, little or no support and you have to fix stuff manually."
     echo "        Running MuiscBot as root is not recommended. You have been warned."
     echo ""
@@ -911,17 +911,17 @@ fi
 # attempt to change the working directory to where this installer is. 
 # if nothing is moved this location might be a clone repo...
 if [ "$InstallDir" == "" ] ; then
-    cd "$(dirname "${BASH_SOURCE[0]}")" || { exit_err "Could not change directory for MusicBot installer."; }
+    cd "$(dirname "${BASH_SOURCE[0]}")" || { exit_err "Could not change directory for DJ-Roomba installer."; }
 fi
 
 echo ""
 if [ "${INSTALL_SYS_PKGS}${INSTALL_BOT_BITS}" == "11" ] ; then
-    echo "Attempting to install required system packages & MusicBot software..."
+    echo "Attempting to install required system packages & DJ-Roomba software..."
 else
     if [ "${INSTALL_SYS_PKGS}${INSTALL_BOT_BITS}" == "10" ] ; then
         echo "Attempting to install only required system packages..."
     else
-        echo "Attempting to install only MusicBot and pip libraries..."
+        echo "Attempting to install only DJ-Roomba and pip libraries..."
     fi
 fi
 echo ""
@@ -1138,7 +1138,7 @@ case $DISTRO_NAME in
     # Handle the versions which are EOL.
     *"CentOS "[2-7]* |*"CentOS 8."[0-5]* |*"CentOS Stream "[0-8]* )
         echo "Unfortunately, this version of CentOS has reached End-of-Life, and will not be supported."
-        echo "You should consider upgrading to the latest version to make installing MusicBot easier."
+        echo "You should consider upgrading to the latest version to make installing DJ-Roomba easier."
         exit 1
         ;;
 
@@ -1237,8 +1237,8 @@ fi
 if [ "$InstalledViaVenv" == "1" ] ; then
     echo ""
     echo "Notice:"
-    echo "  This system required MusicBot to be installed inside a Python venv."
-    echo "  Shell scripts included with MusicBot should detect and use the venv automatically."
+    echo "  This system required DJ-Roomba to be installed inside a Python venv."
+    echo "  Shell scripts included with DJ-Roomba should detect and use the venv automatically."
     echo "  If you do not use the included scripts, you must manually activate instead."
     echo "  To manually activate the venv, run the following command: "
     echo "    source ${VenvDir}/bin/activate"
