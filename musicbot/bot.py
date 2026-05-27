@@ -792,19 +792,8 @@ class MusicBot(discord.Client):
                     log.warning("Disconnect failed or was cancelled?")
 
         # Otherwise we need to connect to the given channel.
-        max_timeout = VOICE_CLIENT_RECONNECT_TIMEOUT * VOICE_CLIENT_MAX_RETRY_CONNECT
         for attempt in range(1, (VOICE_CLIENT_MAX_RETRY_CONNECT + 1)):
             timeout = attempt * VOICE_CLIENT_RECONNECT_TIMEOUT
-            if timeout > max_timeout:
-                log.critical(
-                    "MusicBot is unable to connect to the channel right now:  %(channel)s",
-                    {"channel": channel},
-                )
-                raise exceptions.CommandError(
-                    "MusicBot could not connect to the channel.\n"
-                    "Try again later, or restart the bot if this continues."
-                )
-
             try:
                 client: discord.VoiceClient = await channel.connect(
                     timeout=timeout,
@@ -827,6 +816,15 @@ class MusicBot(discord.Client):
                 raise exceptions.CommandError(
                     "MusicBot connection to voice was cancelled. This is odd. Maybe restart?"
                 ) from e
+        else:
+            log.critical(
+                "MusicBot is unable to connect to the channel right now:  %(channel)s",
+                {"channel": channel},
+            )
+            raise exceptions.CommandError(
+                "MusicBot could not connect to the channel.\n"
+                "Try again later, or restart the bot if this continues."
+            )
 
         # request speaker automatically in stage channels.
         if isinstance(channel, discord.StageChannel):
