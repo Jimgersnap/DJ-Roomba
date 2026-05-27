@@ -9043,7 +9043,7 @@ class MusicBot(discord.Client):
             event = self.server_data[guild.id].get_event("inactive_vc_timer")
 
             if before.channel and self.user in before.channel.members:
-                if str(before.channel.id) in str(self.config.autojoin_channels):
+                if before.channel.id in self.config.autojoin_channels:
                     log.info(
                         "Ignoring %s in %s as it is a bound voice channel.",
                         before.channel.name,
