@@ -6726,10 +6726,7 @@ class MusicBot(discord.Client):
         if update_msg:
             q_msg = await self.safe_edit_message(update_msg, embed, send_if_fail=True)
         else:
-            if pages_total <= 1:
-                q_msg = await self.safe_send_message(channel, embed)
-            else:
-                q_msg = await self.safe_send_message(channel, embed)
+            q_msg = await self.safe_send_message(channel, embed)
 
         if pages_total <= 1:
             log.debug("Not enough entries to paginate the queue.")
