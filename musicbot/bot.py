@@ -2913,8 +2913,8 @@ class MusicBot(discord.Client):
         return Response(
             f"DJ Roomba `{BOTVERSION}` — a Python-based Discord music bot, a fork of Just-Some-Bots/MusicBot, "
             "with additional features and a cleaner Discord presence.\n\n"
-            f"DJ Roomba GitHub: `https://github.com/Jimgersnap/DJ-Roomba`\n"
-            f"DJ-Roomba GitHub: `https://github.com/Just-Some-Bots/MusicBot`\n\n"
+            f"DJ-Roomba GitHub: `https://github.com/Jimgersnap/DJ-Roomba`\n"
+            f"MusicBot GitHub: `https://github.com/Just-Some-Bots/MusicBot`\n\n"
             "DJ Roomba avatar created by VeryBear: `https://www.teepublic.com/user/verybear`",
             delete_after=60,
         )
