@@ -2,6 +2,8 @@
 *.pyc
 ~*/
 .vscode/
+*.service
+.coverage*
 
 audio_cache/
 dectalk/
@@ -14,7 +16,18 @@ config/permissions.ini
 config/aliases.json
 config/autoplaylist.txt
 config/autoplaylist_removed.txt
+config/autoplaylist.cachemap.json
 config/whitelist.txt
 config/blacklist.txt
+config/blocklist_users.txt
+config/blocklist_songs.txt
+config/playlists/
+media/
+i18n/*/LC_MESSAGES/*.mo
 
 docker-compose.yml
+
+/env*/
+
+CLAUDE.md
+.claude/

@@ -7,7 +7,7 @@ body:
       value: >
         Thanks for requesting a new feature.
 
-        Please check that your feature has not already been requested, or has not already been implemented in the `review` branch before continuing.
+        Please check that your feature has not already been requested, or has not already been implemented in the `dev` branch before continuing.
   - type: textarea
     attributes:
       label: What new feature would you like to see?
