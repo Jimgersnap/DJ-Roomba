@@ -81,9 +81,8 @@ class Playlist(EventEmitter, Serializable):
                 self.entries.pop()
         else:
             # Reconstruct the deque excluding the range [a, b]
-            self.entries = deque(
-                list(self.entries)[:start] + list(self.entries)[end + 1 :]
-            )
+            tmp = list(self.entries)
+            self.entries = deque(tmp[:start] + tmp[end + 1 :])
 
     def get_entry_at_index(self, index: int) -> EntryTypes:
         """
