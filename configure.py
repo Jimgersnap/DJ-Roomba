@@ -29,7 +29,7 @@ except Exception as e1:
         except Exception as e2:
             print(
                 "\n\nSomething failed.\nYou need the pip package named: windows-curses\n"
-                "Try to install it with pip and any python verion supported by MusicBot.\n\n"
+                "Try to install it with pip and any python verion supported by DJ-Roomba.\n\n"
             )
             raise e2 from e1
         sys.exit(1)
@@ -192,7 +192,7 @@ class ConfigAssistantTextSystem:
 
     def _get_natural_commands(self) -> None:
         """
-        Loops over MusicBot's attributes and extracts a set of commands
+        Loops over DJ-Roomba's attributes and extracts a set of commands
         which are avaialble in `self.top_commands`.
         """
         for attr in dir(MusicBot):

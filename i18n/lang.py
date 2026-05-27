@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-MusicBot Lang Tool
+DJ-Roomba Lang Tool
 A collection of functions useful to manage translations in PO/MO formats.
 Learn more by using:
   lang.py --help
@@ -667,10 +667,10 @@ class LangTool:
 
 
 def main():
-    """MusicBot i18n tool entry point."""
+    """DJ-Roomba i18n tool entry point."""
     ap = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        description=("A tool for translation related tasks in MusicBot."),
+        description=("A tool for translation related tasks in DJ-Roomba."),
         epilog=(
             "For more help and support with this bot, join our discord:"
             "\n  https://discord.gg/bots\n\n"
