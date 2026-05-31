@@ -109,6 +109,7 @@ class QueueView(discord.ui.View):
         self.player = player
         self.page = page
         self.pages_total = pages_total
+        self.message: Optional[discord.Message] = None
 
         if pages_total == 0:
             self.prev_btn.disabled = True
@@ -116,11 +117,37 @@ class QueueView(discord.ui.View):
 
     async def _update(self, interaction: discord.Interaction) -> None:
         embed, self.pages_total = _build_queue_embed(self.bot, self.player, self.page)
+        if self.pages_total == 0:
+            self.prev_btn.disabled = True
+            self.next_btn.disabled = True
+        else:
+            self.prev_btn.disabled = False
+            self.next_btn.disabled = False
         await interaction.response.edit_message(embed=embed, view=self)
+
+    async def on_error(
+        self,
+        interaction: discord.Interaction,
+        error: Exception,
+        item: discord.ui.Item,
+    ) -> None:
+        log.exception("QueueView button error", exc_info=error)
+        try:
+            await interaction.response.send_message(
+                "Something went wrong updating the queue. Try `/queue` again.",
+                ephemeral=True,
+            )
+        except discord.HTTPException:
+            pass
 
     async def on_timeout(self) -> None:
         self.prev_btn.disabled = True
         self.next_btn.disabled = True
+        if self.message:
+            try:
+                await self.message.edit(view=self)
+            except discord.HTTPException:
+                pass
 
     @discord.ui.button(label="◀", style=discord.ButtonStyle.secondary)
     async def prev_btn(
@@ -203,7 +230,8 @@ def register(bot: "MusicBot") -> None:
 
         embed, pages_total = _build_queue_embed(bot, player, page_index)
         view = QueueView(bot, player, page_index, pages_total)
-        await respond_with_embed(interaction, embed, view=view)
+        msg = await respond_with_embed(interaction, embed, view=view)
+        view.message = msg
 
     # ---------------------------------------------------------------- #
     #  /clearqueue                                                       #
