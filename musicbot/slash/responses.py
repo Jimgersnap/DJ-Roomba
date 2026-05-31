@@ -67,19 +67,14 @@ async def respond_with_embed(
     Send a pre-built embed as a slash command response.
     Returns the sent message for later editing or deletion.
     """
+    kwargs: dict = {"embed": embed, "ephemeral": ephemeral}
+    if view is not None:
+        kwargs["view"] = view
+
     if interaction.response.is_done():
-        msg = await interaction.followup.send(
-            embed=embed,
-            ephemeral=ephemeral,
-            view=view,
-            wait=True,
-        )
+        msg = await interaction.followup.send(**kwargs, wait=True)
     else:
-        await interaction.response.send_message(
-            embed=embed,
-            ephemeral=ephemeral,
-            view=view,
-        )
+        await interaction.response.send_message(**kwargs)
         msg = await interaction.original_response()
 
     if delete_after and not ephemeral:
