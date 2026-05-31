@@ -40,7 +40,7 @@ async def respond(
     """
     Send an embed response to a slash command interaction.
     Works whether the interaction has been deferred or not.
-    Non-ephemeral responses can be auto-deleted after delete_after seconds.
+    Non-ephemeral responses auto-delete per bot config when delete_after is unset.
     """
     embed = discord.Embed(
         description=content,
@@ -58,8 +58,14 @@ async def respond(
         await interaction.response.send_message(embed=embed, ephemeral=ephemeral)
         msg = await interaction.original_response()
 
-    if delete_after and not ephemeral:
-        _schedule_delete(msg, delete_after)
+    if not ephemeral:
+        effective_delay = delete_after
+        if effective_delay is None:
+            cfg = getattr(interaction.client, "config", None)
+            if cfg is not None and getattr(cfg, "delete_messages", False):
+                effective_delay = cfg.delete_delay_short
+        if effective_delay:
+            _schedule_delete(msg, effective_delay)
 
 
 async def respond_with_embed(
@@ -113,11 +119,15 @@ async def invoke_response(
 ) -> None:
     """
     Send a MusicBotResponse (Response / ErrorResponse) as an interaction
-    response. Preserves the response's delete_after value if set.
+    response. Mirrors the prefix command auto-delete fallback from bot.py.
     """
     if response is None:
         return
     delete_after = getattr(response, "delete_after", None)
+    if delete_after is None:
+        cfg = getattr(interaction.client, "config", None)
+        if cfg is not None and getattr(cfg, "delete_messages", False):
+            delete_after = cfg.delete_delay_short
     await respond_with_embed(
         interaction,
         response,
