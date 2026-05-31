@@ -33,12 +33,13 @@ def _format_error(error: exceptions.MusicbotException) -> str:
 
 def setup(bot: "MusicBot") -> None:
     """Register all slash commands and the global error handler."""
-    from musicbot.slash import control, playback, playback_options, queue, utility
+    from musicbot.slash import admin, control, playback, playback_options, queue, utility
     playback.register(bot)
     playback_options.register(bot)
     queue.register(bot)
     control.register(bot)
     utility.register(bot)
+    admin.register(bot)
 
     @bot.tree.error
     async def on_tree_error(
@@ -46,6 +47,9 @@ def setup(bot: "MusicBot") -> None:
         error: app_commands.AppCommandError,
     ) -> None:
         original = getattr(error, "original", error)
+        # Let restart/terminate signals propagate to the main event loop.
+        if isinstance(original, (exceptions.RestartSignal, exceptions.TerminateSignal)):
+            raise original
         if isinstance(original, exceptions.MusicbotException):
             await respond_error(interaction, _format_error(original))
         else:
