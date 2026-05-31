@@ -9251,6 +9251,13 @@ class MusicBot(discord.Client):
         """
         log.info("Bot has been added to guild: %s", guild.name)
 
+        # Re-sync slash commands for this guild.
+        try:
+            await self.tree.sync(guild=guild)
+            log.info("Synced slash commands to guild: %s", guild.name)
+        except discord.HTTPException as e:
+            log.warning("Failed to sync slash commands to %s: %s", guild.name, e)
+
         # Leave guilds if the owner is not a member and configured to do so.
         if self.config.leavenonowners:
             # Get the owner so we can notify them of the leave via DM.
