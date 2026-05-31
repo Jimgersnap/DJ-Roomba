@@ -12,7 +12,7 @@ from discord import app_commands
 
 from musicbot import exceptions
 from musicbot.slash.context import SlashContext
-from musicbot.slash.responses import invoke_response, respond
+from musicbot.slash.responses import defer, invoke_response, respond
 
 if TYPE_CHECKING:
     from musicbot.bot import MusicBot
@@ -63,6 +63,7 @@ def register(bot: "MusicBot") -> None:
         ctx = SlashContext(interaction, bot)
         ctx.check_permission("disconnect")
         guild = ctx.require_guild()
+        await defer(interaction)
         response = await bot.cmd_disconnect(guild=guild)
         await invoke_response(interaction, response)
 
@@ -84,6 +85,7 @@ def register(bot: "MusicBot") -> None:
                 "This command requires you to be in a server."
             )
 
+        await defer(interaction)
         response = await bot.cmd_reconnect(
             ssd_=ctx.ssd,
             guild=guild,
