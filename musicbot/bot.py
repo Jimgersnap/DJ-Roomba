@@ -2519,8 +2519,11 @@ class MusicBot(discord.Client):
                 await asyncio.sleep(0)
 
         # Sync slash commands to all guilds for instant availability.
+        # copy_global_to is required because commands are registered globally
+        # in the tree; guild sync only sends guild-specific commands otherwise.
         for guild in self.guilds:
             try:
+                self.tree.copy_global_to(guild=guild)
                 await self.tree.sync(guild=guild)
                 log.info("Synced slash commands to guild: %s", guild.name)
             except discord.HTTPException as e:
@@ -9253,6 +9256,7 @@ class MusicBot(discord.Client):
 
         # Re-sync slash commands for this guild.
         try:
+            self.tree.copy_global_to(guild=guild)
             await self.tree.sync(guild=guild)
             log.info("Synced slash commands to guild: %s", guild.name)
         except discord.HTTPException as e:
