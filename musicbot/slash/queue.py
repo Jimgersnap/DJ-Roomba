@@ -1,13 +1,11 @@
 """
 Slash commands — Phase 3: queue management.
-/queue list  /queue clear  /queue shuffle  /queue remove
-/promote  /move
+/queue  /clearqueue  /shufflequeue  /removequeue  /promote  /move
 """
 from __future__ import annotations
 
 import logging
 import math
-from collections import deque
 from typing import TYPE_CHECKING, List, Optional
 
 import discord
@@ -173,20 +171,16 @@ async def _queue_position_autocomplete(
 def register(bot: "MusicBot") -> None:
     """Register all queue slash commands with the bot's CommandTree."""
 
-    queue_group = app_commands.Group(
+    # ---------------------------------------------------------------- #
+    #  /queue                                                            #
+    # ---------------------------------------------------------------- #
+
+    @bot.tree.command(
         name="queue",
-        description="View and manage the song queue.",
-    )
-
-    # ---------------------------------------------------------------- #
-    #  /queue list                                                       #
-    # ---------------------------------------------------------------- #
-
-    @queue_group.command(
-        name="list", description="Show the current song queue with page navigation."
+        description="Show the current song queue with page navigation.",
     )
     @app_commands.describe(page="Page number to jump to (default: 1).")
-    async def queue_list(
+    async def slash_queue(
         interaction: discord.Interaction, page: int = 1
     ) -> None:
         ctx = SlashContext(interaction, bot)
@@ -212,11 +206,11 @@ def register(bot: "MusicBot") -> None:
         await respond_with_embed(interaction, embed, view=view)
 
     # ---------------------------------------------------------------- #
-    #  /queue clear                                                      #
+    #  /clearqueue                                                       #
     # ---------------------------------------------------------------- #
 
-    @queue_group.command(name="clear", description="Clear all songs from the queue.")
-    async def queue_clear(interaction: discord.Interaction) -> None:
+    @bot.tree.command(name="clearqueue", description="Clear all songs from the queue.")
+    async def slash_clearqueue(interaction: discord.Interaction) -> None:
         ctx = SlashContext(interaction, bot)
         ctx.check_permission("clear")
         guild = ctx.require_guild()
@@ -229,11 +223,11 @@ def register(bot: "MusicBot") -> None:
             await respond(interaction, "Queue cleared.")
 
     # ---------------------------------------------------------------- #
-    #  /queue shuffle                                                    #
+    #  /shufflequeue                                                     #
     # ---------------------------------------------------------------- #
 
-    @queue_group.command(name="shuffle", description="Shuffle the song queue.")
-    async def queue_shuffle(interaction: discord.Interaction) -> None:
+    @bot.tree.command(name="shufflequeue", description="Shuffle the song queue.")
+    async def slash_shufflequeue(interaction: discord.Interaction) -> None:
         ctx = SlashContext(interaction, bot)
         ctx.check_permission("shuffle")
         player = await ctx.get_player()
@@ -245,16 +239,16 @@ def register(bot: "MusicBot") -> None:
         await respond(interaction, "The queue has been shuffled.")
 
     # ---------------------------------------------------------------- #
-    #  /queue remove                                                     #
+    #  /removequeue                                                      #
     # ---------------------------------------------------------------- #
 
-    @queue_group.command(
-        name="remove",
+    @bot.tree.command(
+        name="removequeue",
         description="Remove a song from the queue by position.",
     )
     @app_commands.describe(position="Position of the song to remove.")
     @app_commands.autocomplete(position=_queue_position_autocomplete)
-    async def queue_remove(
+    async def slash_removequeue(
         interaction: discord.Interaction, position: int
     ) -> None:
         ctx = SlashContext(interaction, bot)
@@ -287,8 +281,6 @@ def register(bot: "MusicBot") -> None:
         await respond(
             interaction, f"Removed **{entry.title}**{added_by} from the queue."
         )
-
-    bot.tree.add_command(queue_group)
 
     # ---------------------------------------------------------------- #
     #  /promote                                                          #
