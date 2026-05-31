@@ -12,7 +12,7 @@ from discord import app_commands
 
 from musicbot import exceptions
 from musicbot.constants import (
-    BOTVERSION,
+    VERSION as BOTVERSION,
     DEFAULT_BOT_NAME,
     MUSICBOT_EMBED_COLOR_NORMAL,
 )
