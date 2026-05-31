@@ -2873,7 +2873,14 @@ class MusicBot(discord.Client):
                 [event.wait()], timeout=self.config.leave_player_inactive_for
             )
         except asyncio.TimeoutError:
-            if not player.is_playing and player.voice_client.is_connected():
+            # Re-fetch the current player — the original reference may be stale
+            # if cmd_reconnect replaced it with a new player object.
+            current_player = self.get_player_in(guild)
+            if (
+                current_player
+                and not current_player.is_playing
+                and current_player.voice_client.is_connected()
+            ):
                 log.info(
                     "Player activity timer for %s has expired. Disconnecting.",
                     guild.name,
@@ -3051,6 +3058,14 @@ class MusicBot(discord.Client):
 
         await self.disconnect_voice_client(guild)
         await asyncio.sleep(1)
+
+        # Reset the inactivity event so the new player can register its own timer.
+        # The old timer coroutine holds a stale player reference and may still be
+        # running; clearing the event here unblocks handle_player_inactivity for
+        # the new player.
+        inactivity_event = self.server_data[guild.id].get_event("inactive_player_timer")
+        inactivity_event.deactivate()
+        inactivity_event.clear()
 
         new_player = await self.get_player(voice_channel, create=True)
         new_player.playlist.entries = deque(saved_entries)
