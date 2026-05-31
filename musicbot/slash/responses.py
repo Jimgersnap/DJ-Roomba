@@ -107,6 +107,27 @@ async def respond_error(
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
 
+async def invoke_response(
+    interaction: discord.Interaction,
+    response: "Optional[discord.Embed]",
+    *,
+    view: Optional[discord.ui.View] = None,
+) -> None:
+    """
+    Send a MusicBotResponse (Response / ErrorResponse) as an interaction
+    response. Preserves the response's delete_after value if set.
+    """
+    if response is None:
+        return
+    delete_after = getattr(response, "delete_after", None)
+    await respond_with_embed(
+        interaction,
+        response,
+        delete_after=delete_after,
+        view=view,
+    )
+
+
 async def defer(
     interaction: discord.Interaction,
     *,
