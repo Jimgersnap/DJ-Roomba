@@ -33,8 +33,9 @@ def _format_error(error: exceptions.MusicbotException) -> str:
 
 def setup(bot: "MusicBot") -> None:
     """Register all slash commands and the global error handler."""
-    from musicbot.slash import playback, queue
+    from musicbot.slash import playback, playback_options, queue
     playback.register(bot)
+    playback_options.register(bot)
     queue.register(bot)
 
     @bot.tree.error
