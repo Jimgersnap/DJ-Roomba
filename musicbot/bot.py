@@ -241,6 +241,11 @@ class MusicBot(discord.Client):
         intents.presences = False
         super().__init__(intents=intents)
 
+        self.tree = discord.app_commands.CommandTree(self)
+
+        from musicbot.slash import setup as slash_setup
+        slash_setup(self)
+
     def create_task(
         self,
         coro: "Coroutine[Any, Any, Any]",
@@ -2512,6 +2517,14 @@ class MusicBot(discord.Client):
                 self.server_data[guild.id].is_ready()
                 # context switch to give scheduled task an execution window.
                 await asyncio.sleep(0)
+
+        # Sync slash commands to all guilds for instant availability.
+        for guild in self.guilds:
+            try:
+                await self.tree.sync(guild=guild)
+                log.info("Synced slash commands to guild: %s", guild.name)
+            except discord.HTTPException as e:
+                log.warning("Failed to sync slash commands to %s: %s", guild.name, e)
 
     async def _on_ready_always(self) -> None:
         """
