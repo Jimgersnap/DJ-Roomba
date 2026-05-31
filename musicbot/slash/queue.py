@@ -212,7 +212,13 @@ def register(bot: "MusicBot") -> None:
     ) -> None:
         ctx = SlashContext(interaction, bot)
         ctx.check_permission("queue")
-        player = await ctx.get_player()
+        ctx.require_guild()
+
+        player = ctx.get_player_in()
+        if player is None:
+            raise exceptions.CommandError(
+                "I'm not playing anything right now. Start something with `/play`."
+            )
 
         total = len(player.playlist.entries)
         if not total and not player.current_entry:
