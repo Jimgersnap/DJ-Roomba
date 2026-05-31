@@ -17,6 +17,17 @@ from musicbot.constants import MUSICBOT_EMBED_COLOR_ERROR, MUSICBOT_EMBED_COLOR_
 log = logging.getLogger(__name__)
 
 
+def _schedule_delete(msg: discord.Message, delay: float) -> None:
+    """Delete a message after delay seconds in a background task."""
+    async def _delete() -> None:
+        await asyncio.sleep(delay)
+        try:
+            await msg.delete()
+        except discord.HTTPException:
+            pass
+    asyncio.create_task(_delete())
+
+
 async def respond(
     interaction: discord.Interaction,
     content: str,
@@ -48,11 +59,7 @@ async def respond(
         msg = await interaction.original_response()
 
     if delete_after and not ephemeral:
-        await asyncio.sleep(delete_after)
-        try:
-            await msg.delete()
-        except discord.HTTPException:
-            pass
+        _schedule_delete(msg, delete_after)
 
 
 async def respond_with_embed(
@@ -78,11 +85,7 @@ async def respond_with_embed(
         msg = await interaction.original_response()
 
     if delete_after and not ephemeral:
-        await asyncio.sleep(delete_after)
-        try:
-            await msg.delete()
-        except discord.HTTPException:
-            pass
+        _schedule_delete(msg, delete_after)
 
     return msg
 
