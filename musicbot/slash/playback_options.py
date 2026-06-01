@@ -13,7 +13,7 @@ from discord import app_commands
 from musicbot import exceptions
 from musicbot.constants import MUSICBOT_EMBED_COLOR_NORMAL
 from musicbot.slash.context import SlashContext
-from musicbot.slash.responses import defer, invoke_response, respond
+from musicbot.slash.responses import defer, invoke_response, respond, schedule_delete
 from musicbot.utils import format_song_duration
 
 if TYPE_CHECKING:
@@ -100,6 +100,9 @@ class SearchView(discord.ui.View):
             color=discord.Colour.from_str(MUSICBOT_EMBED_COLOR_NORMAL),
         )
         await interaction.message.edit(embed=result_embed, view=None)
+        cfg = getattr(interaction.client, "config", None)
+        if cfg is not None and getattr(cfg, "delete_messages", False):
+            schedule_delete(interaction.message, cfg.delete_delay_short)
 
 
 # ------------------------------------------------------------------ #

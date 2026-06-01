@@ -17,7 +17,7 @@ from musicbot.constants import MUSICBOT_EMBED_COLOR_ERROR, MUSICBOT_EMBED_COLOR_
 log = logging.getLogger(__name__)
 
 
-def _schedule_delete(msg: discord.Message, delay: float) -> None:
+def schedule_delete(msg: discord.Message, delay: float) -> None:
     """Delete a message after delay seconds in a background task."""
     async def _delete() -> None:
         await asyncio.sleep(delay)
@@ -65,7 +65,7 @@ async def respond(
             if cfg is not None and getattr(cfg, "delete_messages", False):
                 effective_delay = cfg.delete_delay_short
         if effective_delay:
-            _schedule_delete(msg, effective_delay)
+            schedule_delete(msg, effective_delay)
 
 
 async def respond_with_embed(
@@ -91,7 +91,7 @@ async def respond_with_embed(
         msg = await interaction.original_response()
 
     if delete_after and not ephemeral:
-        _schedule_delete(msg, delete_after)
+        schedule_delete(msg, delete_after)
 
     return msg
 
