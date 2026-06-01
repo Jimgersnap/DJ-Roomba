@@ -38,11 +38,18 @@ class NowPlayingView(discord.ui.View):
     Any server member may use them.
     """
 
-    def __init__(self, bot: "MusicBot", player: "MusicPlayer") -> None:
-        super().__init__(timeout=60)
+    def __init__(
+        self,
+        bot: "MusicBot",
+        player: "MusicPlayer",
+        *,
+        auto_delete: bool = True,
+    ) -> None:
+        super().__init__(timeout=60 if auto_delete else None)
         self.bot = bot
         self.player = player
         self.message: Optional[discord.Message] = None
+        self._auto_delete = auto_delete
         self._refresh_pause_label()
 
     def _refresh_pause_label(self) -> None:
@@ -70,9 +77,10 @@ class NowPlayingView(discord.ui.View):
                 await self.message.edit(view=self)
             except discord.HTTPException:
                 pass
-            cfg = getattr(self.bot, "config", None)
-            if cfg is not None and getattr(cfg, "delete_messages", False):
-                schedule_delete(self.message, cfg.delete_delay_short)
+            if self._auto_delete:
+                cfg = getattr(self.bot, "config", None)
+                if cfg is not None and getattr(cfg, "delete_messages", False):
+                    schedule_delete(self.message, cfg.delete_delay_short)
 
     @discord.ui.button(label="⏸ Pause", style=discord.ButtonStyle.secondary)
     async def pause_resume_btn(

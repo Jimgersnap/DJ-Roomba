@@ -1234,10 +1234,17 @@ class MusicBot(discord.Client):
                 player.current_entry.url
             )
 
-        self.server_data[guild.id].last_np_msg = await self.safe_send_message(
-            np_channel,
-            content,
-        )
+        np_msg = await self.safe_send_message(np_channel, content)
+        self.server_data[guild.id].last_np_msg = np_msg
+
+        if np_msg:
+            try:
+                from musicbot.slash.utility import NowPlayingView
+                view = NowPlayingView(self, player, auto_delete=False)
+                view.message = np_msg
+                await np_msg.edit(view=view)
+            except Exception:
+                log.debug("Could not attach NowPlayingView to auto-NP message", exc_info=True)
 
         # TODO: Check channel voice state?
 
