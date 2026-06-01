@@ -184,23 +184,33 @@ def register(bot: "MusicBot") -> None:
 
     @bot.tree.command(
         name="nowplaying",
-        description="Show what's currently playing with playback controls.",
+        description="Refresh the now-playing message to the bottom of chat.",
     )
     async def slash_np(interaction: discord.Interaction) -> None:
         ctx = SlashContext(interaction, bot)
         ctx.check_permission("np")
-        player = await ctx.get_player()
+        guild = ctx.require_guild()
 
-        if not player.current_entry:
-            raise exceptions.CommandError(
-                "There are no songs queued! Queue something with `/play`."
-            )
+        player = ctx.get_player_in()
+        if player is None or not player.current_entry:
+            raise exceptions.CommandError("Nothing is playing right now.")
+
+        # Delete the existing auto-NP message to avoid redundancy.
+        old_np_msg = bot.server_data[guild.id].last_np_msg
+        if old_np_msg:
+            try:
+                await old_np_msg.delete()
+            except discord.HTTPException:
+                pass
+            bot.server_data[guild.id].last_np_msg = None
 
         embed = _build_np_embed(player)
-        view = NowPlayingView(bot, player)
+        view = NowPlayingView(bot, player, auto_delete=False)
 
         await interaction.response.send_message(embed=embed, view=view)
-        view.message = await interaction.original_response()
+        msg = await interaction.original_response()
+        view.message = msg
+        bot.server_data[guild.id].last_np_msg = msg
 
     # ---------------------------------------------------------------- #
     #  /botinfo                                                          #
