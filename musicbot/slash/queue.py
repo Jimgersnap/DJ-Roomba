@@ -14,7 +14,7 @@ from discord import app_commands
 from musicbot import exceptions
 from musicbot.constants import MUSICBOT_EMBED_COLOR_NORMAL
 from musicbot.slash.context import SlashContext
-from musicbot.slash.responses import defer, invoke_response, respond, respond_with_embed
+from musicbot.slash.responses import defer, invoke_response, respond, respond_with_embed, schedule_delete
 from musicbot.utils import format_song_duration
 
 if TYPE_CHECKING:
@@ -148,6 +148,9 @@ class QueueView(discord.ui.View):
                 await self.message.edit(view=self)
             except discord.HTTPException:
                 pass
+            cfg = getattr(self.bot, "config", None)
+            if cfg is not None and getattr(cfg, "delete_messages", False):
+                schedule_delete(self.message, cfg.delete_delay_short)
 
     @discord.ui.button(label="◀", style=discord.ButtonStyle.secondary)
     async def prev_btn(
