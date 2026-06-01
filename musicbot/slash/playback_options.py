@@ -52,6 +52,7 @@ class SearchView(discord.ui.View):
         self.guild = guild
         self.author = author
         self.permissions = permissions
+        self.message: Optional[discord.Message] = None
 
         options = []
         for i, entry in enumerate(entries[:25], 1):
@@ -66,6 +67,14 @@ class SearchView(discord.ui.View):
 
     async def on_timeout(self) -> None:
         self.result_select.disabled = True
+        if self.message:
+            try:
+                await self.message.edit(view=self)
+            except discord.HTTPException:
+                pass
+            cfg = getattr(self.bot, "config", None)
+            if cfg is not None and getattr(cfg, "delete_messages", False):
+                schedule_delete(self.message, cfg.delete_delay_short)
 
     @discord.ui.select(placeholder="Pick a result to add it to the queue...")
     async def result_select(
@@ -380,4 +389,5 @@ def register(bot: "MusicBot") -> None:
             permissions=ctx.permissions,
         )
 
-        await interaction.followup.send(embed=embed, view=view)
+        msg = await interaction.followup.send(embed=embed, view=view, wait=True)
+        view.message = msg
