@@ -183,7 +183,7 @@ def register(bot: "MusicBot") -> None:
     # ---------------------------------------------------------------- #
 
     @bot.tree.command(
-        name="np",
+        name="nowplaying",
         description="Show what's currently playing with playback controls.",
     )
     async def slash_np(interaction: discord.Interaction) -> None:
