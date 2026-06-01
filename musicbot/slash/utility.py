@@ -18,7 +18,7 @@ from musicbot.constants import (
 )
 from musicbot.entry import StreamPlaylistEntry
 from musicbot.slash.context import SlashContext
-from musicbot.slash.responses import invoke_response, respond
+from musicbot.slash.responses import invoke_response, respond, schedule_delete
 from musicbot.utils import format_song_duration
 
 if TYPE_CHECKING:
@@ -42,6 +42,7 @@ class NowPlayingView(discord.ui.View):
         super().__init__(timeout=60)
         self.bot = bot
         self.player = player
+        self.message: Optional[discord.Message] = None
         self._refresh_pause_label()
 
     def _refresh_pause_label(self) -> None:
@@ -64,6 +65,14 @@ class NowPlayingView(discord.ui.View):
         for child in self.children:
             if isinstance(child, discord.ui.Button):
                 child.disabled = True
+        if self.message:
+            try:
+                await self.message.edit(view=self)
+            except discord.HTTPException:
+                pass
+            cfg = getattr(self.bot, "config", None)
+            if cfg is not None and getattr(cfg, "delete_messages", False):
+                schedule_delete(self.message, cfg.delete_delay_short)
 
     @discord.ui.button(label="⏸ Pause", style=discord.ButtonStyle.secondary)
     async def pause_resume_btn(
@@ -183,6 +192,7 @@ def register(bot: "MusicBot") -> None:
         view = NowPlayingView(bot, player)
 
         await interaction.response.send_message(embed=embed, view=view)
+        view.message = await interaction.original_response()
 
     # ---------------------------------------------------------------- #
     #  /botinfo                                                          #
