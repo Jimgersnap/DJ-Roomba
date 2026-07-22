@@ -3,7 +3,7 @@
 [![Python version](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://python.org)
 [![GitHub license](https://img.shields.io/github/license/Jimgersnap/DJ-Roomba.svg)](LICENSE)
 
-DJ Roomba is a Discord music bot written in [Python](https://www.python.org) 3.10+, using the [discord.py](https://github.com/Rapptz/discord.py) library. It is a fork of [MusicBot](https://github.com/Just-Some-Bots/MusicBot) with additional commands, a cleaner visual style, and auto-deleting responses to keep your channels tidy. It plays requested songs from YouTube and other supported services (including Spotify), falls back to a configurable auto playlist when the queue is empty, and includes a permission system so owners can restrict commands to specific roles or users.
+DJ Roomba is a Discord music bot written in [Python](https://www.python.org) 3.10+, using the [discord.py](https://github.com/Rapptz/discord.py) library. It is a fork of [MusicBot](https://github.com/Just-Some-Bots/MusicBot) with additional commands, a cleaner visual style, and auto-deleting responses to keep your channels tidy. It supports both classic prefix commands and native Discord slash commands, plays requested songs from YouTube and other supported services (including Spotify), falls back to a configurable auto playlist when the queue is empty, and includes a permission system so owners can restrict commands to specific roles or users.
 
 ### Why "DJ-Roomba"?
 
@@ -41,6 +41,8 @@ See [`config/example_options.ini`](./config/example_options.ini) for all availab
 ## Commands
 
 DJ Roomba uses `!` as the default command prefix (configurable with `setprefix`). Many commands have aliases — see [`config/example_aliases.json`](./config/example_aliases.json) for the defaults.
+
+> **Slash commands:** Every command below is also available as a native Discord slash command (e.g. `/play`, `/queue`, `/nowplaying`), with argument hints and interactive buttons for browsing the queue and search results. Slash commands register automatically when the bot joins a server. The tables below use the prefix form, but the same commands work either way.
 
 ### Playback
 
