@@ -28,7 +28,7 @@ body:
         If you followed the official guides and installed the bot with Git, you can run `git describe --tags --always`.
       multiple: false
       options:
-        - I am using the "master" branch
+        - I am using the "main" branch
         - I am using the "dev" branch
   - type: dropdown
     id: system

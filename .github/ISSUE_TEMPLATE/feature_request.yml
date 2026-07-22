@@ -30,5 +30,5 @@ body:
       options:
         - label: I have confirmed that my feature has not already been requested.
           required: true
-        - label: I have confirmed that my feature has not already been implemented in the `master` branch.
+        - label: I have confirmed that my feature has not already been implemented in the `main` branch.
           required: true

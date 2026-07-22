@@ -9,7 +9,7 @@ Thanks for your interest in contributing to DJ Roomba! Pull requests and issues 
 
 ## Pull Requests
 
-- **Target the `dev` branch.** PRs against `master` will be closed.
+- **Target the `dev` branch.** PRs against `main` will be closed.
 - Keep changes focused — one fix or feature per PR.
 - Describe what your PR does and why in the pull request body.
 
