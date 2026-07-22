@@ -241,6 +241,11 @@ class MusicBot(discord.Client):
         intents.presences = False
         super().__init__(intents=intents)
 
+        self.tree = discord.app_commands.CommandTree(self)
+
+        from musicbot.slash import setup as slash_setup
+        slash_setup(self)
+
     def create_task(
         self,
         coro: "Coroutine[Any, Any, Any]",
@@ -1229,10 +1234,17 @@ class MusicBot(discord.Client):
                 player.current_entry.url
             )
 
-        self.server_data[guild.id].last_np_msg = await self.safe_send_message(
-            np_channel,
-            content,
-        )
+        np_msg = await self.safe_send_message(np_channel, content)
+        self.server_data[guild.id].last_np_msg = np_msg
+
+        if np_msg:
+            try:
+                from musicbot.slash.utility import NowPlayingView
+                view = NowPlayingView(self, player, auto_delete=False)
+                view.message = np_msg
+                await np_msg.edit(view=view)
+            except Exception:
+                log.debug("Could not attach NowPlayingView to auto-NP message", exc_info=True)
 
         # TODO: Check channel voice state?
 
@@ -2513,6 +2525,17 @@ class MusicBot(discord.Client):
                 # context switch to give scheduled task an execution window.
                 await asyncio.sleep(0)
 
+        # Sync slash commands to all guilds for instant availability.
+        # copy_global_to is required because commands are registered globally
+        # in the tree; guild sync only sends guild-specific commands otherwise.
+        for guild in self.guilds:
+            try:
+                self.tree.copy_global_to(guild=guild)
+                await self.tree.sync(guild=guild)
+                log.info("Synced slash commands to guild: %s", guild.name)
+            except discord.HTTPException as e:
+                log.warning("Failed to sync slash commands to %s: %s", guild.name, e)
+
     async def _on_ready_always(self) -> None:
         """
         A version of on_ready that will be called on every event.
@@ -2873,7 +2896,14 @@ class MusicBot(discord.Client):
                 [event.wait()], timeout=self.config.leave_player_inactive_for
             )
         except asyncio.TimeoutError:
-            if not player.is_playing and player.voice_client.is_connected():
+            # Re-fetch the current player — the original reference may be stale
+            # if cmd_reconnect replaced it with a new player object.
+            current_player = self.get_player_in(guild)
+            if (
+                current_player
+                and not current_player.is_playing
+                and current_player.voice_client.is_connected()
+            ):
                 log.info(
                     "Player activity timer for %s has expired. Disconnecting.",
                     guild.name,
@@ -3051,6 +3081,14 @@ class MusicBot(discord.Client):
 
         await self.disconnect_voice_client(guild)
         await asyncio.sleep(1)
+
+        # Reset the inactivity event so the new player can register its own timer.
+        # The old timer coroutine holds a stale player reference and may still be
+        # running; clearing the event here unblocks handle_player_inactivity for
+        # the new player.
+        inactivity_event = self.server_data[guild.id].get_event("inactive_player_timer")
+        inactivity_event.deactivate()
+        inactivity_event.clear()
 
         new_player = await self.get_player(voice_channel, create=True)
         new_player.playlist.entries = deque(saved_entries)
@@ -9222,6 +9260,14 @@ class MusicBot(discord.Client):
         https://discordpy.readthedocs.io/en/stable/api.html#discord.on_guild_join
         """
         log.info("Bot has been added to guild: %s", guild.name)
+
+        # Re-sync slash commands for this guild.
+        try:
+            self.tree.copy_global_to(guild=guild)
+            await self.tree.sync(guild=guild)
+            log.info("Synced slash commands to guild: %s", guild.name)
+        except discord.HTTPException as e:
+            log.warning("Failed to sync slash commands to %s: %s", guild.name, e)
 
         # Leave guilds if the owner is not a member and configured to do so.
         if self.config.leavenonowners:
