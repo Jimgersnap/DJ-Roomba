@@ -17,7 +17,7 @@ fi
 
 
 #-----------------------------------------------Configs-----------------------------------------------#
-MusicBotGitURL="https://github.com/Just-Some-Bots/MusicBot.git"
+MusicBotGitURL="https://github.com/Jimgersnap/DJ-Roomba.git"
 CloneDir="DJ-Roomba"
 VenvDir="MusicBotVenv"
 InstallDir=""
@@ -301,7 +301,7 @@ function clone_branch_selection() {
         if in_existing_repo ; then
             USING_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
         else
-            # TODO: change this when merging to review or master.
+            # TODO: change this when merging to main.
             USING_BRANCH="dev"
         fi
     fi
@@ -309,7 +309,7 @@ function clone_branch_selection() {
     if [ "$USING_BRANCH" == "" ] ; then
         echo ""
         echo "DJ-Roomba currently has two branches available."
-        echo "  master - The stable DJ-Roomba release branch."
+        echo "  main   - The stable DJ-Roomba release branch."
         echo "  dev    - The newest DJ-Roomba, latest features and changes which may need testing."
         if [ "$UNLISTED_BRANCHES" == "1" ] ; then
         echo "  *      - WARNING: Any branch name is allowed, if it exists on github."
@@ -324,9 +324,9 @@ function clone_branch_selection() {
         echo "Installing from 'dev' branch..."
         git clone "${MusicBotGitURL}" "${CloneDir}" -b dev
         ;;
-    "master")
-        echo "Installing from 'master' branch..."
-        git clone "${MusicBotGitURL}" "${CloneDir}" -b master
+    "main")
+        echo "Installing from 'main' branch..."
+        git clone "${MusicBotGitURL}" "${CloneDir}" -b main
         ;;
     *)
         if [ "$UNLISTED_BRANCHES" == "1" ] ; then
